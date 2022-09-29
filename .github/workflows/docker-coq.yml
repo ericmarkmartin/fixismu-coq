@@ -1,2 +1,8 @@
-- name: Docker-Coq Action
-  uses: coq-community/docker-coq-action@v1.4.0
+name: Check build 
+on: [push]
+jobs:
+  Compile-Coq-Proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Docker-Coq Action
+        uses: coq-community/docker-coq-action@v1.4.0
