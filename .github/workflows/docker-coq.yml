@@ -1,0 +1,2 @@
+- name: Docker-Coq Action
+  uses: coq-community/docker-coq-action@v1.4.0
