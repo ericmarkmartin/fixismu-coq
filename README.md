@@ -6,7 +6,7 @@ Coq proofs establishing semantic equi-expressiveness results for recursive types
 
 See the paper [on arxiv][arxiv]
 
-[arxiv]: TODO
+[arxiv]: https://arxiv.org/abs/2010.10859
 [STLC]: https://en.wikipedia.org/wiki/Simply_typed_lambda_calculus
 
 ## Building the proof
