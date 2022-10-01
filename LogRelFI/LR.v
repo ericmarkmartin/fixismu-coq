@@ -1,6 +1,6 @@
-Require Export LogRelFI.PseudoTypeFI.
+Require Export LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
-Require Import LogRelFI.PseudoTypeFI.
+Require Import LogRelFI.PseudoType.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.SpecTyping.

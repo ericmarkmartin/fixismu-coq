@@ -9,7 +9,7 @@ Require Import CompilerFI.CompilerFI.
 
 Require Import UValFI.UVal.
 
-Require Import LogRelFI.PseudoTypeFI.
+Require Import LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.

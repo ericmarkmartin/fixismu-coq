@@ -8,7 +8,7 @@ Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.LemmasEvaluation.
 Require Import StlcIso.SpecEvaluation.
 Require Import StlcIso.LemmasEvaluation.
-Require Import LogRelFI.PseudoTypeFI.
+Require Import LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.

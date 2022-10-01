@@ -3,7 +3,7 @@ Require Import StlcIso.LemmasTyping.
 Require Import StlcFix.CanForm.
 Require Import StlcFix.LemmasTyping.
 (* Require Import StlcIso.LemmasScoping. *)
-Require Export LogRelFI.PseudoTypeFI.
+Require Export LogRelFI.PseudoType.
 Require Import UValFI.UVal.
 
 Section RepEmul.

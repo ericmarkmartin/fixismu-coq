@@ -4,7 +4,7 @@ Require Export RecTypes.LemmasTypes.
 (* Require Import StlcFix.SpecScoping. *)
 (* Require Import StlcFix.LemmasScoping. *)
 (* Require Import StlcFix.DecideEval. *)
-Require Import LogRelFI.PseudoTypeFI.
+Require Import LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.

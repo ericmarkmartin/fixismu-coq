@@ -9,7 +9,7 @@ Require Import StlcIso.LemmasEvaluation.
 Require Import StlcIso.TypeSafety.
 Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.StlcOmega.
-Require Import LogRelFI.PseudoTypeFI.
+Require Import LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.
@@ -636,7 +636,7 @@ Proof.
       eapply valrel_termrelnd₀.
       eapply valrel_inSum''.
       eapply valrel_inl''.
-      assert (tyvs2 : ⟪ PseudoTypeFI.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₁)) ⟫).
+      assert (tyvs2 : ⟪ PseudoType.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₁)) ⟫).
       * eapply (F.preservation_star es2).
         crushTyping.
         rewrite repEmul_embed_leftinv.
@@ -687,7 +687,7 @@ Proof.
       eapply valrel_termrelnd₀.
       eapply valrel_inSum''.
       eapply valrel_inr''.
-      assert (tyvs2 : ⟪ PseudoTypeFI.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₂)) ⟫).
+      assert (tyvs2 : ⟪ PseudoType.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₂)) ⟫).
       * eapply (F.preservation_star es2).
         crushTyping.
         rewrite repEmul_embed_leftinv.

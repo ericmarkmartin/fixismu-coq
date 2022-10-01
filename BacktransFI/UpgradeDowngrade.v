@@ -14,7 +14,7 @@ Require Import LogRelFI.LemmasLR.
 Require Import LogRelFI.LemmasIntro.
 Require Import LogRelFI.LemmasInversion.
 Require Import LogRelFI.LemmasPseudoType.
-Require Import LogRelFI.PseudoTypeFI.
+Require Import LogRelFI.PseudoType.
 Require Import UValFI.UVal.
 
 Require Import Lia.

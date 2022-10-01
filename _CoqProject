@@ -29,7 +29,7 @@ LogRelFI/LemmasLR.v
 LogRelFI/LemmasIntro.v
 LogRelFI/LemmasInversion.v
 LogRelFI/LemmasPseudoType.v
-LogRelFI/PseudoTypeFI.v
+LogRelFI/PseudoType.v
 StlcFix/CanForm.v
 StlcFix/Inst.v
 StlcFix/LemmasEvaluation.v

@@ -12,7 +12,7 @@ Require Import StlcIso.SpecEvaluation.
 Require Import StlcIso.SpecAnnot.
 Require Import StlcIso.LemmasEvaluation.
 Require Import StlcIso.LemmasTyping.
-Require Import LogRelFI.PseudoTypeFI.
+Require Import LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.
