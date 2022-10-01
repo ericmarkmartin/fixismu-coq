@@ -33,4 +33,13 @@ See the paper [on arxiv][arxiv]
 | 2.4 (Size-bounded termination) | Page 10, Figure ? | Stlc{Fix, Iso, Equi}/Size.v  | `Definition TermHor` |  |
 | Relation between Termination and Size-Bound Termination | Page 11, Theorem 1 | Stlc{Fix, Iso, Equi}/Size.v | `Lemma evalHor_evaln` and `Lemma TermHor_TerminatingN` | |
 | Observation relation | Page 11, Figure 2 | LogRel{FI, FE, IE}/LR.v | `Definition Obs` |   |
-| Pseudo types| Page 12, Figure ? | LogRel{FI, FE, IE}/PseudoType.v
+| Pseudo types | Page 12, Figure ? | LogRel{FI, FE, IE}/PseudoType.v | `Inductive PTy`
+| Pseudo type conversions | Page 12, Figure ? | LogRel{FI, FE, IE}/PseudoType.v | `Fixpoint repEmul`, `Fixpoint fxToIs`, `Fixpoint isToEq`, `Definition OfType`, `Definition OfTypeStlcIso`, `Definition OfTypeStlcEqui` |
+| Value relation | Page 13, Figure 3 | LogRel{FI, FE, IE}/LR.v | `Definition valrel` | 
+| Term relation | Page 13, Figure 3 | LogRel{FI, FE, IE}/LR.v | `Definition termrel` | 
+| Context relation | Page 13, Figure 3 | LogRel{FI, FE, IE}/LR.v | `Definition contrel` | 
+| Substitution relation | Page 13, Figure 3 | LogRel{FI, FE, IE}/LR.v | `Definition envrel` |
+
+TODO: rename LogRelFE/PseudoType.v:fxToIs -> fxToEq
+TODO: rename substitution relation in paper to environment relation?
+
