@@ -9,7 +9,7 @@ Require Import StlcIsoValid.SpecAnnot.
 Require Import StlcEqui.SpecEvaluation.
 Require Import StlcEqui.LemmasEvaluation.
 Require Import StlcEqui.LemmasTyping.
-Require Import LogRelIE.PseudoTypeIE.
+Require Import LogRelIE.PseudoType.
 Require Import LogRelIE.LemmasPseudoType.
 Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.

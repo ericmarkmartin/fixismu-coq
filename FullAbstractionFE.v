@@ -9,7 +9,7 @@ Require Import CompilerFE.CompilerFE.
 
 Require Import UValFE.UVal.
 
-Require Import LogRelFE.PseudoTypeFE.
+Require Import LogRelFE.PseudoType.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.

@@ -11,7 +11,7 @@ Require Import StlcFix.LemmasEvaluation.
 (* Require Import StlcEqui.LemmasScoping. *)
 (* Require Import StlcEqui.DecideEval. *)
 Require Import UValFE.UVal.
-Require Import LogRelFE.PseudoTypeFE.
+Require Import LogRelFE.PseudoType.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.

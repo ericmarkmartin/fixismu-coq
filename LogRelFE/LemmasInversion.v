@@ -1,5 +1,5 @@
 Require Import Common.Common.
-Require Import LogRelFE.PseudoTypeFE.
+Require Import LogRelFE.PseudoType.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.

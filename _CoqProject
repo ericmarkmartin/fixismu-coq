@@ -98,7 +98,7 @@ LogRelFE/LemmasLR.v
 LogRelFE/LemmasIntro.v
 LogRelFE/LemmasInversion.v
 LogRelFE/LemmasPseudoType.v
-LogRelFE/PseudoTypeFE.v
+LogRelFE/PseudoType.v
 StlcIsoValid/CanForm.v
 StlcIsoValid/Inst.v
 StlcIsoValid/InstAnnot.v
@@ -115,7 +115,7 @@ StlcIsoValid/SpecAnnot.v
 StlcIsoValid/TypeSafety.v
 StlcIsoValid/Fix.v
 UValIE/UVal.v
-LogRelIE/PseudoTypeIE.v
+LogRelIE/PseudoType.v
 LogRelIE/InstPTy.v
 LogRelIE/Contraction.v
 LogRelIE/ValidPTy.v

@@ -1,4 +1,4 @@
-Require Export LogRelFE.PseudoTypeFE.
+Require Export LogRelFE.PseudoType.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.SpecEvaluation.

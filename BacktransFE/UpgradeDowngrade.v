@@ -22,7 +22,7 @@ Require Import LogRelFE.LemmasLR.
 Require Import LogRelFE.LemmasIntro.
 Require Import LogRelFE.LemmasInversion.
 Require Import LogRelFE.LemmasPseudoType.
-Require Import LogRelFE.PseudoTypeFE.
+Require Import LogRelFE.PseudoType.
 Require Import UValFE.UVal.
 
 Require Import Lia.

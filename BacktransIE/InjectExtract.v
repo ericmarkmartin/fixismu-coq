@@ -13,7 +13,7 @@ Require Import StlcEqui.TypeSafety.
 Require Import StlcEqui.SpecTyping.
 Require Import StlcIsoValid.LemmasEvaluation.
 Require Import UValIE.UVal.
-Require Import LogRelIE.PseudoTypeIE.
+Require Import LogRelIE.PseudoType.
 Require Import LogRelIE.LemmasPseudoType.
 Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.

@@ -1,4 +1,4 @@
-Require Export LogRelIE.PseudoTypeIE.
+Require Export LogRelIE.PseudoType.
 Require Import LogRelIE.LemmasPseudoType.
 Require Import StlcIsoValid.SpecSyntax.
 Require Import StlcIsoValid.SpecEvaluation.

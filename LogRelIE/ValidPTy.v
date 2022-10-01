@@ -1,4 +1,4 @@
-Require Export LogRelIE.PseudoTypeIE.
+Require Export LogRelIE.PseudoType.
 Require Export RecTypes.Contraction.
 Require Export LogRelIE.Contraction.
 

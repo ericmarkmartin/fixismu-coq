@@ -22,7 +22,7 @@ Require Import LogRelIE.LemmasLR.
 Require Import LogRelIE.LemmasIntro.
 Require Import LogRelIE.LemmasInversion.
 Require Import LogRelIE.LemmasPseudoType.
-Require Import LogRelIE.PseudoTypeIE.
+Require Import LogRelIE.PseudoType.
 Require Import UValIE.UVal.
 
 Require Import Lia.

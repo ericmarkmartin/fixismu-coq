@@ -9,7 +9,7 @@ Require Import StlcFix.LemmasEvaluation.
 Require Import StlcEqui.SpecEvaluation.
 Require Import StlcEqui.LemmasEvaluation.
 Require Import StlcEqui.LemmasTyping.
-Require Import LogRelFE.PseudoTypeFE.
+Require Import LogRelFE.PseudoType.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.

@@ -8,7 +8,7 @@ Require Import StlcEqui.CanForm.
 Require Import StlcFix.CanForm.
 Require Import StlcFix.LemmasTyping.
 (* Require Import StlcEqui.LemmasScoping. *)
-Require Export LogRelFE.PseudoTypeFE.
+Require Export LogRelFE.PseudoType.
 Require Import UValFE.UVal.
 
 Section RepEmul.

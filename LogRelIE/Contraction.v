@@ -1,5 +1,5 @@
 Require Import LogRelIE.InstPTy.
-Require Import LogRelIE.PseudoTypeIE.
+Require Import LogRelIE.PseudoType.
 
 Require Coq.Arith.PeanoNat.
 Require Import Coq.Bool.Bool.

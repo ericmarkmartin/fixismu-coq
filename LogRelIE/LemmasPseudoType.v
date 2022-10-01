@@ -1,7 +1,7 @@
 Require Export Db.Spec.
 Require Export Db.Lemmas.
 
-Require Export LogRelIE.PseudoTypeIE.
+Require Export LogRelIE.PseudoType.
 Require Export LogRelIE.Contraction.
 Require Export LogRelIE.ValidPTy.
 
@@ -18,7 +18,7 @@ Require Import UValIE.UVal.
 (* Require Import StlcIso.CanForm. *)
 (* Require Import StlcIso.LemmasTyping. *)
 (* (* Require Import StlcIso.LemmasScoping. *) *)
-(* Require Export LogRelIE.PseudoTypeIE. *)
+(* Require Export LogRelIE.PseudoType. *)
 (* Require Import UValIE.UVal. *)
 (* Require Import LogRelIE.ValidPTy. *)
 

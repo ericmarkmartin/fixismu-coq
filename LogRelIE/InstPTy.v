@@ -2,7 +2,7 @@ Require Export Db.Inst.
 Require Export Db.Lemmas.
 Require Export Db.WellScoping.
 
-Require Export LogRelIE.PseudoTypeIE.
+Require Export LogRelIE.PseudoType.
 
 #[refine] Instance vrPTy : Vr PTy := {| vr := ptvar |}.
 Proof. inversion 1; auto. Defined.

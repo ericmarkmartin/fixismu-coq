@@ -11,7 +11,7 @@ Require Import StlcEqui.SpecTyping.
 Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.StlcOmega.
 Require Import UValFE.UVal.
-Require Import LogRelFE.PseudoTypeFE.
+Require Import LogRelFE.PseudoType.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.
@@ -656,7 +656,7 @@ Proof.
       eapply valrel_termrelnd₀.
       eapply valrel_inSum''; eauto using validTy_compfi_ty.
       eapply valrel_inl''; cbn; eauto using validTy_compfi_ty.
-      assert (tyvs2 : ⟪ PseudoTypeFE.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₁)) ⟫).
+      assert (tyvs2 : ⟪ PseudoType.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₁)) ⟫).
       * eapply (F.preservation_star es2).
         crushTyping.
         rewrite repEmul_embed_leftinv.
@@ -711,7 +711,7 @@ Proof.
       eapply valrel_termrelnd₀.
       eapply valrel_inSum''; eauto using validTy_compfi_ty.
       eapply valrel_inr''; cbn; eauto using validTy_compfi_ty.
-      assert (tyvs2 : ⟪ PseudoTypeFE.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₂)) ⟫).
+      assert (tyvs2 : ⟪ PseudoType.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₂)) ⟫).
       * eapply (F.preservation_star es2).
         crushTyping.
         rewrite repEmul_embed_leftinv.

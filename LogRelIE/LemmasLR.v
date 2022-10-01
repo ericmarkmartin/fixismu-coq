@@ -1,7 +1,7 @@
 Require Import Common.Common.
 Require Import UValIE.UVal.
 Require Import LogRelIE.LemmasPseudoType.
-Require Import LogRelIE.PseudoTypeIE.
+Require Import LogRelIE.PseudoType.
 Require Import LogRelIE.LR.
 Require Import StlcIsoValid.SpecSyntax.
 Require Import StlcIsoValid.SpecEvaluation.
