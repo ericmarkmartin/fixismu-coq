@@ -3,7 +3,7 @@
 (* Require Import StlcFix.DecideEval. *)
 Require Import LogRelFE.PseudoTypeFE.
 Require Import LogRelFE.LemmasPseudoType.
-Require Import LogRelFE.LRFE.
+Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.
 Require Import LogRelFE.LemmasIntro.
 Require Import Lia.

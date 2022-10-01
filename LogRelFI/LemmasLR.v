@@ -2,7 +2,7 @@ Require Import Common.Common.
 Require Import UValFI.UVal.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.PseudoTypeFI.
-Require Import LogRelFI.LRFI.
+Require Import LogRelFI.LR.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.LemmasEvaluation.

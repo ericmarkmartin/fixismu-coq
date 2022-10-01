@@ -6,7 +6,7 @@ Require Export RecTypes.LemmasTypes.
 (* Require Import StlcFix.DecideEval. *)
 Require Import LogRelFI.PseudoTypeFI.
 Require Import LogRelFI.LemmasPseudoType.
-Require Import LogRelFI.LRFI.
+Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.
 Require Import LogRelFI.LemmasIntro.
 Require Import Lia.

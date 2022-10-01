@@ -12,7 +12,7 @@ Require Import StlcFix.LemmasEvaluation.
 Require Import UValFI.UVal.
 Require Import LogRelFI.PseudoTypeFI.
 Require Import LogRelFI.LemmasPseudoType.
-Require Import LogRelFI.LRFI.
+Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.
 Require Import Coq.micromega.Lia.
 Require Import Coq.Arith.Wf_nat.

@@ -24,7 +24,7 @@ Db/Lemmas.v
 Db/Spec.v
 Db/Tactics.v
 Db/WellScoping.v
-LogRelFI/LRFI.v
+LogRelFI/LR.v
 LogRelFI/LemmasLR.v
 LogRelFI/LemmasIntro.v
 LogRelFI/LemmasInversion.v
@@ -93,7 +93,7 @@ FullAbstractionFI.v
 FullAbstractionFE.v
 FullAbstractionIE.v
 UValFE/UVal.v
-LogRelFE/LRFE.v
+LogRelFE/LR.v
 LogRelFE/LemmasLR.v
 LogRelFE/LemmasIntro.v
 LogRelFE/LemmasInversion.v
@@ -120,7 +120,7 @@ LogRelIE/InstPTy.v
 LogRelIE/Contraction.v
 LogRelIE/ValidPTy.v
 LogRelIE/LemmasPseudoType.v
-LogRelIE/LRIE.v
+LogRelIE/LR.v
 LogRelIE/LemmasLR.v
 LogRelIE/LemmasIntro.v
 LogRelIE/LemmasInversion.v

@@ -6,7 +6,7 @@ Require Import Common.Common.
 Require Import UValFE.UVal.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import LogRelFE.PseudoTypeFE.
-Require Import LogRelFE.LRFE.
+Require Import LogRelFE.LR.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.LemmasEvaluation.

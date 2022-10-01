@@ -14,7 +14,7 @@ Require Import StlcEqui.LemmasEvaluation.
 Require Import StlcEqui.LemmasTyping.
 Require Import LogRelIE.PseudoTypeIE.
 Require Import LogRelIE.LemmasPseudoType.
-Require Import LogRelIE.LRIE.
+Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.
 Require Import LogRelIE.LemmasIntro.
 Require Import LogRelIE.LemmasInversion.

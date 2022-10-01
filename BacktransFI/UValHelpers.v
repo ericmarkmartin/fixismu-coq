@@ -14,7 +14,7 @@ Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.CanForm.
 Require Import Db.Lemmas.
 Require Import Db.WellScoping.
-Require Import LogRelFI.LRFI.
+Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.
 Require Import LogRelFI.LemmasIntro.
 Require Import LogRelFI.LemmasInversion.

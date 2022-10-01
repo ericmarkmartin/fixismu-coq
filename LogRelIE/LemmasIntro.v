@@ -12,7 +12,7 @@ Require Import StlcIsoValid.LemmasEvaluation.
 Require Import UValIE.UVal.
 Require Import LogRelIE.PseudoTypeIE.
 Require Import LogRelIE.LemmasPseudoType.
-Require Import LogRelIE.LRIE.
+Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.
 Require Import Coq.micromega.Lia.
 Require Import Coq.Arith.Wf_nat.

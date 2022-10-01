@@ -13,14 +13,14 @@ Require Import StlcFix.StlcOmega.
 Require Import UValFE.UVal.
 Require Import LogRelFE.PseudoTypeFE.
 Require Import LogRelFE.LemmasPseudoType.
-Require Import LogRelFE.LRFE.
+Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.
 Require Import LogRelFE.LemmasIntro.
 Require Import LogRelFE.LemmasInversion.
 Require Import Lia.
 Require Import Db.Lemmas.
 
-Require Import LogRelFE.LRFE.
+Require Import LogRelFE.LR.
 (* Require Import CompilerFE.ProtectConfine. *)
 Require Import CompilerFE.CompilerFE.
 

@@ -13,7 +13,7 @@ Require Import StlcFix.LemmasEvaluation.
 Require Import UValFE.UVal.
 Require Import LogRelFE.PseudoTypeFE.
 Require Import LogRelFE.LemmasPseudoType.
-Require Import LogRelFE.LRFE.
+Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.
 Require Import Lia.
 Require Import Coq.Arith.Wf_nat.

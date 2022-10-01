@@ -13,7 +13,7 @@ Require Import StlcIsoValid.LemmasEvaluation.
 Require Import StlcIsoValid.CanForm.
 Require Import Db.Lemmas.
 Require Import Db.WellScoping.
-Require Import LogRelIE.LRIE.
+Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.
 Require Import LogRelIE.LemmasIntro.
 Require Import LogRelIE.LemmasInversion.

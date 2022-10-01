@@ -11,14 +11,14 @@ Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.StlcOmega.
 Require Import LogRelFI.PseudoTypeFI.
 Require Import LogRelFI.LemmasPseudoType.
-Require Import LogRelFI.LRFI.
+Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.
 Require Import LogRelFI.LemmasIntro.
 Require Import LogRelFI.LemmasInversion.
 Require Import Lia.
 Require Import Db.Lemmas.
 
-Require Import LogRelFI.LRFI.
+Require Import LogRelFI.LR.
 (* Require Import CompilerFI.ProtectConfine. *)
 Require Import CompilerFI.CompilerFI.
 
