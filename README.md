@@ -40,6 +40,3 @@ See the paper [on arxiv][arxiv]
 | Context relation | Page 13, Figure 3 | LogRel{FI, FE, IE}/LR.v | `Definition contrel` | 
 | Substitution relation | Page 13, Figure 3 | LogRel{FI, FE, IE}/LR.v | `Definition envrel` |
 
-TODO: rename LogRelFE/PseudoType.v:fxToIs -> fxToEq
-TODO: rename substitution relation in paper to environment relation?
-
