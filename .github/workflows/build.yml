@@ -1,4 +1,5 @@
 ---
+name: build 
 on:
   push:
     branches:
@@ -6,19 +7,21 @@ on:
   pull_request:
     branches:
       - main
-runs-on: ubuntu-latest  # container actions require GNU/Linux
-strategy:
-  matrix:
-    coq_version:
-      - '8.13.2'
-      - '8.16'
-      - dev
-    ocaml_version: ['default']
-  fail-fast: false  # don't stop jobs if one fails
-steps:
-  - uses: actions/checkout@v2
-  - uses: coq-community/docker-coq-action@v1
-    with:
-      opam_file: 'folder/coq-proj.opam'
-      coq_version: ${{ matrix.coq_version }}
-      ocaml_version: ${{ matrix.ocaml_version }}
+jobs:
+  compile-coq-proof:
+    runs-on: ubuntu-latest  # container actions require GNU/Linux
+    strategy:
+      matrix:
+        coq_version:
+          - '8.13.2'
+          - '8.16'
+          - dev
+        ocaml_version: ['default']
+      fail-fast: false  # don't stop jobs if one fails
+    steps:
+      - uses: actions/checkout@v2
+      - uses: coq-community/docker-coq-action@v1
+        with:
+          opam_file: 'folder/coq-proj.opam'
+          coq_version: ${{ matrix.coq_version }}
+          ocaml_version: ${{ matrix.ocaml_version }}
