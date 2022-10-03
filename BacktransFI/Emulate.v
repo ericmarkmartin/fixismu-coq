@@ -97,6 +97,7 @@ Proof.
   induction 1; cbn; eauto using toUVals_entry with typing uval_typing.
 Qed.
 
+#[export]
 Hint Resolve emulateT : uval_typing.
 
 Lemma emulate_pctx_T {n C Γₒ τₒ Γ τ} :

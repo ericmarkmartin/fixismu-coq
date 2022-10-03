@@ -73,6 +73,7 @@ Inductive Typing (Γ: Env) : Tm → Ty → Prop :=
       ⟪ Γ e⊢ t : T ⟫ →
       ⟪ Γ e⊢ t : U ⟫
 where "⟪  Γ e⊢ t : T  ⟫" := (Typing Γ t T).
+#[export]
 Hint Constructors Typing : wt.
 
 Lemma quuux (Γ Γ' : Env) (i : Ix) {τ τ'} :
@@ -126,6 +127,7 @@ Proof.
   apply (IHΓ i H3 H5).
 Qed.
 
+#[export]
 Hint Resolve ty_in_env_implies_contr_ty : wt.
 
 Lemma ClosedEnv_implies_Closed_varty {Γ i T} :
@@ -135,6 +137,7 @@ Proof.
   induction wtv; inversion cenv; eauto.
 Qed.
 
+#[export]
 Hint Resolve ClosedEnv_implies_Closed_varty : wt.
 
 Lemma ty_in_valid_env_valid {i τ Γ} : ValidEnv Γ → ⟪ i : τ r∈ Γ ⟫ → ValidTy τ.
@@ -143,6 +146,7 @@ Proof.
   split;
   eauto with wt.
 Qed.
+#[export]
 Hint Resolve ty_in_valid_env_valid : wt.
 
 Lemma quux (Γ Γ' : Env) (i : Ix) {τ : Ty} :

@@ -30,6 +30,7 @@ Inductive evalHor (t1 : Tm) : Tm -> nat -> Prop :=
   | evalHor_step : forall t2 t3 n,
       size t1 <= n -> eval t1 t2 -> evalHor t2 t3 n -> evalHor t1 t3 (S n)
 .
+#[export]
 Hint Constructors evalHor : eval.
 
 Definition TermHor (t1 : Tm) (n : nat) :=

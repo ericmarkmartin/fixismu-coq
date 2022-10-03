@@ -81,9 +81,13 @@ where "t₁ --> t₂" := (eval t₁ t₂).
 
 Notation "t -->i t'" := (eval t t') (at level 80).
 
+#[export]
 Hint Constructors eval : eval.
+#[export]
 Hint Constructors eval₀ : eval.
+#[export]
 Hint Constructors clos_refl_trans_1n : eval.
+#[export]
 Hint Constructors clos_trans_1n : eval.
 
 Definition normal (t : Tm) := forall t', not (t --> t').
@@ -144,6 +148,7 @@ Qed.
 
 Definition evaln := stepRel eval.
 
+#[export]
 Hint Constructors stepRel : eval.
 
 Notation "t₁ -->* t₂" := (clos_refl_trans_1n Tm eval t₁ t₂) (at level 80).

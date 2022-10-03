@@ -75,6 +75,7 @@ Inductive Typing (Γ: Env) : Tm → Ty → Prop :=
       ⟪ Γ i⊢ t₂ : T ⟫ →
       ⟪ Γ i⊢ seq t₁ t₂ : T ⟫
 where "⟪  Γ i⊢ t : T  ⟫" := (Typing Γ t T).
+#[export]
 Hint Constructors Typing : wt.
 
 Lemma ty_in_env_implies_contr_ty {i τ Γ} : ContrEnv Γ → ⟪ i : τ r∈ Γ ⟫ → SimpleContr τ.
@@ -92,6 +93,7 @@ Proof.
   apply (IHΓ i H3 H5).
 Qed.
 
+#[export]
 Hint Resolve ty_in_env_implies_contr_ty : wt.
 
 Lemma ClosedEnv_implies_Closed_varty {Γ i T} :
@@ -101,7 +103,8 @@ Proof.
   induction wtv; inversion cenv; eauto.
 Qed.
 
-Hint Resolve ClosedEnv_implies_Closed_varty.
+#[export]
+Hint Resolve ClosedEnv_implies_Closed_varty : wt.
 
 Lemma ty_in_valid_env_valid {i τ Γ} : ValidEnv Γ → ⟪ i : τ r∈ Γ ⟫ → ValidTy τ.
 Proof.
@@ -109,6 +112,7 @@ Proof.
   split;
     eauto with wt.
 Qed.
+#[export]
 Hint Resolve ty_in_valid_env_valid : wt.
 
 Reserved Notation "⟪ i⊢ C : Γ₀ , τ₀ → Γ , τ ⟫"

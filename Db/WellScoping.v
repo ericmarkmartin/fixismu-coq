@@ -35,10 +35,15 @@ End WsSnoc.
 Lemma wsiS (γ: Dom) (i: Ix) : S γ ∋ S i → γ ∋ i.
 Proof. inversion 1; auto. Qed.
 
+#[export]
 Hint Constructors wsIx : ws.
+#[export]
 Hint Resolve wsiS : wsi.
+#[export]
 Hint Resolve ws_snoc : ws.
+#[export]
 Hint Resolve wsi_snoc_sub : wsi.
+#[export]
 Hint Resolve wsi_snoc_tm : wsi.
 
 Ltac crushScopingMatchH :=

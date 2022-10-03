@@ -25,9 +25,13 @@ Ltac progressH :=
   end;
   stlcCanForm.
 
+#[export]
 Hint Constructors eval : pctx.
+#[export]
 Hint Constructors eval₀ : pctx.
+#[export]
 Hint Extern 20 (Value _) => cbn : pctx.
+#[export]
 Hint Extern 20 (ECtx _) => cbn : pctx.
 
 (* Lemma local_progress {t U} (wt: ⟪ empty ⊢ t : U ⟫) : *)

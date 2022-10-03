@@ -32,7 +32,9 @@ Combined Scheme simp_contr_comb_ind from simp_contr_mut_ind, simp_rec_mut_ind.
 
 
 
+#[export]
 Hint Constructors SimpleContr : simple_contr_rec.
+#[export]
 Hint Constructors SimpleRec : simple_contr_rec.
 
 Definition unfoldOnce (τ : Ty) : Ty :=
@@ -88,7 +90,7 @@ Lemma LMC_ind'' : forall (Pc : forall {τ : Ty}, SimpleContr τ -> Prop) (Pr : f
     forall {τ}, (forall (sc : SimpleContr τ), Pc sc) /\ (forall (sr : SimpleRec τ), Pr sr).
 Proof.
   intros Pc Pr Hc Hr.
-  cut (forall {n} {τ}, LMC τ <= n -> (forall (sc : SimpleContr τ), Pc _ sc) /\ (forall (sr : SimpleRec τ), Pr _ sr)).
+  cut (forall n τ, LMC τ <= n -> (forall (sc : SimpleContr τ), Pc _ sc) /\ (forall (sr : SimpleRec τ), Pr _ sr)).
   - intros H τ.
     eapply (H (LMC τ)); lia.
   - intros n.
@@ -154,11 +156,9 @@ Qed.
 Lemma SimpleRecSub_implies_SimpleRec {τ ξ} : SimpleRec τ → SimpleRecSub ξ → SimpleRec τ[ξ].
 Proof.
   intro H.
-  Hint Constructors SimpleContr : contr.
-  Hint Constructors SimpleRec : contr.
   apply (simp_rec_mut_ind
-           (fun {τ} (_ : SimpleContr τ) => (forall ξ : Sub Ty, SimpleRecSub ξ → SimpleContr τ[ξ]))
-           (fun {τ} (_ : SimpleRec τ) => (forall ξ : Sub Ty, SimpleRecSub ξ → SimpleRec τ[ξ]))); cbn; eauto with contr.
+           (fun τ (_ : SimpleContr τ) => (forall ξ : Sub Ty, SimpleRecSub ξ → SimpleContr τ[ξ]))
+           (fun τ (_ : SimpleRec τ) => (forall ξ : Sub Ty, SimpleRecSub ξ → SimpleRec τ[ξ]))); cbn; eauto with simple_contr_rec.
 
   intros.
   constructor.
@@ -168,8 +168,8 @@ Qed.
 Lemma SimpleContrSub_implies_SimpleContr {τ ξ} : SimpleContr τ → SimpleRecSub ξ → SimpleContr τ[ξ].
   intro H.
   apply (simp_contr_mut_ind
-           (fun {τ} (_ : SimpleContr τ) => (forall ξ : Sub Ty, SimpleRecSub ξ → SimpleContr τ[ξ]))
-           (fun {τ} (_ : SimpleRec τ) => (forall ξ : Sub Ty, SimpleRecSub ξ → SimpleRec τ[ξ]))).
+           (fun τ (_ : SimpleContr τ) => (forall ξ : Sub Ty, SimpleRecSub ξ → SimpleContr τ[ξ]))
+           (fun τ (_ : SimpleRec τ) => (forall ξ : Sub Ty, SimpleRecSub ξ → SimpleRec τ[ξ]))).
   cbn.
   constructor.
 
@@ -239,6 +239,7 @@ Proof.
   eauto using unfold_preserves_contr.
 Qed.
 
+#[export]
 Hint Resolve SimpleContr_unfoldOnce : simple_contr_rec.
 
 (* Lemma unfold_preserves_contr_conv {τ} : SimpleContr (τ [beta1 (trec τ)]) → SimpleContr τ. *)
@@ -269,6 +270,7 @@ Proof.
   eauto using SimpleRec, SimpleContr_unfoldOnce.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_unfoldOnce : simple_contr_rec.
 
 Lemma SimpleContr_unfoldn (τ : Ty) (n : nat) : SimpleContr τ -> SimpleContr (unfoldn n τ).
@@ -328,6 +330,7 @@ Proof.
     now eapply SimpleContr_unfoldn.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_unfoldn : simple_contr_rec.
 
 Lemma SimpleRec_invert_arrow {τ σ} :
@@ -346,6 +349,7 @@ Proof.
   eapply SimpleRec_invert_arrow.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_invert_arrow_1 : simple_contr_rec.
 
 Lemma SimpleRec_invert_arrow_2 {τ σ} :
@@ -354,6 +358,7 @@ Proof.
   eapply SimpleRec_invert_arrow.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_invert_arrow_2 : simple_contr_rec.
 
 Lemma SimpleRec_invert_prod {τ σ} :
@@ -372,6 +377,7 @@ Proof.
   eapply SimpleRec_invert_prod.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_invert_prod_1 : simple_contr_rec.
 
 Lemma SimpleRec_invert_prod_2 {τ σ} :
@@ -380,6 +386,7 @@ Proof.
   eapply SimpleRec_invert_prod.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_invert_prod_2 : simple_contr_rec.
 
 Lemma SimpleRec_invert_sum {τ σ} :
@@ -398,6 +405,7 @@ Proof.
   eapply SimpleRec_invert_sum.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_invert_sum_1 : simple_contr_rec.
 
 Lemma SimpleRec_invert_sum_2 {τ σ} :
@@ -406,6 +414,7 @@ Proof.
   eapply SimpleRec_invert_sum.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_invert_sum_2 : simple_contr_rec.
 
 Lemma SimpleRec_invert_trec {τ} :
@@ -414,6 +423,7 @@ Proof.
   eapply SimpleRec_unfoldOnce.
 Qed.
 
+#[export]
 Hint Resolve SimpleRec_invert_trec : simple_contr_rec.
 
 
@@ -448,6 +458,7 @@ CoInductive Tyeq : Ty → Ty → Prop :=
     ⟪ τ ≗ trec σ ⟫
 where "⟪ τ ≗ τ' ⟫" := (Tyeq τ τ').
 
+#[export]
 Hint Constructors Tyeq : tyeq.
 
 
@@ -468,6 +479,7 @@ Inductive TyeqEnv : Env → Env → Prop :=
   ⟪ Γ r▻ τ ≗≗ Γ' r▻ τ' ⟫
 where "⟪ Γ ≗≗ Γ' ⟫" := (TyeqEnv Γ Γ').
 
+#[export]
 Hint Constructors TyeqEnv : tyeq.
 
 
@@ -574,6 +586,7 @@ CoFixpoint tyeq_refl {τ} : ⟪ τ ≗ τ ⟫.
 Proof.
   destruct τ; repeat constructor; eapply tyeq_refl.
 Qed.
+#[export]
 Hint Resolve tyeq_refl : tyeq.
 
 (* Lemma eq_refl_itleft' {τ} (n : nat) : *)

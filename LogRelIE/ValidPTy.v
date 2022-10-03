@@ -1,4 +1,5 @@
 Require Export LogRelIE.PseudoType.
+Require Export LogRelIE.InstPTy.
 Require Export RecTypes.Contraction.
 Require Export LogRelIE.Contraction.
 
@@ -78,7 +79,9 @@ Inductive ClosedPEnv : PEnv → Prop :=
       ClosedPEnv Γ →
       ClosedPEnv (Γ p▻ τ).
 
+#[export]
 Hint Constructors wsPTy : cty.
+#[export]
 Hint Constructors ClosedPEnv : cenv.
 
 Definition ValidPTy : PTy -> Prop := fun τ => ⟨ 0 ⊢ τ ⟩ /\ SimplePContr τ.
@@ -88,12 +91,14 @@ Lemma ValidPTy_SimplePContr {τ} : ValidPTy τ -> SimplePContr τ.
 Proof.
   now destruct 1.
 Qed.
+#[export]
 Hint Resolve ValidPTy_SimplePContr : simple_p_contr_rec.
 
 Lemma ValidPEnv_nil : ValidPEnv pempty.
 Proof.
   split; constructor; eauto.
 Qed.
+#[export]
 Hint Resolve ValidPEnv_nil : ptyvalid.
 
 Lemma ValidPEnv_cons {Γ τ} : ValidPEnv Γ -> ValidPTy τ -> ValidPEnv (Γ p▻ τ).
@@ -101,6 +106,7 @@ Proof.
   intros [env_cl env_contr] [ty_cl ty_contr].
   split; constructor; eauto.
 Qed.
+#[export]
 Hint Resolve ValidPEnv_cons : ptyvalid.
 
 Lemma ValidPEnv_invert_cons {Γ τ} : ValidPEnv (Γ p▻ τ) → ValidPEnv Γ ∧ ValidPTy τ.
@@ -123,12 +129,11 @@ Proof.
     apply (IHi Γ0 vΓ0 H1).
 Qed.
 
-
 Lemma ValidPTy_unfold_trec {τ} : ValidPTy (ptrec τ) -> ValidPTy (τ[beta1 (ptrec τ)]).
 Proof.
   intros (clτ & crτ).
   inversion clτ; subst.
   split.
-  - now eauto using wsAp, wsSub_sub_beta1.
+  - now eauto using (wsAp (X := PTy)), (wsSub_sub_beta1 (X := PTy)).
   - now eapply (SimplePContr_pUnfoldOnce (ptrec τ)).
 Qed.

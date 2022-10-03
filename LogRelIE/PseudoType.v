@@ -166,6 +166,7 @@ Section WellScoping.
 
 End WellScoping.
 
+#[export]
 Instance WsPTy : Ws PTy := wsPTy.
 
 (* #[refine] Instance vrPTy : Vr PTy := {| vr := ptvar |}. *)

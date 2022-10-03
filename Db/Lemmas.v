@@ -5,6 +5,7 @@ Require Export Coq.Program.Equality.
 Require Export Coq.Program.Tactics.
 
 Create HintDb ws.
+#[export]
 Hint Constructors wsIx : ws.
 
 Local Tactic Notation "crush'" tactic(T) :=

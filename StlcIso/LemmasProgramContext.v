@@ -1,16 +1,19 @@
 Require Import StlcIso.SpecSyntax.
 
+#[export]
 Hint Constructors PCtx : pctx.
 
 (* Lemmas to solve program context equations via eauto. *)
 Lemma eq_pctx_papp₁ c t c₁ t₂ :
   c = papp₁ c₁ t₂ → app (pctx_app t c₁) t₂ = pctx_app t c.
 Proof. intros; subst; reflexivity. Qed.
+#[export]
 Hint Resolve eq_pctx_papp₁ : pctx.
 
 Lemma eq_pctx_papp₂ c t t₁ c₂ :
   c = papp₂ t₁ c₂ → app t₁ (pctx_app t c₂) = pctx_app t c.
 Proof. intros; subst; reflexivity. Qed.
+#[export]
 Hint Resolve eq_pctx_papp₂ : pctx.
 
 (* Lemma eq_pctx_pite₁ c t c₁ t₂ t₃ : *)
@@ -41,16 +44,19 @@ Hint Resolve eq_pctx_papp₂ : pctx.
 Lemma eq_pctx_pinl c t c₁ :
   c = pinl c₁ → inl (pctx_app t c₁) = pctx_app t c.
 Proof. intros; subst; reflexivity. Qed.
+#[export]
 Hint Resolve eq_pctx_pinl : pctx.
 
 Lemma eq_pctx_pinr c t c₁ :
   c = pinr c₁ → inr (pctx_app t c₁) = pctx_app t c.
 Proof. intros; subst; reflexivity. Qed.
+#[export]
 Hint Resolve eq_pctx_pinr : pctx.
 
 Lemma eq_pctx_pcaseof₁ c t c₁ t₂ t₃ :
   c = pcaseof₁ c₁ t₂ t₃ → caseof (pctx_app t c₁) t₂ t₃ = pctx_app t c.
 Proof. intros; subst; reflexivity. Qed.
+#[export]
 Hint Resolve eq_pctx_pcaseof₁ : pctx.
 
 (* Lemma eq_pctx_pseq₁ c t c₁ t₂ : *)
@@ -66,9 +72,11 @@ Hint Resolve eq_pctx_pcaseof₁ : pctx.
 Lemma eq_pctx_pfold c t c₁ :
   c = pfold c₁ → fold_ (pctx_app t c₁) = pctx_app t c.
 Proof. intros; subst; reflexivity. Qed.
+#[export]
 Hint Resolve eq_pctx_pfold : pctx.
 
 Lemma eq_pctx_punfold c t c₁ :
   c = punfold c₁ → unfold_ (pctx_app t c₁) = pctx_app t c.
 Proof. intros; subst; reflexivity. Qed.
+#[export]
 Hint Resolve eq_pctx_punfold : pctx.

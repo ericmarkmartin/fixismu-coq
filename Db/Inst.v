@@ -6,10 +6,14 @@ Require Export Coq.Program.Tactics.
 Module Type Kit.
 
   Parameter TM: Type.
+  #[export]
   Declare Instance inst_vr: Vr TM.
+  #[export]
   Declare Instance inst_ap: ∀ Y {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y TM}, Ap TM Y.
 
+  #[export]
   Declare Instance inst_ap_inj: LemApInj (apXY := inst_ap Ix) TM Ix.
+  #[export]
   Declare Instance inst_ap_vr:
     ∀ Y {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y TM}, LemApVr TM Y.
   Parameter inst_ap_comp:
@@ -34,22 +38,32 @@ Module Inst (kit: Kit).
     auto.
 
   Import kit.
+  #[export]
   Existing Instance inst_ap.
+  #[export]
   Existing Instance inst_ap_vr.
+  #[export]
   Existing Instance inst_ap_inj.
+  #[export]
   Existing Instance inst_ap_comp.
+  #[export]
   Existing Instance inst_ap_liftSub.
 
 
+  #[export]
   Instance inst_apTMZTM {Z} {vrZ: Vr Z} {apTMZ: Ap TM Z} :
     LemApLift TM Z TM := λ _ _, eq_refl.
+  #[export]
   Instance inst_apLiftIxIx: LemApLift Ix Ix TM := ap_vr.
 
+  #[export]
   #[refine] Instance compUpTMIx: LemCompUp TM Ix := {}.
   Proof. intros; extensionality i; destruct i; crush. Qed.
 
+  #[export]
   Instance inst_wkApIx: LemApWk TM Ix := λ _, eq_refl.
 
+  #[export]
   #[refine] Instance compUpTM: LemCompUp TM TM := {}.
   Proof.
     intros; extensionality i; destruct i; crush.
@@ -57,6 +71,7 @@ Module Inst (kit: Kit).
     extensionality j; destruct j; crush.
   Qed.
 
+  #[export]
   #[refine] Instance wkApTM: LemApWk TM TM := {}.
   Proof.
     crush.

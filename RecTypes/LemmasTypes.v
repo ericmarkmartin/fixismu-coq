@@ -17,6 +17,7 @@ Proof.
   inversion H.
   inversion H1.
 Qed.
+#[export]
 Hint Resolve closed_implies_not_var : cty.
 
 Lemma closed_implies_not_var_eq {τ} :
@@ -33,6 +34,7 @@ Lemma closed_arr_implies_closed_argty {τ τ'} :
 Proof.
   inversion 1; assumption.
 Qed.
+#[export]
 Hint Resolve closed_arr_implies_closed_argty : cty.
 
 Lemma closed_arr_implies_closed_retty {τ τ'} :
@@ -40,6 +42,7 @@ Lemma closed_arr_implies_closed_retty {τ τ'} :
 Proof.
   inversion 1; assumption.
 Qed.
+#[export]
 Hint Resolve closed_arr_implies_closed_retty : cty.
 
 Lemma closed_arr_implies_closed_argty_eq {τ τ1 τ2} :
@@ -67,6 +70,7 @@ Lemma closed_sum_implies_closed_lhs {τ τ'} :
 Proof.
   inversion 1; assumption.
 Qed.
+#[export]
 Hint Resolve closed_sum_implies_closed_lhs : cty.
 
 Lemma closed_sum_implies_closed_rhs {τ τ'} :
@@ -74,6 +78,7 @@ Lemma closed_sum_implies_closed_rhs {τ τ'} :
 Proof.
   inversion 1; assumption.
 Qed.
+#[export]
 Hint Resolve closed_sum_implies_closed_rhs : cty.
 
 Lemma closed_sum_implies_closed_lhs_eq {τ τ1 τ2} :
@@ -146,6 +151,7 @@ Proof.
   split; eauto with simple_contr_rec.
   now constructor.
 Qed.
+#[export]
 Hint Resolve ValidTy_arr : tyvalid.
 
 Lemma ValidTy_invert_arr {τ1 τ2} : ValidTy (tarr τ1 τ2) -> ValidTy τ1 /\ ValidTy τ2.
@@ -162,6 +168,7 @@ Proof.
   split; eauto with simple_contr_rec.
   now constructor.
 Qed.
+#[export]
 Hint Resolve ValidTy_prod : tyvalid.
 
 Lemma ValidTy_invert_prod {τ1 τ2} : ValidTy (tprod τ1 τ2) -> ValidTy τ1 /\ ValidTy τ2.
@@ -178,6 +185,7 @@ Proof.
   split; eauto with simple_contr_rec.
   now constructor.
 Qed.
+#[export]
 Hint Resolve ValidTy_sum : tyvalid.
 
 Lemma ValidTy_invert_sum {τ1 τ2} : ValidTy (tsum τ1 τ2) -> ValidTy τ1 /\ ValidTy τ2.
@@ -192,12 +200,14 @@ Lemma ValidTy_unit : ValidTy tunit.
 Proof.
   split; now constructor.
 Qed.
+#[export]
 Hint Resolve ValidTy_unit : tyvalid.
 
 Lemma ValidTy_bool : ValidTy tbool.
 Proof.
   split; now constructor.
 Qed.
+#[export]
 Hint Resolve ValidTy_bool : tyvalid.
 
 Lemma ValidTy_rec {τ} : ⟨ 1 ⊢ τ ⟩ -> SimpleContr τ -> ValidTy (trec τ).
@@ -206,6 +216,7 @@ Proof.
   split; eauto with simple_contr_rec.
   now constructor.
 Qed.
+#[export]
 Hint Resolve ValidTy_rec : tyvalid.
 
 Lemma ValidTy_unfold_trec {τ} : ValidTy (trec τ) -> ValidTy (τ[beta1 (trec τ)]).
@@ -229,6 +240,7 @@ Lemma ValidTy_unfoldOnce {τ} : ValidTy τ -> ValidTy (unfoldOnce τ).
 Proof.
   destruct τ; cbn; eauto using ValidTy_unfold_trec.
 Qed.
+#[export]
 Hint Resolve ValidTy_unfoldOnce : tyvalid.
 
 Lemma ValidTy_unfoldn {n τ} : ValidTy τ -> ValidTy (unfoldn n τ).
@@ -333,8 +345,10 @@ Ltac crushValidTyMatch :=
 Ltac crushValidTy :=
   repeat crushValidTyMatch; try lia; eauto with ws wsi.
 
+#[export]
 Hint Extern 20 (ValidTy _) =>
   crushValidTy : tyvalid2.
 
+#[export]
 Hint Extern 20 (Closed_SimpleRec_SimpleContr _) =>
   crushValidTy : tyvalid2.

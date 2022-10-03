@@ -4,6 +4,7 @@ Require Export Db.WellScoping.
 
 Require Export LogRelIE.PseudoType.
 
+#[export]
 #[refine] Instance vrPTy : Vr PTy := {| vr := ptvar |}.
 Proof. inversion 1; auto. Defined.
 
@@ -40,6 +41,7 @@ Module PTyKit <: Kit.
 
   End Application.
 
+  #[export]
   #[refine] Instance inst_ap_inj: LemApInj PTy Ix := {}.
   Proof.
     intros m Inj_m x. revert m Inj_m.
@@ -47,6 +49,7 @@ Module PTyKit <: Kit.
     inversion 1; subst; f_equal; eauto using InjSubIxUp.
   Qed.
 
+  #[export]
   #[refine] Instance inst_ap_comp (Y Z: Type)
     {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y PTy}
     {vrZ: Vr Z} {wkZ: Wk Z} {liftZ: Lift Z PTy}
@@ -55,6 +58,7 @@ Module PTyKit <: Kit.
     LemApComp PTy Y Z := {}.
   Proof. induction x; crush. Qed.
 
+  #[export]
   #[refine] Instance inst_ap_liftSub (Y: Type)
     {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y PTy} :
     LemApLiftSub PTy Y := {}.
@@ -69,6 +73,7 @@ End PTyKit.
 Module InstPTy := Inst.Inst PTyKit.
 Export InstPTy. (* Export for shorter names. *)
 
+#[export]
 Instance wsVrPTy: WsVr PTy.
 Proof.
   constructor.
@@ -106,6 +111,7 @@ Section ApplicationPTy.
   Qed.
 End ApplicationPTy.
 
+#[export]
 Instance wsWkPTy : WsWk PTy.
 Proof.
   constructor; crush.

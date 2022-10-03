@@ -155,12 +155,13 @@ Proof.
         exact IHn.
       destruct τ.
       (* take care of trec first *)
-      Focus 6.
-      unfold UValIE.
-      fold (UValIE n).
-      apply (@UValIE'_valid (UValIE n)).
-      exact IHn.
-      exact (ValidTy_unfoldn H).
+      6: {
+        unfold UValIE.
+        fold (UValIE n).
+        apply (@UValIE'_valid (UValIE n)).
+        exact IHn.
+        exact (ValidTy_unfoldn H).
+      }
       all:
         unfold UValIE, UValIE';
           cbn;
@@ -204,12 +205,13 @@ Proof.
         assumption.
       destruct τ.
       (* take care of trec first *)
-      Focus 6.
-      unfold UValIE.
-      fold (UValIE n).
-      apply (@UValIE'_preserves_ws' (UValIE n)).
-      exact (IHn i).
-      apply unfoldn_preserves_ws; assumption.
+      6: {
+        unfold UValIE.
+        fold (UValIE n).
+        apply (@UValIE'_preserves_ws' (UValIE n)).
+        exact (IHn i).
+        apply unfoldn_preserves_ws; assumption.
+      }
       all:
         try inversion H; subst;
         unfold UValIE, UValIE';
@@ -256,13 +258,14 @@ Proof.
         exact (UValIE_preserves_rec n).
       destruct τ.
       (* take care of trec first *)
-      Focus 6.
-      unfold UValIE.
-      fold (UValIE n).
-      apply (@UValIE'_preserves_contr (UValIE n)).
-      exact (UValIE_preserves_contr n).
-      exact (UValIE_preserves_rec n).
-      apply (SimpleContr_unfoldn _ _ H).
+      6: {
+        unfold UValIE.
+        fold (UValIE n).
+        apply (@UValIE'_preserves_contr (UValIE n)).
+        exact (UValIE_preserves_contr n).
+        exact (UValIE_preserves_rec n).
+        apply (SimpleContr_unfoldn _ _ H).
+      }
 
       all:
         try inversion H; subst;
@@ -281,13 +284,14 @@ Proof.
         exact (UValIE_preserves_rec n).
       destruct τ.
       (* take care of trec first *)
-      Focus 6.
-      unfold UValIE.
-      fold (UValIE n).
-      apply (@UValIE'_preserves_rec (UValIE n)).
-      exact (UValIE_preserves_contr n).
-      exact (UValIE_preserves_rec n).
-      apply (SimpleRec_unfoldn _ _ H).
+      6: {
+        unfold UValIE.
+        fold (UValIE n).
+        apply (@UValIE'_preserves_rec (UValIE n)).
+        exact (UValIE_preserves_contr n).
+        exact (UValIE_preserves_rec n).
+        apply (SimpleRec_unfoldn _ _ H).
+      }
       all:
         try inversion H; try inversion H3; subst;
           unfold UValIE, UValIE';
@@ -369,7 +373,9 @@ Proof.
   exact H'.
 Qed.
 
+#[export]
 Hint Resolve unkUValT : uval_typing.
+#[export]
 Hint Resolve unkUValAT : uval_typing.
 
 (* Definition constr_uvalie {Γ} (n : nat) (τ : E.Ty) (t : F.Tm) {P : ClosedTy τ} {Q : F.Typing Γ t (@UValFE n τ P)} : F.Tm := *)
@@ -550,6 +556,7 @@ Proof.
   I.crushTyping.
 Qed.
 
+#[export]
 Hint Resolve caseV0_T : uval_typing.
 
 Definition caseUVal_pctx (τ : Ty) := I.pcaseof₁ I.phole (I.var 0) (I.Om τ).
@@ -905,14 +912,22 @@ Qed.
 (*   now cbn. *)
 (* Qed. *)
 
+#[export]
 Hint Resolve caseUnit_T : uval_typing.
+#[export]
 Hint Resolve caseSum_T : uval_typing.
+#[export]
 Hint Resolve caseArr_T : uval_typing.
-(* Hint Resolve caseRec_T : uval_typing. *)
+(* #[export]
+Hint Resolve caseRec_T : uval_typing. *)
+#[export]
 Hint Resolve caseUnitA_T : uval_typing.
+#[export]
 Hint Resolve caseSumA_T : uval_typing.
+#[export]
 Hint Resolve caseArrA_T : uval_typing.
-(* Hint Resolve caseRecA_T : uval_typing. *)
+(* #[export]
+Hint Resolve caseRecA_T : uval_typing. *)
 
 (* Lemma caseUVal_eval_bool {n tunk tcunit tcbool tcprod tcsum tcarr v} : *)
 (*   Value v → *)
@@ -953,19 +968,32 @@ Hint Resolve caseArrA_T : uval_typing.
 (*   eauto using caseUVal_pctx_T with typing. *)
 (* Qed. *)
 
+#[export]
 Hint Resolve unkUValT : uval_typing.
+#[export]
 Hint Resolve inUnitT : uval_typing.
+#[export]
 Hint Resolve inBoolT : uval_typing.
+#[export]
 Hint Resolve inProd_T : uval_typing.
+#[export]
 Hint Resolve inSum_T : uval_typing.
+#[export]
 Hint Resolve inArr_T : uval_typing.
-(* Hint Resolve inUnit_pctx_T : uval_typing. *)
-(* Hint Resolve inBool_pctx_T : uval_typing. *)
-(* Hint Resolve inProd_pctx_T : uval_typing. *)
-(* Hint Resolve inSum_pctx_T : uval_typing. *)
-(* Hint Resolve inArr_pctx_T : uval_typing. *)
-(* Hint Resolve caseUVal_pctx_T : uval_typing. *)
-(* Hint Resolve caseUVal_T : uval_typing. *)
+(* #[export]
+Hint Resolve inUnit_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve inBool_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve inProd_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve inSum_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve inArr_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve caseUVal_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve caseUVal_T : uval_typing. *)
 
 Local Ltac crush :=
   repeat (subst*;

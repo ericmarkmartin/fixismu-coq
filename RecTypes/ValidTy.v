@@ -92,7 +92,9 @@ Inductive ClosedEnv : Env → Prop :=
       ClosedEnv Γ →
       ClosedEnv (evar Γ τ).
 
+#[export]
 Hint Constructors wsTy : cty.
+#[export]
 Hint Constructors ClosedEnv : cenv.
 
 Definition ValidTy : Ty -> Prop := fun τ => ⟨ 0 ⊢ τ ⟩ /\ SimpleContr τ.
@@ -102,12 +104,14 @@ Lemma ValidTy_SimpleContr {τ} : ValidTy τ -> SimpleContr τ.
 Proof.
   now destruct 1.
 Qed.
+#[export]
 Hint Resolve ValidTy_SimpleContr : simple_contr_rec.
 
 Lemma ValidEnv_nil : ValidEnv empty.
 Proof.
   split; constructor; eauto.
 Qed.
+#[export]
 Hint Resolve ValidEnv_nil : tyvalid.
 
 Lemma ValidEnv_cons {Γ τ} : ValidEnv Γ -> ValidTy τ -> ValidEnv (Γ r▻ τ).
@@ -115,4 +119,5 @@ Proof.
   intros [env_cl env_contr] [ty_cl ty_contr].
   split; constructor; eauto.
 Qed.
+#[export]
 Hint Resolve ValidEnv_cons : tyvalid.

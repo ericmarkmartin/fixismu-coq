@@ -4,6 +4,7 @@ Require Export Db.WellScoping.
 
 Require Export RecTypes.SpecTypes.
 
+#[export]
 #[refine] Instance vrTy : Vr Ty := {| vr := tvar |}.
 Proof. inversion 1; auto. Defined.
 
@@ -40,6 +41,7 @@ Module TyKit <: Kit.
 
   End Application.
 
+  #[export]
   #[refine] Instance inst_ap_inj: LemApInj Ty Ix := {}.
   Proof.
     intros m Inj_m x. revert m Inj_m.
@@ -47,6 +49,7 @@ Module TyKit <: Kit.
     inversion 1; subst; f_equal; eauto using InjSubIxUp.
   Qed.
 
+  #[export]
   #[refine] Instance inst_ap_comp (Y Z: Type)
     {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y Ty}
     {vrZ: Vr Z} {wkZ: Wk Z} {liftZ: Lift Z Ty}
@@ -55,6 +58,7 @@ Module TyKit <: Kit.
     LemApComp Ty Y Z := {}.
   Proof. induction x; crush. Qed.
 
+  #[export]
   #[refine] Instance inst_ap_liftSub (Y: Type)
     {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y Ty} :
     LemApLiftSub Ty Y := {}.
@@ -70,6 +74,7 @@ End TyKit.
 Module InstTy := Inst TyKit.
 Export InstTy. (* Export for shorter names. *)
 
+#[export]
 Instance wsVrTy: WsVr Ty.
 Proof.
   constructor.
@@ -108,6 +113,7 @@ Section ApplicationTy.
   Qed.
 End ApplicationTy.
 
+#[export]
 Instance wsWkTy : WsWk Ty.
 Proof.
   constructor; crush.

@@ -450,7 +450,9 @@ Proof.
   induction C2; cbn; f_equal; assumption.
 Qed.
 
+#[export]
 Hint Resolve pctxtyping_app_annot : typing.
+#[export]
 Hint Resolve pctxtyping_cat_annot : typing.
 
 Ltac crushTypingMatchIAH2 :=
@@ -471,8 +473,10 @@ Ltac crushTypingIA :=
      eauto with ws
     ).
 
+#[export]
 Hint Extern 20 (⟪ _ ia⊢ _ : _ ⟫) =>
   crushTypingIA : typing.
 
+#[export]
 Hint Extern 20 (⟪ ia⊢ _ : _ , _ → _ , _ ⟫) =>
   crushTypingIA : typing.

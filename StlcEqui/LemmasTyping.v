@@ -91,6 +91,7 @@ Local Ltac crush :=
 Lemma getEvar_wsIx Γ i T :
   ⟪ i : T r∈ Γ ⟫ → dom Γ ∋ i.
 Proof. induction 1; crush. Qed.
+#[export]
 Hint Resolve getEvar_wsIx : ws.
 
 (* Lemma wsIx_getEvar {Γ i} (wi: dom Γ ∋ i) : *)
@@ -123,15 +124,18 @@ Hint Resolve getEvar_wsIx : ws.
 
 Lemma wtRen_closed ξ Δ : WtRen empty Δ ξ.
 Proof. unfold WtRen; intros. inversion H. Qed.
+#[export]
 Hint Resolve wtRen_closed : ws.
 
 Lemma wtRen_idm (Γ: Env) : WtRen Γ Γ (idm Ix).
 Proof. unfold WtRen, idm; auto. Qed.
+#[export]
 Hint Resolve wtRen_idm : ws.
 
 Lemma wtRen_comp {Γ₁ Γ₂ Γ₃ ξ₁ ξ₂} :
   WtRen Γ₁ Γ₂ ξ₁ → WtRen Γ₂ Γ₃ ξ₂ → WtRen Γ₁ Γ₃ (ξ₁ >-> ξ₂).
 Proof. unfold WtRen, comp; simpl; auto. Qed.
+#[export]
 Hint Resolve wtRen_comp : ws.
 
 (*************************************************************************)
@@ -152,27 +156,32 @@ Proof. unfold WtRenNatural, WtRen in *; eauto. Qed.
 Lemma wtRen_wkms (Δ: Env) :
   ∀ Γ, WtRen Γ (Γ r▻▻ Δ) (wkms (dom Δ)).
 Proof. unfold WtRen. induction Δ; crush. Qed.
+#[export]
 Hint Resolve wtRen_wkms : ws.
 
 Lemma wtiIx_wkms (Δ: Env) :
   ∀ (Γ: Env) (i: Ix) T,
     ⟪ (wkms (dom Δ) i) : T r∈ (Γ r▻▻ Δ) ⟫ → ⟪ i : T r∈ Γ ⟫.
 Proof. induction Δ; eauto with wsi. Qed.
+#[export]
 Hint Resolve wtiIx_wkms : wsi.
 
 Lemma wtRen_wkm Γ T :
   WtRen Γ (Γ r▻ T) wkm.
 Proof. apply (wtRen_wkms (empty r▻ T)). Qed.
+#[export]
 Hint Resolve wtRen_wkm : ws.
 
 Lemma wtiIx_wkm Γ i T :
   ⟪ (wkm i) : T r∈ (Γ r▻ T) ⟫ → ⟪ i : T r∈ Γ ⟫.
 Proof. apply (wtiIx_wkms (empty r▻ T)). Qed.
+#[export]
 Hint Resolve wtiIx_wkm : wsi.
 
 Lemma wtRenNatural_wkms_id Δ :
   ∀ Γ, WtRenNatural (Γ r▻▻ Δ) Γ (wkms (dom Δ)) (idm Ix).
 Proof. unfold WtRenNatural; eauto using wtiIx_wkms. Qed.
+#[export]
 Hint Resolve wtRenNatural_wkms_id : wsi.
 
 Lemma wtiRen_comp_wkms Δ :
@@ -180,11 +189,13 @@ Lemma wtiRen_comp_wkms Δ :
     WtRen Γ₁ (Γ₂ r▻▻ Δ) (ξ >-> wkms (dom Δ)) →
     WtRen Γ₁ Γ₂        ξ.
 Proof. apply (wtRen_natural (wtRenNatural_wkms_id Δ)). Qed.
+#[export]
 Hint Resolve wtiRen_comp_wkms : wsi.
 
 Lemma wtRen_snoc Γ₁ Γ₂ ξ x T :
   WtRen Γ₁ Γ₂ ξ → ⟪ x : T r∈ Γ₂ ⟫ → WtRen (Γ₁ r▻ T) Γ₂ (ξ · x).
 Proof. unfold WtRen. crush. Qed.
+#[export]
 Hint Resolve wtRen_snoc : ws.
 
 Lemma wtiRen_snoc Γ₁ Γ₂ T ξ x :
@@ -192,6 +203,7 @@ Lemma wtiRen_snoc Γ₁ Γ₂ T ξ x :
 Proof.
   intros wξ i. specialize (wξ (S i)). eauto using GetEvar.
 Qed.
+#[export]
 Hint Resolve wtiRen_snoc : wsi.
 
 Lemma wtiIx_snoc Γ₁ Γ₂ ξ T x :
@@ -199,11 +211,13 @@ Lemma wtiIx_snoc Γ₁ Γ₂ ξ T x :
 Proof.
   intros wξ. specialize (wξ 0). eauto using GetEvar.
 Qed.
+#[export]
 Hint Resolve wtiIx_snoc : wsi.
 
 Lemma wtRen_up {Γ₁ Γ₂ ξ} (wξ: WtRen Γ₁ Γ₂ ξ) :
   ∀ T, WtRen (Γ₁ r▻ T) (Γ₂ r▻ T) (ξ ↑).
 Proof. unfold up; crush. Qed.
+#[export]
 Hint Resolve wtRen_up : ws.
 
 Lemma wtiRen_up Γ₁ Γ₂ ξ T :
@@ -212,26 +226,31 @@ Proof.
   unfold up, WtRen. crush.
   specialize (H (S i) T0). eauto with ws wsi.
 Qed.
+#[export]
 Hint Resolve wtiRen_up : wsi.
 
 Lemma wtRen_ups Γ₁ Γ₂ Δ ξ :
   WtRen Γ₁ Γ₂ ξ → WtRen (Γ₁ r▻▻ Δ) (Γ₂ r▻▻ Δ) (ξ ↑⋆ dom Δ).
 Proof. induction Δ; crush. Qed.
+#[export]
 Hint Resolve wtRen_ups : ws.
 
 Lemma wtiRen_ups Γ₁ Γ₂ Δ ξ :
   WtRen (Γ₁ r▻▻ Δ) (Γ₂ r▻▻ Δ) (ξ ↑⋆ dom Δ) → WtRen Γ₁ Γ₂ ξ.
 Proof. induction Δ; eauto with wsi. Qed.
+#[export]
 Hint Resolve wtiRen_ups : wsi.
 
 Lemma wtRen_beta (Γ Δ: Env) :
   ∀ ξ, WtRen Δ Γ ξ → WtRen (Γ r▻▻ Δ) Γ (beta (dom Δ) ξ).
 Proof. unfold WtRen; induction Δ; crush. Qed.
+#[export]
 Hint Resolve wtRen_beta : ws.
 
 Lemma typing_ren {Γ₁ t T} (wt: ⟪ Γ₁ e⊢ t : T ⟫) :
   ∀ Γ₂ ξ, WtRen Γ₁ Γ₂ ξ → ⟪ Γ₂ e⊢ t[ξ] : T ⟫.
 Proof. induction wt; econstructor; crush. Qed.
+#[export]
 Hint Resolve typing_ren : ws.
 
 (* Lemma typing_weakening Δ {Γ t T} (wt: ⟪ Γ ⊢ t : T ⟫) : *)
@@ -246,15 +265,18 @@ Hint Resolve typing_ren : ws.
 
 Lemma wtSub_closed ζ Δ : WtSub empty Δ ζ.
 Proof. inversion 1. Qed.
+#[export]
 Hint Resolve wtSub_closed : ws.
 
 Lemma wtSub_idm (Γ: Env) : WtSub Γ Γ (idm Tm).
 Proof. unfold WtSub. crush. Qed.
+#[export]
 Hint Resolve wtSub_idm : ws.
 
 Lemma wtSub_snoc Γ₁ Γ₂ ζ t T :
   WtSub Γ₁ Γ₂ ζ → ⟪ Γ₂ e⊢ t : T ⟫ → WtSub (Γ₁ r▻ T) Γ₂ (ζ · t).
 Proof. unfold WtSub. crush. Qed.
+#[export]
 Hint Resolve wtSub_snoc : ws.
 
 Lemma wtiSub_snoc Γ₁ Γ₂ T ζ t :
@@ -262,6 +284,7 @@ Lemma wtiSub_snoc Γ₁ Γ₂ T ζ t :
 Proof.
   intros wζ i. specialize (wζ (S i)). eauto using GetEvar.
 Qed.
+#[export]
 Hint Resolve wtiSub_snoc : wsi.
 
 Lemma wtSub_toSub ξ Γ₁ Γ₂ :
@@ -272,31 +295,37 @@ Lemma wtSub_wkms (Δ: Env) :
   ∀ Γ, WtSub Γ (Γ r▻▻ Δ) ⌈@wkms Ix _ _ (dom Δ)⌉.
 Proof. eauto using wtRen_wkms, wtSub_toSub. Qed.
 
+#[export]
 Hint Resolve wtSub_wkms : ws.
 
 Lemma wtSub_wkm Γ T :
   WtSub Γ (Γ r▻ T) ⌈wkm⌉.
 Proof. apply (wtSub_wkms (empty r▻ T)). Qed.
+#[export]
 Hint Resolve wtSub_wkm : ws.
 
 Lemma wtSub_up {Γ₁ Γ₂ ζ} (wζ: WtSub Γ₁ Γ₂ ζ) :
   ∀ T, WtSub (Γ₁ r▻ T) (Γ₂ r▻ T) (ζ ↑).
 Proof. inversion 1; crush. Qed.
+#[export]
 Hint Resolve wtSub_up : ws.
 
 Lemma wtSub_ups Γ₁ Γ₂ Δ ζ :
   WtSub Γ₁ Γ₂ ζ → WtSub (Γ₁ r▻▻ Δ) (Γ₂ r▻▻ Δ) (ζ ↑⋆ dom Δ).
 Proof. induction Δ; crush. Qed.
+#[export]
 Hint Resolve wtSub_ups : ws.
 
 Lemma typing_sub {Γ₁ t T} (wt: ⟪ Γ₁ e⊢ t : T ⟫) :
   ∀ {Γ₂ ζ}, WtSub Γ₁ Γ₂ ζ → ⟪ Γ₂ e⊢ t[ζ] : T ⟫.
 Proof. induction wt; crush. Qed.
+#[export]
 Hint Resolve typing_sub : ws.
 
 Lemma wtSub_comp {Γ₁ Γ₂ Γ₃ ζ₁ ζ₂} :
   WtSub Γ₁ Γ₂ ζ₁ → WtSub Γ₂ Γ₃ ζ₂ → WtSub Γ₁ Γ₃ (ζ₁ >=> ζ₂).
 Proof. unfold WtSub, comp; eauto with ws. Qed.
+#[export]
 Hint Resolve wtSub_comp : ws.
 
 Lemma wtTm_snoc Γ₁ Γ₂ ζ T t :
@@ -304,6 +333,7 @@ Lemma wtTm_snoc Γ₁ Γ₂ ζ T t :
 Proof.
   intros wζ. specialize (wζ 0). eauto using GetEvar.
 Qed.
+#[export]
 Hint Immediate wtTm_snoc : ws.
 
 (*************************************************************************)
@@ -313,11 +343,13 @@ Lemma wtSub_beta (Γ Δ: Env) :
 Proof.
   unfold WtSub; induction Δ; crush.
 Qed.
+#[export]
 Hint Resolve wtSub_beta : ws.
 
 Lemma wtSub_beta1 Γ t T (wi: ⟪ Γ e⊢ t : T ⟫) :
   WtSub (Γ r▻ T) Γ (beta1 t).
 Proof. apply (wtSub_beta Γ (empty r▻ T)); crush. Qed.
+#[export]
 Hint Resolve wtSub_beta1 : ws.
 
 (*************************************************************************)
@@ -356,7 +388,9 @@ Ltac crushTypingTemp :=
      eauto with ws
     ).
 
+#[export]
 Hint Resolve pctxtyping_cat : typing.
+#[export]
 Hint Resolve pctxtyping_app : typing.
 
 Lemma wtvar_implies_wsvar {Γ i τ} :
@@ -395,6 +429,7 @@ Ltac try_typed_terms_are_valid :=
   | [ H: ⟪ _ e⊢ _ : ?τ ⟫ |- ValidTy ?τ ] => refine (typed_terms_are_valid _ _ _ H)
   end.
 
+#[export]
 Hint Extern 50 (ValidTy _) => try_typed_terms_are_valid : tyvalid_terms.
 
 Lemma invert_ty_abs {Γ τ₁ t τ} :
@@ -573,9 +608,11 @@ Ltac crushTyping :=
     );
   eauto with ws tyvalid tyeq.
 
+#[export]
 Hint Extern 20 (⟪ _ e⊢ _ : _ ⟫) =>
   crushTyping : typing.
 
+#[export]
 Hint Extern 20 (⟪ e⊢ _ : _ , _ → _ , _ ⟫) =>
   crushTyping : typing.
 

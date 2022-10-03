@@ -2,6 +2,7 @@ Require Export Db.Spec.
 Require Export Db.Lemmas.
 
 Require Export LogRelIE.PseudoType.
+Require Export LogRelIE.InstPTy.
 Require Export LogRelIE.Contraction.
 Require Export LogRelIE.ValidPTy.
 
@@ -99,7 +100,7 @@ Section IsToEq.
     revert δ δ' σ;
     induction τ; intros δ δ' σ wsτ wsσ; try inversion wsτ; subst; cbn; repeat I.crushStlcSyntaxMatchH; f_equal; eauto.
     - transitivity ((isToEq τ) [ σ↑ >-> isToEq]).
-      eapply IHτ; eauto using wsSub_up.
+      eapply IHτ; eauto using (wsSub_up (X := PTy)).
       change (apTy ?ξ ?τ) with τ[ξ] in *.
       eapply ( wsApExt (isToEq_preserves_ws H0)).
       intros i iδ.
@@ -142,6 +143,7 @@ Proof.
   inversion H.
   inversion H1.
 Qed.
+#[export]
 Hint Resolve closed_implies_not_ptvar : cpty.
 
 Lemma closed_arr_implies_closed_argpty {τ τ'} :
@@ -149,6 +151,7 @@ Lemma closed_arr_implies_closed_argpty {τ τ'} :
 Proof.
   inversion 1; assumption.
 Qed.
+#[export]
 Hint Resolve closed_arr_implies_closed_argpty : cpty.
 
 Lemma closed_arr_implies_closed_retpty {τ τ'} :
@@ -156,6 +159,7 @@ Lemma closed_arr_implies_closed_retpty {τ τ'} :
 Proof.
   inversion 1; assumption.
 Qed.
+#[export]
 Hint Resolve closed_arr_implies_closed_retpty : cpty.
 
 Lemma closed_arr_implies_closed_argpty_eq {τ τ1 τ2} :
@@ -167,6 +171,7 @@ Proof.
   rewrite H0 in H.
   exact (closed_arr_implies_closed_argpty H).
 Qed.
+#[export]
 Hint Resolve closed_arr_implies_closed_argpty_eq : cpty.
 
 Lemma closed_psum_implies_closed_lhs {τ τ'} :
@@ -174,6 +179,7 @@ Lemma closed_psum_implies_closed_lhs {τ τ'} :
 Proof.
   inversion 1; assumption.
 Qed.
+#[export]
 Hint Resolve closed_psum_implies_closed_lhs : cpty.
 
 Lemma closed_psum_implies_closed_rhs {τ τ'} :
@@ -181,6 +187,7 @@ Lemma closed_psum_implies_closed_rhs {τ τ'} :
 Proof.
   inversion 1; assumption.
 Qed.
+#[export]
 Hint Resolve closed_psum_implies_closed_rhs : cpty.
 
 Lemma closed_psum_implies_closed_lhs_eq {τ τ1 τ2} :
@@ -549,7 +556,7 @@ Section OfType.
            eapply EqMuR.
            destruct H.
            inversion H; subst.
-           assert ⟨ beta1 (ptrec τ) : 1 => 0 ⟩ as wsbμτ by now eapply wsSub_sub_beta1.
+           assert ⟨ beta1 (ptrec τ) : 1 => 0 ⟩ as wsbμτ by now eapply (wsSub_sub_beta1 (X := PTy)).
            rewrite (isToEq_sub H6 wsbμτ).
            enough (beta1 (ptrec τ) >-> isToEq = beta1 (trec (isToEq τ))) as -> by eapply tyeq_refl.
            extensionality i.
@@ -646,7 +653,7 @@ Section OfType.
              now eapply tyeq_refl.
              extensionality i.
              destruct i; now cbn.
-             eapply wsSub_sub_beta1.
+             eapply (wsSub_sub_beta1 (X := PTy)).
              now destruct H.
              destruct H.
              inversion H; now subst.

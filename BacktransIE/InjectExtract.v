@@ -396,9 +396,13 @@ Proof.
   eauto using eraseAnnotT, extractAT.
 Qed.
 
+#[export]
 Hint Resolve injectT : uval_typing.
+#[export]
 Hint Resolve extractT : uval_typing.
+#[export]
 Hint Resolve injectAT : uval_typing.
+#[export]
 Hint Resolve extractAT : uval_typing.
 
 Lemma inject_closed {n τ} :
@@ -920,7 +924,8 @@ Proof.
   induction t; crush; cbn; apply IHt;
   assumption.
 Qed.
-Hint Resolve value_sub.
+(* #[export] *)
+(* Hint Resolve value_sub. *)
 
 Lemma inject_tarr_works {n w d p vs vu τ1 τ2 τ'} :
   ValidTy τ' ->

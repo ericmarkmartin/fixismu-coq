@@ -79,9 +79,13 @@ Inductive eval : Tm → Tm → Prop :=
     t -->₀ t' → ECtx C → pctx_app t C --> pctx_app t' C
 where "t₁ --> t₂" := (eval t₁ t₂).
 
+#[export]
 Hint Constructors eval : eval.
+#[export]
 Hint Constructors eval₀ : eval.
+#[export]
 Hint Constructors clos_refl_trans_1n : eval.
+#[export]
 Hint Constructors clos_trans_1n : eval.
 
 Definition normal (t : Tm) := forall t', not (t --> t').
@@ -143,6 +147,7 @@ Qed.
 Definition evaln := stepRel eval.
 Definition evalStar := clos_refl_trans_1n Tm eval.
 
+#[export]
 Hint Constructors stepRel : eval.
 
 (* (* domi: this definition is equivalent to the normal eval.  Not sure why it's there anymore *) *)

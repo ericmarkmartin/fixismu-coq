@@ -47,6 +47,7 @@ Section WellScoping.
   where "⟨ γ ⊢ t ⟩" := (wsTm γ t).
 
 End WellScoping.
+#[export]
 Instance WsTm : Ws Tm := wsTm.
 
 (** ** Program contexts *)

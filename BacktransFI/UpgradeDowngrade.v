@@ -271,8 +271,10 @@ Ltac crushUpgradeTypingMatch :=
     | |- ⟪ _ a⊢ downgradeA _ _ _ : _ ⟫ => apply downgrade_annot_T1'
   end.
 
+#[export]
 Hint Extern 20 (⟪ _ a⊢ upgradeA _ _ _ : _ ⟫) => crushUpgradeTypingMatch : typing.
 
+#[export]
 Hint Extern 20 (⟪ _ a⊢ downgradeA _ _ _ : _ ⟫) => crushUpgradeTypingMatch : typing.
 
 
@@ -333,9 +335,13 @@ Proof.
   eauto using downgrade_T.
 Qed.
 
+#[export]
 Hint Resolve upgrade_T1 : uval_typing.
+#[export]
 Hint Resolve downgrade_T1 : uval_typing.
+#[export]
 Hint Resolve upgrade_annot_T1 : uval_typing.
+#[export]
 Hint Resolve downgrade_annot_T1 : uval_typing.
 
 Lemma upgrade_closed {n d τ} :

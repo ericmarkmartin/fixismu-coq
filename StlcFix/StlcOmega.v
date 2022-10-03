@@ -29,7 +29,9 @@ Proof.
   now cbn.
 Qed.
 
+#[export]
 Hint Resolve stlcOmegaT : typing.
+#[export]
 Hint Resolve stlcOmegaAT : typing.
 
 Definition stlcOmegaHelp (ty : Ty) : Tm :=

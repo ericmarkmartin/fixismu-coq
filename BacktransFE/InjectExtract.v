@@ -137,9 +137,13 @@ Proof.
   eauto using eraseAnnotT, extractAT.
 Qed.
 
+#[export]
 Hint Resolve injectT : uval_typing.
+#[export]
 Hint Resolve extractT : uval_typing.
+#[export]
 Hint Resolve injectAT : uval_typing.
+#[export]
 Hint Resolve extractAT : uval_typing.
 
 Lemma inject_closed {n τ} :
@@ -408,7 +412,8 @@ Proof.
   induction t; crush; cbn; apply IHt;
   assumption.
 Qed.
-Hint Resolve value_sub.
+(* #[export] *)
+(* Hint Resolve value_sub. *)
 
 Lemma inject_tarr_works {n w d p vs vu τ1 τ2} :
   (forall n' w' vs1 vu1, n' <= n → inject_works_prop n' w' d p vs1 vu1 τ2) →
@@ -768,7 +773,7 @@ Proof.
     pose proof (tvs2w := typing_sub tvs2 _ wkm (wtSub_wkm _ τ₁)).
     rewrite (wsClosed_invariant (wt_implies_ws tvs2)) in tvs2w.
     refine (valrel_lambda _ _ _ _ _ _); crushOfType; rewrite <-?compiler_is_fxToIs_embed, ?repEmul_embed_leftinv; eauto;
-      crushTyping; eauto using validTy_compfi_ty, validPTy_embed with tyeq typing uval_typing.
+      crushTyping; E.crushTyping; eauto using validTy_compfi_ty, validPTy_embed with tyeq typing uval_typing.
     subst.
 
     destruct (valrel_implies_Value H1) as [vvs3 vvu3].
@@ -828,7 +833,7 @@ Proof.
       rewrite (wsClosed_invariant (wt_implies_ws tvs)) in tvsw.
       rewrite <-compiler_is_fxToIs_embed in tvsw.
       crushOfType;
-        crushTyping;
+        crushTyping; E.crushTyping;
       rewrite <-?compiler_is_fxToIs_embed in tyx;
       rewrite ?repEmul_embed_leftinv, <-?compiler_is_fxToIs_embed;
         eauto using validTy_compfi_ty, validPTy_embed with tyeq typing uval_typing.

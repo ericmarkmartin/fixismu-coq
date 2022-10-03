@@ -67,6 +67,7 @@ Section WellScoping.
 
 End WellScoping.
 
+#[export]
 Instance WsTy : Ws Ty := wsTy.
 
 Section Application.
@@ -123,6 +124,7 @@ Inductive GetEvar : Env → Ix → Ty → Prop :=
       ⟪   i : T r∈ Γ      ⟫ →
       ⟪ S i : T r∈ Γ r▻ T' ⟫
 where "⟪  i : T r∈ Γ  ⟫" := (GetEvar Γ i T).
+#[export]
 Hint Constructors GetEvar : ws.
 
 Definition WtRen (Γ₁ Γ₂: Env) (ξ: Sub Ix) : Prop :=
@@ -135,4 +137,5 @@ Proof. inversion 1; auto. Qed.
 Lemma getEvarInvThere {Γ i T U} :
   ⟪ (S i) : T r∈ Γ r▻ U ⟫ → ⟪ i : T r∈ Γ ⟫.
 Proof. inversion 1; auto. Qed.
+#[export]
 Hint Resolve getEvarInvThere : wsi.

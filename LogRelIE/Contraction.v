@@ -29,7 +29,9 @@ Scheme simp_p_contr_mut_ind := Induction for SimplePContr Sort Prop
 
 Combined Scheme simp_p_contr_comb_ind from simp_p_contr_mut_ind, simp_p_rec_mut_ind.
 
+#[export]
 Hint Constructors SimplePContr : simple_p_contr_rec.
+#[export]
 Hint Constructors SimplePRec : simple_p_contr_rec.
 
 Definition pUnfoldOnce (τ : PTy) : PTy :=
@@ -89,11 +91,9 @@ Qed.
 Lemma SimplePRecSub_implies_SimplePRec {τ ξ} : SimplePRec τ → SimplePRecSub ξ → SimplePRec τ[ξ].
 Proof.
   intro H.
-  Hint Constructors SimplePContr : contr.
-  Hint Constructors SimplePRec : contr.
   apply (simp_p_rec_mut_ind
-           (fun {τ} (_ : SimplePContr τ) => (forall ξ : Sub PTy, SimplePRecSub ξ → SimplePContr τ[ξ]))
-           (fun {τ} (_ : SimplePRec τ) => (forall ξ : Sub PTy, SimplePRecSub ξ → SimplePRec τ[ξ]))); cbn; eauto with contr.
+           (fun τ (_ : SimplePContr τ) => (forall ξ : Sub PTy, SimplePRecSub ξ → SimplePContr τ[ξ]))
+           (fun τ (_ : SimplePRec τ) => (forall ξ : Sub PTy, SimplePRecSub ξ → SimplePRec τ[ξ]))); cbn; eauto with simple_p_contr_rec.
 
   intros.
   constructor.
@@ -103,8 +103,8 @@ Qed.
 Lemma SimplePContrSub_implies_SimplePContr {τ ξ} : SimplePContr τ → SimplePRecSub ξ → SimplePContr τ[ξ].
   intro H.
   apply (simp_p_contr_mut_ind
-           (fun {τ} (_ : SimplePContr τ) => (forall ξ : Sub PTy, SimplePRecSub ξ → SimplePContr τ[ξ]))
-           (fun {τ} (_ : SimplePRec τ) => (forall ξ : Sub PTy, SimplePRecSub ξ → SimplePRec τ[ξ]))).
+           (fun τ (_ : SimplePContr τ) => (forall ξ : Sub PTy, SimplePRecSub ξ → SimplePContr τ[ξ]))
+           (fun τ (_ : SimplePRec τ) => (forall ξ : Sub PTy, SimplePRecSub ξ → SimplePRec τ[ξ]))).
   cbn.
   constructor.
 
@@ -179,6 +179,7 @@ Proof.
   eauto using punfold_preserves_contr.
 Qed.
 
+#[export]
 Hint Resolve SimplePContr_pUnfoldOnce : simple_p_contr_rec.
 
 Lemma SimplePRec_pUnfoldOnce (τ : PTy) : SimplePRec τ -> SimplePRec (pUnfoldOnce τ).
@@ -187,6 +188,7 @@ Proof.
   eauto using SimplePRec, SimplePContr_pUnfoldOnce.
 Qed.
 
+#[export]
 Hint Resolve SimplePRec_pUnfoldOnce : simple_contr_rec.
 
 Lemma SimplePRec_invert_arrow {τ σ} :
@@ -199,6 +201,7 @@ Proof.
   now subst.
 Qed.
 
+#[export]
 Hint Resolve SimplePRec_invert_arrow : simple_contr_p_rec.
 
 Lemma SimplePRec_invert_arrow_argty {τ σ} :
@@ -207,6 +210,7 @@ Proof.
   eapply SimplePRec_invert_arrow.
 Qed.
 
+#[export]
 Hint Resolve SimplePRec_invert_arrow_argty : simple_contr_p_rec.
 
 Lemma SimplePRec_invert_arrow_retty {τ σ} :
@@ -215,6 +219,7 @@ Proof.
   eapply SimplePRec_invert_arrow.
 Qed.
 
+#[export]
 Hint Resolve SimplePRec_invert_arrow_retty : simple_contr_p_rec.
 
 Fixpoint LMC_pty (τ : PTy) {struct τ} : nat :=

@@ -122,7 +122,9 @@ Proof.
   eauto using F.AnnotTyping.
 Qed.
 
+#[export]
 Hint Resolve unkUValT : uval_typing.
+#[export]
 Hint Resolve unkUValAT : uval_typing.
 
 (* Definition constr_uvalfi {Γ} (n : nat) (τ : I.Ty) (t : F.Tm) {P : ClosedTy τ} {Q : F.Typing Γ t (@UValFI n τ P)} : F.Tm := *)
@@ -298,6 +300,7 @@ Proof.
   F.crushTyping.
 Qed.
 
+#[export]
 Hint Resolve caseV0_T : uval_typing.
 
 Definition caseUVal_pctx (τ : F.Ty) := F.pcaseof₁ F.phole (F.var 0) (stlcOmega τ).
@@ -557,13 +560,21 @@ Proof.
   now cbn.
 Qed.
 
+#[export]
 Hint Resolve caseUnit_T : uval_typing.
+#[export]
 Hint Resolve caseSum_T : uval_typing.
+#[export]
 Hint Resolve caseArr_T : uval_typing.
+#[export]
 Hint Resolve caseRec_T : uval_typing.
+#[export]
 Hint Resolve caseUnitA_T : uval_typing.
+#[export]
 Hint Resolve caseSumA_T : uval_typing.
+#[export]
 Hint Resolve caseArrA_T : uval_typing.
+#[export]
 Hint Resolve caseRecA_T : uval_typing.
 
 (* Lemma caseUVal_eval_bool {n tunk tcunit tcbool tcprod tcsum tcarr v} : *)
@@ -606,19 +617,32 @@ Hint Resolve caseRecA_T : uval_typing.
 (* Qed. *)
 
 Arguments UValFI n : simpl never.
+#[export]
 Hint Resolve unkUValT : uval_typing.
+#[export]
 Hint Resolve inUnitT : uval_typing.
+#[export]
 Hint Resolve inBoolT : uval_typing.
+#[export]
 Hint Resolve inProd_T : uval_typing.
+#[export]
 Hint Resolve inSum_T : uval_typing.
+#[export]
 Hint Resolve inArr_T : uval_typing.
-(* Hint Resolve inUnit_pctx_T : uval_typing. *)
-(* Hint Resolve inBool_pctx_T : uval_typing. *)
-(* Hint Resolve inProd_pctx_T : uval_typing. *)
-(* Hint Resolve inSum_pctx_T : uval_typing. *)
-(* Hint Resolve inArr_pctx_T : uval_typing. *)
-(* Hint Resolve caseUVal_pctx_T : uval_typing. *)
-(* Hint Resolve caseUVal_T : uval_typing. *)
+(* #[export]
+Hint Resolve inUnit_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve inBool_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve inProd_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve inSum_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve inArr_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve caseUVal_pctx_T : uval_typing. *)
+(* #[export]
+Hint Resolve caseUVal_T : uval_typing. *)
 
 Local Ltac crush :=
   repeat (subst*;

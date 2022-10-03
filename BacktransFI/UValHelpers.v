@@ -345,29 +345,53 @@ Section IntroTypes.
   Qed.
 End IntroTypes.
 
+#[export]
 Hint Resolve inUnitDwn_T : uval_typing.
+#[export]
 Hint Resolve inBoolDwn_T : uval_typing.
+#[export]
 Hint Resolve inSumDwn_T : uval_typing.
+#[export]
 Hint Resolve inProdDwn_T : uval_typing.
+#[export]
 Hint Resolve inArrDwn_T : uval_typing.
+#[export]
 Hint Resolve inRecDwn_T : uval_typing.
+#[export]
 Hint Resolve inUnitDwn_pctx_T : uval_typing.
+#[export]
 Hint Resolve inBoolDwn_pctx_T : uval_typing.
+#[export]
 Hint Resolve inSumDwn_pctx_T : uval_typing.
+#[export]
 Hint Resolve inProdDwn_pctx_T : uval_typing.
+#[export]
 Hint Resolve inArrDwn_pctx_T : uval_typing.
+#[export]
 Hint Resolve inRecDwn_pctx_T : uval_typing.
+#[export]
 Hint Resolve inUnitDwnA_T : uval_typing.
+#[export]
 Hint Resolve inBoolDwnA_T : uval_typing.
+#[export]
 Hint Resolve inSumDwnA_T : uval_typing.
+#[export]
 Hint Resolve inProdDwnA_T : uval_typing.
+#[export]
 Hint Resolve inArrDwnA_T : uval_typing.
+#[export]
 Hint Resolve inRecDwnA_T : uval_typing.
+#[export]
 Hint Resolve inUnitDwn_pctxA_T : uval_typing.
+#[export]
 Hint Resolve inBoolDwn_pctxA_T : uval_typing.
+#[export]
 Hint Resolve inSumDwn_pctxA_T : uval_typing.
+#[export]
 Hint Resolve inProdDwn_pctxA_T : uval_typing.
+#[export]
 Hint Resolve inArrDwn_pctxA_T : uval_typing.
+#[export]
 Hint Resolve inRecDwn_pctxA_T : uval_typing.
 
 
@@ -832,29 +856,53 @@ Section DestructTypes.
 
 End DestructTypes.
 
+#[export]
 Hint Resolve caseUnitUp_T : uval_typing.
+#[export]
 Hint Resolve caseBoolUp_T : uval_typing.
+#[export]
 Hint Resolve caseSumUp_T : uval_typing.
+#[export]
 Hint Resolve caseProdUp_T : uval_typing.
+#[export]
 Hint Resolve caseArrUp_T : uval_typing.
+#[export]
 Hint Resolve caseRecUp_T : uval_typing.
+#[export]
 Hint Resolve caseUnitUp_pctx_T : uval_typing.
+#[export]
 Hint Resolve caseBoolUp_pctx_T : uval_typing.
+#[export]
 Hint Resolve caseSumUp_pctx_T : uval_typing.
+#[export]
 Hint Resolve caseProdUp_pctx_T : uval_typing.
+#[export]
 Hint Resolve caseArrUp_pctx_T : uval_typing.
+#[export]
 Hint Resolve caseRecUp_pctx_T : uval_typing.
+#[export]
 Hint Resolve caseUnitUpA_T : uval_typing.
+#[export]
 Hint Resolve caseBoolUpA_T : uval_typing.
+#[export]
 Hint Resolve caseSumUpA_T : uval_typing.
+#[export]
 Hint Resolve caseProdUpA_T : uval_typing.
+#[export]
 Hint Resolve caseArrUpA_T : uval_typing.
+#[export]
 Hint Resolve caseRecUpA_T : uval_typing.
+#[export]
 Hint Resolve caseUnitUp_pctxA_T : uval_typing.
+#[export]
 Hint Resolve caseBoolUp_pctxA_T : uval_typing.
+#[export]
 Hint Resolve caseSumUp_pctxA_T : uval_typing.
+#[export]
 Hint Resolve caseProdUp_pctxA_T : uval_typing.
+#[export]
 Hint Resolve caseArrUp_pctxA_T : uval_typing.
+#[export]
 Hint Resolve caseRecUp_pctxA_T : uval_typing.
 
 

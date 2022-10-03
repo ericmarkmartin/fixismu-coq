@@ -105,6 +105,8 @@ Inductive Typing (Γ: Env) : Tm → Ty → Prop :=
       ⟪ Γ i⊢ t₂ : T ⟫ →
       ⟪ Γ i⊢ seq t₁ t₂ : T ⟫
 where "⟪  Γ i⊢ t : T  ⟫" := (Typing Γ t T).
+#[export]
+Hint Constructors Typing : typing.
 
 
 Reserved Notation "⟪ i⊢ C : Γ₀ , τ₀ → Γ , τ ⟫"

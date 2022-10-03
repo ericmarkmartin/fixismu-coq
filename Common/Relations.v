@@ -3,7 +3,9 @@ Require Coq.Relations.Operators_Properties.
 Require Coq.Setoids.Setoid.
 Require Export Coq.Unicode.Utf8.
 
+#[export]
 Hint Constructors clos_refl_trans_1n : eval.
+#[export]
 Hint Constructors clos_trans_1n : eval.
 
 (* ** Transitive and transitive-reflexive closure *)
@@ -82,4 +84,5 @@ Section StepRel.
   Qed.
 End StepRel.
 
+#[export]
 Hint Constructors stepRel : eval.

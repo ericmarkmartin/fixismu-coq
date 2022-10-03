@@ -159,11 +159,17 @@ Proof.
   now rewrite ?eraseAnnot_caseArrUpA.
 Qed.
 
+#[export]
 Hint Resolve uvalApp_T : uval_typing.
+#[export]
 Hint Resolve uvalApp_pctx₁_T : uval_typing.
+#[export]
 Hint Resolve uvalApp_pctx₂_T : uval_typing.
+#[export]
 Hint Resolve uvalAppA_T : uval_typing.
+#[export]
 Hint Resolve uvalApp_pctxA₁_T : uval_typing.
+#[export]
 Hint Resolve uvalApp_pctxA₂_T : uval_typing.
 
 

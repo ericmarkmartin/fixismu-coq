@@ -26,7 +26,7 @@ Require Import StlcEqui.LemmasTyping.
 Lemma trec_tunit_eq_tunit : ⟪ tunit ≗ trec tunit ⟫.
 Proof.
   constructor;
-  eauto with contr.
+  eauto with simple_contr_rec.
   cbn.
   apply tyeq_refl.
 Qed.

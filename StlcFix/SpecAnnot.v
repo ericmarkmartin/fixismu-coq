@@ -373,7 +373,9 @@ Proof.
 Qed.
 
 
+#[export]
 Hint Resolve pctxtyping_app_annot : typing.
+#[export]
 Hint Resolve pctxtyping_cat_annot : typing.
 
 Ltac crushTypingMatchAH2 :=
@@ -394,8 +396,10 @@ Ltac crushTypingA :=
      eauto with ws
     ).
 
+#[export]
 Hint Extern 20 (⟪ _ a⊢ _ : _ ⟫) =>
   crushTypingA : typing.
 
+#[export]
 Hint Extern 20 (⟪ a⊢ _ : _ , _ → _ , _ ⟫) =>
   crushTypingA : typing.

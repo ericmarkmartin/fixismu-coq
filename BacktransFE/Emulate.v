@@ -128,6 +128,7 @@ Proof.
     now eapply IHtyτ.
 Qed.
 
+#[export]
 Hint Resolve emulateT : uval_typing.
 
 Lemma emulate_pctx_T {n C Γₒ τₒ Γ τ} :

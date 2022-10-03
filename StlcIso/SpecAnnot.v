@@ -348,8 +348,10 @@ Proof.
   induction 1; cbn; eauto using Typing, PCtxTyping, eraseAnnotT.
 Qed.
 
-(* Hint Resolve pctxtyping_app_annot : typing. *)
-(* Hint Resolve pctxtyping_cat_annot : typing. *)
+(* #[export]
+Hint Resolve pctxtyping_app_annot : typing. *)
+(* #[export]
+Hint Resolve pctxtyping_cat_annot : typing. *)
 
 (* Ltac crushTypingMatchIAH2 := *)
 (*   match goal with *)
@@ -368,8 +370,10 @@ Ltac crushTypingIA :=
      eauto with ws
     ).
 
+#[export]
 Hint Extern 20 (⟪ _ ia⊢ _ : _ ⟫) =>
   crushTypingIA : typing.
 
+#[export]
 Hint Extern 20 (⟪ ia⊢ _ : _ , _ → _ , _ ⟫) =>
   crushTypingIA : typing.

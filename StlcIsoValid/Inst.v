@@ -4,6 +4,7 @@ Require Export Db.WellScoping.
 Require Export StlcIsoValid.SpecSyntax.
 Require Export RecTypes.InstTy.
 
+#[export]
 #[refine] Instance vrTm : Vr Tm := {| vr := var |}.
 Proof. inversion 1; auto. Defined.
 
@@ -30,16 +31,19 @@ Module TmKit <: Kit.
     Context {wkY: Wk Y}.
     Context {liftY: Lift Y Tm}.
 
-    #[refine] Global Instance inst_ap : Ap Tm Y := {| ap := apTm |}.
+    #[export]
+    #[refine] Instance inst_ap : Ap Tm Y := {| ap := apTm |}.
     Proof.
       induction x; crush.
     Defined.
 
-    #[refine] Global Instance inst_ap_vr : LemApVr Tm Y := {}.
+    #[export]
+    #[refine] Instance inst_ap_vr : LemApVr Tm Y := {}.
     Proof. reflexivity. Qed.
 
   End Application.
 
+  #[export]
   #[refine] Instance inst_ap_inj: LemApInj Tm Ix := {}.
   Proof.
     intros m Inj_m x. revert m Inj_m.
@@ -47,6 +51,7 @@ Module TmKit <: Kit.
     inversion 1; subst; f_equal; eauto using InjSubIxUp.
   Qed.
 
+  #[export]
   #[refine] Instance inst_ap_comp (Y Z: Type)
     {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y Tm}
     {vrZ: Vr Z} {wkZ: Wk Z} {liftZ: Lift Z Tm}
@@ -55,6 +60,7 @@ Module TmKit <: Kit.
     LemApComp Tm Y Z := {}.
   Proof. induction x; crush. Qed.
 
+  #[export]
   #[refine] Instance inst_ap_liftSub (Y: Type)
     {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y Tm} :
     LemApLiftSub Tm Y := {}.
@@ -68,6 +74,7 @@ End TmKit.
 Module InstTm := Inst TmKit.
 Export InstTm. (* Export for shorter names. *)
 
+#[export]
 Instance wsVrTm: WsVr Tm.
 Proof.
   constructor.
@@ -108,6 +115,7 @@ Section Application.
   Qed.
 End Application.
 
+#[export]
 Instance wsWkTm: WsWk Tm.
 Proof.
   constructor; crush.

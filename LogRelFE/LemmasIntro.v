@@ -615,17 +615,17 @@ Section TermRelation.
     rewrite -> valrel_fixp in H.
     destruct H as [ot [[? ?]|[? ?]]]; subst; clear ot.
     - assert (F.eval (F.ite F.true ts₂ ts₃) ts₂) by
-          (apply (F.eval_ctx₀ F.phole); try refine (F.eval_ite_true _ _); simpl; intuition).
+          (apply (F.eval_ctx₀ F.phole); try refine (F.eval_ite_true _ u); simpl; intuition).
       assert (esn : F.evaln (F.ite F.true ts₂ ts₃) ts₂ 1) by (unfold F.evaln; eauto with eval).
-      assert (E.eval (E.ite E.true tu₂ tu₃) tu₂) by
-          (apply (E.eval_eval₀); try refine (E.eval_ite_true _ _); simpl; intuition).
+      assert (E.eval (E.ite E.true tu₂ tu₃) tu₂).
+      { apply (E.eval_eval₀); try refine E.eval_ite_true; simpl; intuition. }
       assert (eun : E.evaln (E.ite E.true tu₂ tu₃) tu₂ 1) by (unfold E.evaln; eauto with eval).
       refine (termrel_antired w' esn eun _ _ _); crush.
     - assert (F.eval (F.ite F.false ts₂ ts₃) ts₃) by
           (apply (F.eval_ctx₀ F.phole); try refine (F.eval_ite_false _ _); simpl; intuition).
       assert (esn : F.evaln (F.ite F.false ts₂ ts₃) ts₃ 1) by (unfold F.evaln; eauto with eval).
       assert (E.eval (E.ite E.false tu₂ tu₃) tu₃) by
-          (apply (E.eval_eval₀); try refine (E.eval_ite_false _ _); simpl; intuition).
+          (apply (E.eval_eval₀); try refine E.eval_ite_false; simpl; intuition).
       assert (eun : E.evaln (E.ite E.false tu₂ tu₃) tu₃ 1) by (unfold E.evaln; eauto with eval).
       refine (termrel_antired w' esn eun _ _ _); crush.
   Qed.
@@ -673,8 +673,8 @@ Section TermRelation.
     assert (F.eval (F.proj₁ (F.pair vs₁ vs₂)) vs₁) by
         (apply (F.eval_ctx₀ F.phole); try refine (F.eval_proj₁ _ _); simpl; intuition).
     assert (esn : F.evaln (F.proj₁ (F.pair vs₁ vs₂)) vs₁ 1) by (unfold F.evaln; eauto with eval).
-    assert (E.eval (E.proj₁ (E.pair vu₁ vu₂)) vu₁) by
-        (apply (E.eval_eval₀); try refine (E.eval_proj₁ _); simpl; intuition).
+    assert (E.eval (E.proj₁ (E.pair vu₁ vu₂)) vu₁).
+        { apply (E.eval_eval₀); try refine (E.eval_proj₁ _ _); simpl; intuition. }
     assert (eun : E.evaln (E.proj₁ (E.pair vu₁ vu₂)) vu₁ 1) by (unfold E.evaln; eauto with eval).
     destruct w'; try apply termrel_zero.
     refine (termrel_antired w' esn eun _ _ _); crush.
@@ -703,7 +703,7 @@ Section TermRelation.
         (apply (F.eval_ctx₀ F.phole); try refine (F.eval_proj₁ _ _); simpl; crush).
     assert (esn : clos_refl_trans_1n F.Tm F.eval (F.proj₁ (F.pair vs₁ vs₂)) vs₁) by (eauto with eval).
     assert (E.eval (E.proj₁ (E.pair vu₁ vu₂)) vu₁) by
-        (apply (E.eval_eval₀); try refine (E.eval_proj₁ _); simpl; intuition).
+        (apply (E.eval_eval₀); try refine (E.eval_proj₁ _ _); simpl; intuition).
     assert (eun : E.evalStar (E.proj₁ (E.pair vu₁ vu₂)) vu₁)
       by (unfold E.evalStar; eauto with eval).
     refine (termrel₀_antired_star esn eun _); crush.
@@ -731,7 +731,7 @@ Section TermRelation.
         (apply (F.eval_ctx₀ F.phole); try refine (F.eval_proj₂ _ _); simpl; intuition).
     assert (esn : clos_refl_trans_1n F.Tm F.eval (F.proj₂ (F.pair vs₁ vs₂)) vs₂) by (eauto with eval).
     assert (E.eval (E.proj₂ (E.pair vu₁ vu₂)) vu₂) by
-        (apply (E.eval_eval₀); try refine (E.eval_proj₂ _); simpl; intuition).
+        (apply (E.eval_eval₀); try refine (E.eval_proj₂ _ _); simpl; intuition).
     assert (eun : E.evalStar (E.proj₂ (E.pair vu₁ vu₂)) vu₂)
       by (unfold E.evalStar; eauto with eval).
     refine (termrel₀_antired_star esn eun _); crush.
@@ -766,7 +766,7 @@ Section TermRelation.
         (apply (F.eval_ctx₀ F.phole); try refine (F.eval_proj₂ _ _); simpl; intuition).
     assert (esn : F.evaln (F.proj₂ (F.pair vs₁ vs₂)) vs₂ 1) by (unfold F.evaln; eauto with eval).
     assert (E.eval (E.proj₂ (E.pair vu₁ vu₂)) vu₂) by
-        (apply E.eval_eval₀; try refine (E.eval_proj₂ _); simpl; intuition).
+        (apply E.eval_eval₀; try refine (E.eval_proj₂ _ _); simpl; intuition).
     assert (eun : E.evaln (E.proj₂ (E.pair vu₁ vu₂)) vu₂ 1)
       by (unfold E.evaln; eauto with eval).
     destruct w'; try apply termrel_zero.
@@ -828,7 +828,7 @@ Section TermRelation.
           (apply (F.eval_ctx₀ F.phole); try refine (F.eval_case_inl _); simpl; intuition).
       assert (esn : F.evaln (F.caseof (F.inl vs') ts₂ ts₃) (ts₂ [beta1 vs']) 1) by (unfold F.evaln; eauto with eval).
       assert (E.eval (E.caseof (E.inl vu') tu₂ tu₃) (tu₂ [beta1 vu'])) by
-          (apply (E.eval_ctx₀ E.phole); try refine (E.eval_case_inl _ _); simpl; intuition).
+          (apply (E.eval_ctx₀ E.phole); try refine (E.eval_case_inl _); simpl; intuition).
       assert (eun : E.evaln (E.caseof (E.inl vu') tu₂ tu₃) (tu₂ [beta1 vu']) 1) by (unfold E.evaln; eauto with eval).
       destruct w'; try apply termrel_zero.
       refine (termrel_antired w' esn eun _ _ _); crush.
@@ -836,7 +836,7 @@ Section TermRelation.
           (apply (F.eval_ctx₀ F.phole); try refine (F.eval_case_inr _); simpl; intuition).
       assert (esn : F.evaln (F.caseof (F.inr vs') ts₂ ts₃) (ts₃ [beta1 vs']) 1) by (unfold F.evaln; eauto with eval).
       assert (E.eval (E.caseof (E.inr vu') tu₂ tu₃) (tu₃ [beta1 vu'])) by
-          (apply (E.eval_ctx₀ E.phole); try refine (E.eval_case_inr _ _); simpl; intuition).
+          (apply (E.eval_ctx₀ E.phole); try refine (E.eval_case_inr _); simpl; intuition).
       assert (eun : E.evaln (E.caseof (E.inr vu') tu₂ tu₃) (tu₃ [beta1 vu']) 1) by (unfold E.evaln; eauto with eval).
       destruct w'; try apply termrel_zero.
       refine (termrel_antired w' esn eun _ _ _); crush.
@@ -862,14 +862,14 @@ Section TermRelation.
           (apply (F.eval_ctx₀ F.phole); try refine (F.eval_case_inl _); simpl; intuition).
       assert (esn : clos_refl_trans_1n F.Tm F.eval (F.caseof (F.inl vs') ts₂ ts₃) (ts₂ [beta1 vs'])) by (eauto with eval).
       assert (E.eval (E.caseof (E.inl vu') tu₂ tu₃) (tu₂ [beta1 vu'])) by
-          (apply (E.eval_ctx₀ E.phole); try refine (E.eval_case_inl _ _); simpl; intuition).
+          (apply (E.eval_ctx₀ E.phole); try refine (E.eval_case_inl _); simpl; intuition).
       assert (eun : E.evalStar (E.caseof (E.inl vu') tu₂ tu₃) (tu₂ [beta1 vu'])) by (unfold E.evalStar; eauto with eval).
       refine (termreli₀_antired_star esn eun _); crush.
     - assert (F.eval (F.caseof (F.inr vs') ts₂ ts₃) (ts₃ [beta1 vs'])) by
           (apply (F.eval_ctx₀ F.phole); try refine (F.eval_case_inr _); simpl; intuition).
       assert (esn : clos_refl_trans_1n F.Tm F.eval (F.caseof (F.inr vs') ts₂ ts₃) (ts₃ [beta1 vs'])) by (eauto with eval).
       assert (E.eval (E.caseof (E.inr vu') tu₂ tu₃) (tu₃ [beta1 vu'])) by
-          (apply (E.eval_ctx₀ E.phole); try refine (E.eval_case_inr _ _); simpl; intuition).
+          (apply (E.eval_ctx₀ E.phole); try refine (E.eval_case_inr _); simpl; intuition).
       assert (eun : E.evalStar (E.caseof (E.inr vu') tu₂ tu₃) (tu₃ [beta1 vu'])) by (unfold E.evalStar; eauto with eval).
       refine (termreli₀_antired_star esn eun _); crush.
   Qed.

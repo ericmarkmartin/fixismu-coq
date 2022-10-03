@@ -277,7 +277,7 @@ End Beta.
 
 Class Ws (T: Type) := ws: Dom → T → Prop.
 Notation "⟨  γ ⊢ t  ⟩" := (ws γ t) (at level 0, γ at level 99, t at level 99).
-
+#[export]
 Instance WsIx : Ws Ix := { ws := wsIx }.
 
 Definition WsSub {X Y} {wsX: Ws X} {wsY : Ws Y} (γ δ: Dom) (ξ: Sub Y) : Prop :=
@@ -372,11 +372,13 @@ Section IndexInstances.
 
 End IndexInstances.
 
+#[export]
 Instance wsLiftXX {X} {vrX: Vr X} {wsX: Ws X} : WsLift X X.
 Proof. now constructor. Qed.
 
 Arguments liftXX_id _ {_} _.
 
+#[export]
 Instance wkT {T} {vrT: Vr T}
   {apT: ∀ {Y} {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y T}, Ap T Y}
   {apVrT: ∀ {Y} {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y T}, LemApVr T Y}
@@ -387,6 +389,7 @@ Instance wkT {T} {vrT: Vr T}
   |}.
 
 Create HintDb ws.
+#[export]
 Hint Constructors wsIx : ws.
 
 Ltac crushDbSyntaxMatchH :=
@@ -422,3 +425,4 @@ Ltac crushDbSyntaxMatchH :=
     | |- context[@ap _ _ _ ?apXY (idm _) ?x   ] => rewrite (@ap_id _ _ _ apXY x)
     | |- context[@lift _ _ _ _ ?liftXY (vr ?i)] => rewrite (@lift_vr _ _ _ _ liftXY i)
     end.
+

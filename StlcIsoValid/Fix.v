@@ -366,9 +366,12 @@ Lemma wtOmA_tau {Γ} τ : ValidTy τ → ⟪ Γ ia⊢ OmA τ : τ ⟫.
     (crushTypingIA; crushValidTy).
 Qed.
 
+#[export]
 Hint Resolve wtOm_tau : typing.
+#[export]
 Hint Resolve wtOmA_tau : typing.
-(* Hint Resolve stlcOmegaAT : typing. *)
+(* #[export]
+Hint Resolve stlcOmegaAT : typing. *)
 
 Definition OmHelp (τ : Ty) : Tm :=
   app (abs tunit (app (ufix₁ (abs (tunit r⇒ τ) (var 0)) tunit τ) (var 0))) unit.

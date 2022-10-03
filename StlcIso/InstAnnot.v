@@ -5,11 +5,13 @@ Require Export StlcIso.SpecSyntax.
 Require Export StlcIso.SpecAnnot.
 Require Export StlcIso.Inst.
 
+#[export]
 #[refine] Instance vrTmA : Vr TmA := {| vr := ia_var |}.
 Proof. inversion 1; auto. Defined.
 
-#[refine] Instance vrTy : Vr Ty := {| vr := tvar |}.
-Proof. inversion 1; auto. Defined.
+(* #[export] *)
+(* #[refine] Instance vrTy : Vr Ty := {| vr := tvar |}. *)
+(* Proof. inversion 1; auto. Defined. *)
 
 Local Ltac crush :=
   intros; cbn in * |-;
@@ -44,6 +46,7 @@ Module TmAKit <: Kit.
 
   End Application.
 
+  #[export]
   #[refine] Instance inst_ap_inj: LemApInj TmA Ix := {}.
   Proof.
     intros m Inj_m x. revert m Inj_m.
@@ -51,6 +54,7 @@ Module TmAKit <: Kit.
     inversion 1; subst; f_equal; eauto using InjSubIxUp.
   Qed.
 
+  #[export]
   #[refine] Instance inst_ap_comp (Y Z: Type)
     {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y TmA}
     {vrZ: Vr Z} {wkZ: Wk Z} {liftZ: Lift Z TmA}
@@ -59,6 +63,7 @@ Module TmAKit <: Kit.
     LemApComp TmA Y Z := {}.
   Proof. induction x; crush; f_equal; eauto. Qed.
 
+  #[export]
   #[refine] Instance inst_ap_liftSub (Y: Type)
     {vrY: Vr Y} {wkY: Wk Y} {liftY: Lift Y TmA} :
     LemApLiftSub TmA Y := {}.
