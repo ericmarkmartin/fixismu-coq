@@ -14,6 +14,7 @@ jobs:
       matrix:
         coq_version:
           - '8.13.2'
+          - '8.15'
           - '8.16'
           - dev
         ocaml_version: ['default']
