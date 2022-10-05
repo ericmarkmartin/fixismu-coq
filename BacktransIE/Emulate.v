@@ -1,13 +1,13 @@
-Require StlcIsoValid.SpecSyntax.
+Require StlcIso.SpecSyntax.
 Require StlcEqui.SpecSyntax.
 Require Import BacktransIE.UValHelpers.
 Require Import BacktransIE.UValHelpers2.
-Require Import StlcIsoValid.SpecTyping.
+Require Import StlcIso.SpecTyping.
 Require Import StlcEqui.SpecTyping.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecAnnot.
-Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecAnnot.
+Require Import StlcIso.LemmasEvaluation.
 Require Import StlcEqui.SpecEvaluation.
 Require Import StlcEqui.SpecAnnot.
 Require Import StlcEqui.LemmasEvaluation.

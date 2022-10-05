@@ -1,6 +1,6 @@
 Require Export Db.Lemmas.
-Require Export StlcIsoValid.SpecSyntax.
-Require Export StlcIsoValid.SpecEvaluation.
+Require Export StlcIso.SpecSyntax.
+Require Export StlcIso.SpecEvaluation.
 Require Export Coq.Program.Tactics.
 Require Import Common.Common.
 Require Import Common.Relations.

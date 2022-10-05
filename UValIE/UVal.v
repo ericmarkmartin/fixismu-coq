@@ -13,17 +13,17 @@ Require Import StlcEqui.CanForm.
 Require Import StlcEqui.Fix.
 Require Import StlcEqui.Size.
 Require Import StlcEqui.TypeSafety.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.SpecAnnot.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.CanForm.
-Require Import StlcIsoValid.Size.
-(* Require Import StlcIsoValid.StlcOmega. *)
-Require Import StlcIsoValid.TypeSafety.
-Require Import StlcIsoValid.Fix.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecAnnot.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.CanForm.
+Require Import StlcIso.Size.
+(* Require Import StlcIso.StlcOmega. *)
+Require Import StlcIso.TypeSafety.
+Require Import StlcIso.Fix.
 Require Import Common.Relations.
 Require Import Lia.
 
@@ -33,16 +33,16 @@ Module I.
   Include RecTypes.Contraction.
   Include RecTypes.ValidTy.
   Include RecTypes.LemmasTypes.
-  Include StlcIsoValid.SpecEvaluation.
-  Include StlcIsoValid.SpecSyntax.
-  Include StlcIsoValid.SpecTyping.
-  Include StlcIsoValid.SpecAnnot.
-  Include StlcIsoValid.LemmasTyping.
-  Include StlcIsoValid.LemmasEvaluation.
-  Include StlcIsoValid.CanForm.
-  Include StlcIsoValid.Fix.
-  Include StlcIsoValid.Size.
-  Include StlcIsoValid.TypeSafety.
+  Include StlcIso.SpecEvaluation.
+  Include StlcIso.SpecSyntax.
+  Include StlcIso.SpecTyping.
+  Include StlcIso.SpecAnnot.
+  Include StlcIso.LemmasTyping.
+  Include StlcIso.LemmasEvaluation.
+  Include StlcIso.CanForm.
+  Include StlcIso.Fix.
+  Include StlcIso.Size.
+  Include StlcIso.TypeSafety.
 End I.
 
 Module E.

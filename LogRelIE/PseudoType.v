@@ -1,10 +1,10 @@
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecEquivalent.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.SpecAnnot.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecEquivalent.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecAnnot.
 Require Import StlcEqui.LemmasEvaluation.
 Require Import StlcEqui.SpecEvaluation.
 Require Import StlcEqui.SpecEquivalent.
@@ -15,14 +15,14 @@ Require Import RecTypes.SpecTypes.
 Require Import Coq.micromega.Lia.
 
 Module I.
-  Include StlcIsoValid.LemmasEvaluation.
-  Include StlcIsoValid.LemmasTyping.
-  Include StlcIsoValid.SpecEvaluation.
-  Include StlcIsoValid.SpecEquivalent.
-  Include StlcIsoValid.SpecSyntax.
-  Include StlcIsoValid.SpecTyping.
-  Include StlcIsoValid.SpecAnnot.
-  Include StlcIsoValid.CanForm.
+  Include StlcIso.LemmasEvaluation.
+  Include StlcIso.LemmasTyping.
+  Include StlcIso.SpecEvaluation.
+  Include StlcIso.SpecEquivalent.
+  Include StlcIso.SpecSyntax.
+  Include StlcIso.SpecTyping.
+  Include StlcIso.SpecAnnot.
+  Include StlcIso.CanForm.
 End I.
 
 Module E.

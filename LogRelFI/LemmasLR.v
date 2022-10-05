@@ -9,12 +9,12 @@ Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.LemmasTyping.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.Size.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.LemmasEvaluation.
 (* Require Import StlcIso.LemmasScoping. *)
-Require Import StlcIsoValid.Inst.
-Require Import StlcIsoValid.Size.
+Require Import StlcIso.Inst.
+Require Import StlcIso.Size.
 
 Require Import Lia.
 Require Import Min.

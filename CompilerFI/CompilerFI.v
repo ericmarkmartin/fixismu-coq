@@ -22,16 +22,16 @@ Require Import StlcFix.CanForm.
 Require Import StlcFix.SpecEquivalent.
 Require Import StlcFix.Size.
 
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.SpecAnnot.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.CanForm.
-Require Import StlcIsoValid.Fix.
-Require Import StlcIsoValid.SpecEquivalent.
-Require Import StlcIsoValid.Size.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecAnnot.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.CanForm.
+Require Import StlcIso.Fix.
+Require Import StlcIso.SpecEquivalent.
+Require Import StlcIso.Size.
 
 Module F.
   Include StlcFix.SpecEvaluation.
@@ -49,15 +49,15 @@ Module I.
   Include RecTypes.InstTy.
   Include RecTypes.LemmasTypes.
 
-  Include StlcIsoValid.SpecEvaluation.
-  Include StlcIsoValid.SpecSyntax.
-  Include StlcIsoValid.SpecTyping.
-  Include StlcIsoValid.SpecAnnot.
-  Include StlcIsoValid.LemmasTyping.
-  Include StlcIsoValid.LemmasEvaluation.
-  Include StlcIsoValid.CanForm.
-  Include StlcIsoValid.Fix.
-  Include StlcIsoValid.Size.
+  Include StlcIso.SpecEvaluation.
+  Include StlcIso.SpecSyntax.
+  Include StlcIso.SpecTyping.
+  Include StlcIso.SpecAnnot.
+  Include StlcIso.LemmasTyping.
+  Include StlcIso.LemmasEvaluation.
+  Include StlcIso.CanForm.
+  Include StlcIso.Fix.
+  Include StlcIso.Size.
 End I.
 
 Fixpoint compfi_ty (τ : F.Ty) : I.Ty :=

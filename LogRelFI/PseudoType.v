@@ -5,12 +5,12 @@ Require Import StlcFix.SpecEquivalent.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.SpecAnnot.
-Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIso.LemmasEvaluation.
 (* Require Import StlcIso.LemmasScoping. *)
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecEquivalent.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecEquivalent.
 (* Require Import StlcIso.SpecScoping. *)
-Require Import StlcIsoValid.SpecSyntax.
+Require Import StlcIso.SpecSyntax.
 Require Import UValFI.UVal.
 
 Module F.
@@ -24,13 +24,13 @@ Module F.
 End F.
 
 Module I.
-  Include StlcIsoValid.LemmasEvaluation.
-  Include StlcIsoValid.LemmasTyping.
-  Include StlcIsoValid.SpecEvaluation.
-  Include StlcIsoValid.SpecEquivalent.
-  Include StlcIsoValid.SpecAnnot.
-  Include StlcIsoValid.SpecTyping.
-  Include StlcIsoValid.SpecSyntax.
+  Include StlcIso.LemmasEvaluation.
+  Include StlcIso.LemmasTyping.
+  Include StlcIso.SpecEvaluation.
+  Include StlcIso.SpecEquivalent.
+  Include StlcIso.SpecAnnot.
+  Include StlcIso.SpecTyping.
+  Include StlcIso.SpecSyntax.
 End I.
 
 Inductive Prec : Set :=
@@ -143,6 +143,7 @@ Section WellScoping.
 
 End WellScoping.
 
+#[export]
 Instance WsPTy : Ws PTy := wsPTy.
 
 Section Application.

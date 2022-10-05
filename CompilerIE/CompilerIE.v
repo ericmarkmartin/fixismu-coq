@@ -13,15 +13,15 @@ Require Import LogRelIE.LemmasIntro.
 Require Import Lia.
 Require Import Db.Lemmas.
 
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.SpecAnnot.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.CanForm.
-Require Import StlcIsoValid.SpecEquivalent.
-Require Import StlcIsoValid.Size.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecAnnot.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.CanForm.
+Require Import StlcIso.SpecEquivalent.
+Require Import StlcIso.Size.
 
 Require Import StlcEqui.SpecEvaluation.
 Require Import StlcEqui.SpecSyntax.
@@ -38,14 +38,14 @@ Module I.
   Include RecTypes.InstTy.
   Include RecTypes.LemmasTypes.
 
-  Include StlcIsoValid.SpecEvaluation.
-  Include StlcIsoValid.SpecSyntax.
-  Include StlcIsoValid.SpecTyping.
-  Include StlcIsoValid.SpecAnnot.
-  Include StlcIsoValid.LemmasTyping.
-  Include StlcIsoValid.LemmasEvaluation.
-  Include StlcIsoValid.CanForm.
-  Include StlcIsoValid.Size.
+  Include StlcIso.SpecEvaluation.
+  Include StlcIso.SpecSyntax.
+  Include StlcIso.SpecTyping.
+  Include StlcIso.SpecAnnot.
+  Include StlcIso.LemmasTyping.
+  Include StlcIso.LemmasEvaluation.
+  Include StlcIso.CanForm.
+  Include StlcIso.Size.
 End I.
 
 Module E.

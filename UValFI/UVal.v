@@ -2,15 +2,15 @@ Require Export RecTypes.SpecTypes.
 Require Export RecTypes.InstTy.
 Require Export RecTypes.LemmasTypes.
 
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.CanForm.
-Require Import StlcIsoValid.Fix.
-Require Import StlcIsoValid.Size.
-Require Import StlcIsoValid.TypeSafety.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.CanForm.
+Require Import StlcIso.Fix.
+Require Import StlcIso.Size.
+Require Import StlcIso.TypeSafety.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.SpecTyping.
@@ -40,15 +40,15 @@ Module I.
   Include RecTypes.InstTy.
   Include RecTypes.LemmasTypes.
 
-  Include StlcIsoValid.SpecEvaluation.
-  Include StlcIsoValid.SpecSyntax.
-  Include StlcIsoValid.SpecTyping.
-  Include StlcIsoValid.LemmasTyping.
-  Include StlcIsoValid.LemmasEvaluation.
-  Include StlcIsoValid.CanForm.
-  Include StlcIsoValid.Fix.
-  Include StlcIsoValid.Size.
-  Include StlcIsoValid.TypeSafety.
+  Include StlcIso.SpecEvaluation.
+  Include StlcIso.SpecSyntax.
+  Include StlcIso.SpecTyping.
+  Include StlcIso.LemmasTyping.
+  Include StlcIso.LemmasEvaluation.
+  Include StlcIso.CanForm.
+  Include StlcIso.Fix.
+  Include StlcIso.Size.
+  Include StlcIso.TypeSafety.
 End I.
 
 Definition UValFI' := fun (S : I.Ty -> F.Ty) (τ : I.Ty) =>

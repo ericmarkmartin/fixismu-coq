@@ -1,6 +1,6 @@
-Require Export StlcIsoValid.SpecTyping.
-Require Export StlcIsoValid.SpecEvaluation.
-Require Export StlcIsoValid.SpecAnnot.
+Require Export StlcIso.SpecTyping.
+Require Export StlcIso.SpecEvaluation.
+Require Export StlcIso.SpecAnnot.
 
 (* Note that this definition quantifies over an explicitly annotated StlcIso context.
  * This allows our back-translation to make use of information from the typing judgement.

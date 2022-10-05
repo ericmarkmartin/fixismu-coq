@@ -11,11 +11,11 @@ Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.LemmasTyping.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.Size.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.Inst.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.Inst.
 Require Import UValFI.UVal.
 
 Require Import Lia.
@@ -257,7 +257,7 @@ Section ValrelInversion.
     assert (ValidEnv I.empty) by eauto with tyvalid.
     destruct (valrel_implies_OfType vr) as [[? ?] [? ?]].
     destruct (invert_valrel_pEmulDV_inProd' vr) as (? & ? & ? & ? & ? & ? & ? & ?); subst.
-    apply valrel_pair''; crush.
+    apply valrel_pair''; crush; eapply I.typed_terms_are_valid; crush.
   Qed.
 
   Lemma invert_valrel_pEmulDV_prod {dir w n p vs vu τ₁ τ₂} :

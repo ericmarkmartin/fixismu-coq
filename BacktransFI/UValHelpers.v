@@ -1,13 +1,13 @@
 Require Import UValFI.UVal.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.LemmasTyping.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.LemmasTyping.
 Require Import StlcFix.SpecSyntax.
 (* Require Import StlcFix.Fix. *)
 Require Import StlcFix.StlcOmega.
 Require Import StlcFix.Inst.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.SpecAnnot.
-Require Import StlcIsoValid.SpecTyping.
+Require Import StlcIso.SpecTyping.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.LemmasTyping.
 Require Import StlcFix.LemmasEvaluation.

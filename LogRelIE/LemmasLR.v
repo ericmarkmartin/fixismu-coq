@@ -3,16 +3,16 @@ Require Import UValIE.UVal.
 Require Import LogRelIE.LemmasPseudoType.
 Require Import LogRelIE.PseudoType.
 Require Import LogRelIE.LR.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.Size.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.Size.
 Require Import StlcEqui.SpecSyntax.
 Require Import StlcEqui.SpecEvaluation.
 Require Import StlcEqui.LemmasEvaluation.
-(* Require Import StlcIsoValid.LemmasScoping. *)
+(* Require Import StlcIso.LemmasScoping. *)
 Require Import StlcEqui.Inst.
 Require Import StlcEqui.Size.
 

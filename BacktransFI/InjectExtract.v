@@ -1,12 +1,12 @@
 Require StlcFix.SpecSyntax.
-Require StlcIsoValid.SpecSyntax.
+Require StlcIso.SpecSyntax.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.LemmasTyping.
 Require Import StlcFix.Size.
-Require Import StlcIsoValid.SpecEvaluation.
+Require Import StlcIso.SpecEvaluation.
 Require Import StlcFix.SpecEvaluation.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.TypeSafety.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.TypeSafety.
 Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.StlcOmega.
 Require Import LogRelFI.PseudoType.

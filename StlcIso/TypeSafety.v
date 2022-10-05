@@ -86,16 +86,17 @@ Proof.
 Qed.
 
 Lemma context_replacement {Γ C t t' T}
-  (hyp: ∀ Γ' T', ⟪ Γ' i⊢ t : T' ⟫ → ⟪ Γ' i⊢ t' : T' ⟫) :
+  (hyp: ∀ Γ' T', ValidEnv Γ' → ⟪ Γ' i⊢ t : T' ⟫ → ⟪ Γ' i⊢ t' : T' ⟫) :
+  ValidEnv Γ →
     ⟪ Γ i⊢ pctx_app t C : T ⟫ →
     ⟪ Γ i⊢ pctx_app t' C : T ⟫.
 Proof.
-  intro wt; depind wt; induction C;
-    crush; eauto using Typing.
+  intros vΓ wt; depind wt; induction C;
+    crush; eauto using Typing; crushTyping.
 Qed.
 
 Lemma preservation₀ {t t'} (r : t -->₀ t') :
-  ∀ {Γ τ}, ⟪ Γ i⊢ t : τ ⟫ → ⟪ Γ i⊢ t' : τ ⟫.
+  ∀ {Γ τ}, ValidEnv Γ → ⟪ Γ i⊢ t : τ ⟫ → ⟪ Γ i⊢ t' : τ ⟫.
 Proof.
   induction r;
     eauto using context_replacement;
@@ -103,14 +104,14 @@ Proof.
 Qed.
 
 Lemma preservation {t t'} (r: t --> t') :
-  ∀ {Γ τ}, ⟪ Γ i⊢ t : τ ⟫ → ⟪ Γ i⊢ t' : τ ⟫.
+  ∀ {Γ τ}, ValidEnv Γ → ⟪ Γ i⊢ t : τ ⟫ → ⟪ Γ i⊢ t' : τ ⟫.
 Proof.
   induction r.
   eauto using context_replacement, preservation₀.
 Qed.
 
 Lemma preservation_star {t t'} (r: t -->* t') :
-  ∀ {Γ τ}, ⟪ Γ i⊢ t : τ ⟫ → ⟪ Γ i⊢ t' : τ ⟫.
+  ∀ {Γ τ}, ValidEnv Γ → ⟪ Γ i⊢ t : τ ⟫ → ⟪ Γ i⊢ t' : τ ⟫.
 Proof.
   induction r;
   eauto using preservation.

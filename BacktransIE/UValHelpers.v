@@ -1,17 +1,17 @@
 Require Import UValIE.UVal.
 Require Import StlcEqui.SpecSyntax.
 Require Import StlcEqui.LemmasTyping.
-Require Import StlcIsoValid.SpecSyntax.
-(* Require Import StlcIsoValid.IsoValid. *)
-Require Import StlcIsoValid.Inst.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.SpecAnnot.
+Require Import StlcIso.SpecSyntax.
+(* Require Import StlcIso.IsoValid. *)
+Require Import StlcIso.Inst.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecAnnot.
 Require Import StlcEqui.SpecTyping.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.CanForm.
-Require Import StlcIsoValid.Fix.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.CanForm.
+Require Import StlcIso.Fix.
 Require Import Db.Lemmas.
 Require Import Db.WellScoping.
 Require Import LogRelIE.LR.

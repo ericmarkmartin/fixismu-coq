@@ -1,53 +1,17 @@
 Require Export RecTypes.SpecTypes.
 Require Export RecTypes.InstTy.
+Require Export RecTypes.Contraction.
+Require Export RecTypes.ValidTy.
 Require Export RecTypes.LemmasTypes.
 
 Require Export StlcIso.Inst.
 Require Export StlcIso.SpecSyntax.
 
+Require Import Coq.Bool.Bool.
+Require Import Coq.Arith.Max.
+Require Import Coq.micromega.Lia.
+
 (** * Typing *)
-
-(* Fixpoint subt (T T' : Ty) (i : Ix) {struct T} : Ty := *)
-(*   match T with *)
-(*   | tarr τ τ' => *)
-(*     let A := subt τ T' i in *)
-(*     let B := subt τ' T' i in *)
-(*     (tarr A B) *)
-(*   | tunit => tunit *)
-(*   | tsum τ τ' => *)
-(*     let A := (⟪ τ : i -> T' ⟫) in *)
-(*     let B := (⟪ τ' : i -> T' ⟫) in *)
-(*     (tsum A B) *)
-(*   end *)
-(*  where "⟪ T : i -> S ⟫" := (subt T S i). *)
-
-(*  a type is closed with an (type variable) environment of size n *)
-Inductive ClosedNTy (n : nat) : Ty → Prop :=
-    | UnitClosed :
-        ClosedNTy n tunit
-    | FnClosed {τ τ'} :
-        ClosedNTy n τ →
-        ClosedNTy n τ' →
-        ClosedNTy n (tarr τ τ')
-    | ClosedSum {τ τ'} :
-        ClosedNTy n τ →
-        ClosedNTy n τ' →
-        ClosedNTy n (tsum τ τ')
-    | ClosedRec {τ} :
-        ClosedNTy (S n) τ →
-        ClosedNTy n (trec τ)
-    | ClosedVar {i} :
-        i < n →
-        ClosedNTy n (tvar i).
-
-Definition ClosedTy : Ty → Prop := ClosedNTy 0.
-
-Inductive ClosedEnv : Env → Prop :=
-  | EmptyClosed : ClosedEnv empty
-  | VarClosed {Γ τ} :
-      ClosedTy τ →
-      ClosedEnv Γ →
-      ClosedEnv (evar Γ τ).
 
 Reserved Notation "⟪  Γ i⊢ t : T  ⟫"
   (at level 0, Γ at level 98, t at level 98, T at level 98 ).
@@ -57,6 +21,7 @@ Inductive Typing (Γ: Env) : Tm → Ty → Prop :=
       ⟪ Γ i⊢ var i : T ⟫
   | WtAbs {t τ₁ τ₂} :
       ⟪ Γ r▻ τ₁ i⊢ t : τ₂ ⟫ →
+      ValidTy τ₁ →
       ⟪ Γ i⊢ abs τ₁ t : tarr τ₁ τ₂ ⟫
   | WtApp {t₁ t₂ τ₁ τ₂} :
       ⟪ Γ i⊢ t₁ : tarr τ₁ τ₂ ⟫ →
@@ -85,20 +50,25 @@ Inductive Typing (Γ: Env) : Tm → Ty → Prop :=
       ⟪ Γ i⊢ proj₂ t : τ₂ ⟫
   | WtInl {t τ₁ τ₂} :
       ⟪ Γ i⊢ t : τ₁ ⟫ →
+      ValidTy τ₂ →
       ⟪ Γ i⊢ inl t : tsum τ₁ τ₂ ⟫
   | WtInr {t τ₁ τ₂} :
       ⟪ Γ i⊢ t : τ₂ ⟫ →
+      ValidTy τ₁ →
       ⟪ Γ i⊢ inr t : tsum τ₁ τ₂ ⟫
   | WtCaseof {t₁ t₂ t₃ τ₁ τ₂ T} :
       ⟪ Γ i⊢ t₁ : tsum τ₁ τ₂ ⟫ →
       ⟪ Γ r▻ τ₁ i⊢ t₂ : T ⟫ →
       ⟪ Γ r▻ τ₂ i⊢ t₃ : T ⟫ →
+      ValidTy τ₁ → ValidTy τ₂ →
       ⟪ Γ i⊢ caseof t₁ t₂ t₃ : T ⟫
   | WtFold {t τ} :
       ⟪ Γ i⊢ t : τ[beta1 (trec τ)] ⟫ →
+      ValidTy (trec τ) →
       ⟪ Γ i⊢ fold_ t : trec τ ⟫
   | WtUnfold {t τ} :
       ⟪ Γ i⊢ t : trec τ ⟫ →
+      ValidTy (trec τ) →
       ⟪ Γ i⊢ unfold_ t : τ[beta1 (trec τ)] ⟫
   | WtSeq {t₁ t₂ T} :
       ⟪ Γ i⊢ t₁ : tunit ⟫ →
@@ -108,6 +78,42 @@ where "⟪  Γ i⊢ t : T  ⟫" := (Typing Γ t T).
 #[export]
 Hint Constructors Typing : typing.
 
+Lemma ty_in_env_implies_contr_ty {i τ Γ} : ContrEnv Γ → ⟪ i : τ r∈ Γ ⟫ → SimpleContr τ.
+Proof.
+  revert i.
+  depind Γ;
+  intros.
+  inversion H0.
+  destruct i.
+  inversion H; subst.
+  inversion H0; subst.
+  assumption.
+  inversion H0; subst.
+  inversion H; subst.
+  apply (IHΓ i H3 H5).
+Qed.
+
+#[export]
+Hint Resolve ty_in_env_implies_contr_ty : wt.
+
+Lemma ClosedEnv_implies_Closed_varty {Γ i T} :
+  ClosedEnv Γ -> ⟪ i : T r∈ Γ ⟫ -> ⟨ 0 ⊢ T ⟩.
+Proof.
+  intros cenv wtv.
+  induction wtv; inversion cenv; eauto.
+Qed.
+
+#[export]
+Hint Resolve ClosedEnv_implies_Closed_varty : wt.
+
+Lemma ty_in_valid_env_valid {i τ Γ} : ValidEnv Γ → ⟪ i : τ r∈ Γ ⟫ → ValidTy τ.
+Proof.
+  intros [env_cl env_contr] wti.
+  split;
+    eauto with wt.
+Qed.
+#[export]
+Hint Resolve ty_in_valid_env_valid : wt.
 
 Reserved Notation "⟪ i⊢ C : Γ₀ , τ₀ → Γ , τ ⟫"
   (at level 0, C at level 98,
@@ -119,6 +125,7 @@ Inductive PCtxTyping (Γ₀: Env) (τ₀: Ty) : Env → PCtx → Ty → Prop :=
       ⟪ i⊢ phole : Γ₀, τ₀ → Γ₀, τ₀ ⟫
   | WtPAbs {Γ C τ₁ τ₂} :
       ⟪ i⊢ C : Γ₀, τ₀ → Γ r▻ τ₁, τ₂ ⟫ →
+      ValidTy τ₁ →
       ⟪ i⊢ pabs τ₁ C : Γ₀, τ₀ → Γ, tarr τ₁ τ₂ ⟫
   | WtPAppl {Γ C t₂ τ₁ τ₂} :
       ⟪ i⊢ C : Γ₀, τ₀ → Γ, tarr τ₁ τ₂ ⟫ →
@@ -159,30 +166,37 @@ Inductive PCtxTyping (Γ₀: Env) (τ₀: Ty) : Env → PCtx → Ty → Prop :=
       ⟪ i⊢ pproj₂ C : Γ₀, τ₀ → Γ, τ₂ ⟫
   | WtPInl {Γ C τ₁ τ₂} :
       ⟪ i⊢ C : Γ₀, τ₀ → Γ, τ₁ ⟫ →
+      ValidTy τ₂ →
       ⟪ i⊢ pinl C : Γ₀, τ₀ → Γ, tsum τ₁ τ₂ ⟫
   | WtPInr {Γ C τ₁ τ₂} :
       ⟪ i⊢ C : Γ₀, τ₀ → Γ, τ₂ ⟫ →
+      ValidTy τ₁ →
       ⟪ i⊢ pinr C : Γ₀, τ₀ → Γ, tsum τ₁ τ₂ ⟫
   | WtPCaseof₁ {Γ C t₂ t₃ τ₁ τ₂ T} :
       ⟪ i⊢ C : Γ₀, τ₀ → Γ, tsum τ₁ τ₂ ⟫ →
       ⟪ Γ r▻ τ₁ i⊢ t₂ : T ⟫ →
       ⟪ Γ r▻ τ₂ i⊢ t₃ : T ⟫ →
+      ValidTy τ₁ → ValidTy τ₂ →
       ⟪ i⊢ pcaseof₁ C t₂ t₃ : Γ₀, τ₀ → Γ, T ⟫
   | WtPCaseof₂ {Γ t₁ C t₃ τ₁ τ₂ T} :
       ⟪ Γ i⊢ t₁ : tsum τ₁ τ₂ ⟫ →
       ⟪ i⊢ C : Γ₀, τ₀ → Γ r▻ τ₁, T ⟫ →
       ⟪ Γ r▻ τ₂ i⊢ t₃ : T ⟫ →
+      ValidTy τ₁ → ValidTy τ₂ →
       ⟪ i⊢ pcaseof₂ t₁ C t₃ : Γ₀, τ₀ → Γ, T ⟫
   | WtPCaseof₃ {Γ t₁ t₂ C τ₁ τ₂ T} :
       ⟪ Γ i⊢ t₁ : tsum τ₁ τ₂ ⟫ →
       ⟪ Γ r▻ τ₁ i⊢ t₂ : T ⟫ →
       ⟪ i⊢ C : Γ₀, τ₀ → Γ r▻ τ₂, T ⟫ →
+      ValidTy τ₁ → ValidTy τ₂ →
       ⟪ i⊢ pcaseof₃ t₁ t₂ C : Γ₀, τ₀ → Γ, T ⟫
   | WtPFold {Γ C τ} :
       ⟪ i⊢ C : Γ₀, τ₀ → Γ, τ [beta1 (trec τ)] ⟫ →
+      ValidTy (trec τ) →
       ⟪ i⊢ pfold C : Γ₀, τ₀ → Γ, trec τ ⟫
   | WtPUnfold {Γ C τ} :
       ⟪ i⊢ C : Γ₀, τ₀ → Γ, trec τ ⟫ →
+      ValidTy (trec τ) →
       ⟪ i⊢ punfold C : Γ₀, τ₀ → Γ, τ [beta1 (trec τ)] ⟫
   | WtPSeq₁ {Γ C t₂ T} :
       ⟪ i⊢ C : Γ₀, τ₀ → Γ, tunit ⟫ →

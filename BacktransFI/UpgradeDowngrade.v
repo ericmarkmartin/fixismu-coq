@@ -1,4 +1,4 @@
-Require Import StlcIsoValid.SpecSyntax.
+Require Import StlcIso.SpecSyntax.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.Inst.
 Require Import StlcFix.SpecTyping.

@@ -1,7 +1,7 @@
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.SpecEquivalent.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.LemmasTyping.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecEquivalent.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.LemmasTyping.
 Require Import StlcEqui.SpecEquivalent.
 Require Import StlcEqui.LemmasEvaluation.
 

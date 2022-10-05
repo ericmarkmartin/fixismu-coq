@@ -1,12 +1,11 @@
-Require StlcIsoValid.SpecSyntax.
+Require StlcIso.SpecSyntax.
 Require StlcEqui.SpecSyntax.
 Require Import StlcEqui.SpecTyping.
-Require Import StlcEqui.LemmasTyping.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.CanForm.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.CanForm.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.LemmasEvaluation.
 (* Require Import StlcEqui.SpecScoping. *)
 (* Require Import StlcEqui.LemmasScoping. *)
 (* Require Import StlcEqui.DecideEval. *)
@@ -223,7 +222,7 @@ Section ValueRelation.
     - assert (⟪ empty i⊢ vs : tbool ⟫);
       destruct eqs as [[? ?]|[? ?]]; subst; eauto with typing;
       unfold OfType, OfTypeStlcIso, OfTypeStlcEqui; simpl;
-      eauto using inBool_Value, inBoolT with typing.
+      eauto using inBool_Value, inBoolT with typing; crush.
     - crush.
       + destruct eqs as [[-> ->]|[-> ->]]; now cbn.
       + right; exists vs; cbn; unfold is_inl; eauto.

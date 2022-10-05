@@ -1,9 +1,9 @@
 Require Export LogRelIE.PseudoType.
 Require Import LogRelIE.LemmasPseudoType.
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.Size.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.Size.
 Require Import StlcEqui.SpecSyntax.
 Require Import StlcEqui.SpecTyping.
 Require Import StlcEqui.SpecEvaluation.

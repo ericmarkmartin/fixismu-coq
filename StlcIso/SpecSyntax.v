@@ -1,6 +1,11 @@
 Require Export Db.Spec.
 Require Export RecTypes.SpecTypes.
 
+Require Import Coq.micromega.Lia.
+Require Export RecTypes.SpecTypes.
+Require Export RecTypes.InstTy.
+Require Export RecTypes.Contraction.
+
 (** ** Simply typed terms. *)
 Inductive Tm : Set :=
   | var (i: Ix)

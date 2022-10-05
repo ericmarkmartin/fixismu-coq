@@ -4,14 +4,14 @@ Require Export RecTypes.Contraction.
 Require Export RecTypes.ValidTy.
 Require Export RecTypes.LemmasTypes.
 
-Require Import StlcIsoValid.SpecSyntax.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.SpecAnnot.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.Inst.
-Require Import StlcIsoValid.InstAnnot.
+Require Import StlcIso.SpecSyntax.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecAnnot.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.Inst.
+Require Import StlcIso.InstAnnot.
 Require Import Db.Lemmas.
 Require Import Db.WellScoping.
 

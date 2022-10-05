@@ -19,27 +19,32 @@ Hint Resolve eq_pctx_papp₂ : pctx.
 (* Lemma eq_pctx_pite₁ c t c₁ t₂ t₃ : *)
 (*   c = pite₁ c₁ t₂ t₃ → ite (pctx_app t c₁) t₂ t₃ = pctx_app t c. *)
 (* Proof. intros; subst; reflexivity. Qed. *)
-(* Hint Resolve eq_pctx_pite₁ : pctx. *)
+(* #[export]
+Hint Resolve eq_pctx_pite₁ : pctx. *)
 
 (* Lemma eq_pctx_ppair₁ c t c₁ t₂ : *)
 (*   c = ppair₁ c₁ t₂ → pair (pctx_app t c₁) t₂ = pctx_app t c. *)
 (* Proof. intros; subst; reflexivity. Qed. *)
-(* Hint Resolve eq_pctx_ppair₁ : pctx. *)
+(* #[export]
+Hint Resolve eq_pctx_ppair₁ : pctx. *)
 
 (* Lemma eq_pctx_ppair₂ c t t₁ c₂ : *)
 (*   c = ppair₂ t₁ c₂ → pair t₁ (pctx_app t c₂) = pctx_app t c. *)
 (* Proof. intros; subst; reflexivity. Qed. *)
-(* Hint Resolve eq_pctx_ppair₂ : pctx. *)
+(* #[export]
+Hint Resolve eq_pctx_ppair₂ : pctx. *)
 
 (* Lemma eq_pctx_pproj₁ c t c₁ : *)
 (*   c = pproj₁ c₁ → proj₁ (pctx_app t c₁) = pctx_app t c. *)
 (* Proof. intros; subst; reflexivity. Qed. *)
-(* Hint Resolve eq_pctx_pproj₁ : pctx. *)
+(* #[export]
+Hint Resolve eq_pctx_pproj₁ : pctx. *)
 
 (* Lemma eq_pctx_pproj₂ c t c₁ : *)
 (*   c = pproj₂ c₁ → proj₂ (pctx_app t c₁) = pctx_app t c. *)
 (* Proof. intros; subst; reflexivity. Qed. *)
-(* Hint Resolve eq_pctx_pproj₂ : pctx. *)
+(* #[export]
+Hint Resolve eq_pctx_pproj₂ : pctx. *)
 
 Lemma eq_pctx_pinl c t c₁ :
   c = pinl c₁ → inl (pctx_app t c₁) = pctx_app t c.
@@ -62,12 +67,14 @@ Hint Resolve eq_pctx_pcaseof₁ : pctx.
 (* Lemma eq_pctx_pseq₁ c t c₁ t₂ : *)
 (*   c = pseq₁ c₁ t₂ → seq (pctx_app t c₁) t₂ = pctx_app t c. *)
 (* Proof. intros; subst; reflexivity. Qed. *)
-(* Hint Resolve eq_pctx_pseq₁ : pctx. *)
+(* #[export]
+Hint Resolve eq_pctx_pseq₁ : pctx. *)
 
 (* Lemma eq_pctx_pfixt c t τ₁ τ₂ c₁ : *)
 (*   c = pfixt τ₁ τ₂ c₁ → fixt τ₁ τ₂ (pctx_app t c₁) = pctx_app t c. *)
 (* Proof. intros; subst; reflexivity. Qed. *)
-(* Hint Resolve eq_pctx_pfixt : pctx. *)
+(* #[export]
+Hint Resolve eq_pctx_pfixt : pctx. *)
 
 Lemma eq_pctx_pfold c t c₁ :
   c = pfold c₁ → fold_ (pctx_app t c₁) = pctx_app t c.

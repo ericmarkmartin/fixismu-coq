@@ -31,12 +31,14 @@ Module TmKit <: Kit.
     Context {wkY: Wk Y}.
     Context {liftY: Lift Y Tm}.
 
-    #[refine] Global Instance inst_ap : Ap Tm Y := {| ap := apTm |}.
+    #[export]
+    #[refine] Instance inst_ap : Ap Tm Y := {| ap := apTm |}.
     Proof.
       induction x; crush.
     Defined.
 
-    #[refine] Global Instance inst_ap_vr : LemApVr Tm Y := {}.
+    #[export]
+    #[refine] Instance inst_ap_vr : LemApVr Tm Y := {}.
     Proof. reflexivity. Qed.
 
   End Application.

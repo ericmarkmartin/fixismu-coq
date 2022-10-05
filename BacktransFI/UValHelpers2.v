@@ -1,13 +1,13 @@
 Require StlcFix.SpecSyntax.
-Require StlcIsoValid.SpecSyntax.
+Require StlcIso.SpecSyntax.
 Require Import BacktransFI.UValHelpers.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.StlcOmega.
 Require Import StlcFix.LemmasTyping.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.LemmasEvaluation.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.LemmasEvaluation.
 Require Import LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
@@ -17,7 +17,7 @@ Require Import LogRelFI.LemmasInversion.
 Require Import Lia.
 Require Import Db.Lemmas.
 Require Import UValFI.UVal.
-Require StlcIsoValid.Fix.
+Require StlcIso.Fix.
 Require Lia.
 
 Definition uvalApp_pctx₁ n ts₂ τ τ' :=

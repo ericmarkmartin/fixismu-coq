@@ -2,8 +2,8 @@ Require Import StlcFix.SpecTyping.
 Require Import StlcFix.SpecEquivalent.
 Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.LemmasTyping.
-Require Import StlcIsoValid.SpecEquivalent.
-Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIso.SpecEquivalent.
+Require Import StlcIso.LemmasEvaluation.
 
 Require Import CompilerFI.CompilerFI.
 

@@ -1,6 +1,6 @@
-Require Export StlcIsoValid.Inst.
-Require Export StlcIsoValid.SpecSyntax.
-Require Export StlcIsoValid.SpecTyping.
+Require Export StlcIso.Inst.
+Require Export StlcIso.SpecSyntax.
+Require Export StlcIso.SpecTyping.
 Require Coq.Program.Tactics.
 Require Coq.Program.Wf.
 Require Wf.

@@ -1,5 +1,5 @@
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.SpecTyping.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.SpecTyping.
 
 Lemma can_form_tarr {Γ t τ₁ τ₂}
   (v: Value t) (wt: ⟪ Γ i⊢ t : tarr τ₁ τ₂ ⟫) :

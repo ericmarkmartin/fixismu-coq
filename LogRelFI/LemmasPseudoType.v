@@ -3,8 +3,8 @@ Require Export Db.Lemmas.
 
 Require Export LogRelFI.PseudoType.
 
-Require StlcIsoValid.TypeSafety.
-Require Import StlcIsoValid.LemmasTyping.
+Require StlcIso.TypeSafety.
+Require Import StlcIso.LemmasTyping.
 Require Import StlcFix.Inst.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.CanForm.
