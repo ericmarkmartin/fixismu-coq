@@ -501,12 +501,11 @@ Proof.
   cbn in *;
   repeat split; cbn; try assumption;
   try rewrite <-UValIE_unfoldn in *;
-    try assumption. crushValidTy.
+    try assumption; crushValidTy.
   - refine (WtEq _ _ _ _ tvu);
       eauto using E.ValidTy_unfoldn with tyvalid.
     eapply ty_eq_peel_recs; E.crushValidTy.
     eapply tyeq_refl.
-  - rewrite <-UValIE_unfoldn in tvs; E.crushValidTy.
   - refine (WtEq _ _ _ _ tvu);
       eauto using E.ValidTy_unfoldn with tyvalid.
     eapply ty_eq_unf_ty; E.crushValidTy.

@@ -640,7 +640,7 @@ Section OfType.
          eexists; split; [reflexivity|].
          crush.
          - rewrite repEmul_sub.
-           replace (beta1 (ptrec τ) >-> repEmul) with (beta1 (X := vrTy) (trec (repEmul τ))).
+           replace (beta1 (ptrec τ) >-> repEmul) with (beta1 (vrX := vrTy) (trec (repEmul τ))).
            assumption.
            extensionality i.
            destruct i; now cbn.

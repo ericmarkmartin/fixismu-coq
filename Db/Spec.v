@@ -385,7 +385,7 @@ Instance wkT {T} {vrT: Vr T}
   {apTIxInj: LemApInj T Ix} : Wk T :=
   {| wk := ap wk;
      wk_inj := ap_inj wk_inj;
-     wk_vr := ap_vr wk
+     wk_vr := ap_vr (liftYX := liftIx (vrX := vrT)) wk
   |}.
 
 Create HintDb ws.
