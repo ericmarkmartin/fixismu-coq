@@ -1,9 +1,15 @@
-Require StlcIso.TypeSafety.
-Require Import StlcIso.LemmasTyping.
+Require Export Db.Spec.
+Require Export Db.Lemmas.
+
+Require Export LogRelFI.PseudoType.
+
+Require StlcIsoValid.TypeSafety.
+Require Import StlcIsoValid.LemmasTyping.
+Require Import StlcFix.Inst.
+Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.CanForm.
 Require Import StlcFix.LemmasTyping.
 (* Require Import StlcIso.LemmasScoping. *)
-Require Export LogRelFI.PseudoType.
 Require Import UValFI.UVal.
 
 Section RepEmul.
@@ -46,6 +52,95 @@ Proof.
   eauto using GetEvarP.
 Qed.
 
+Section ValidTy.
+
+  Fixpoint ValidPTy (τ : PTy) : Prop :=
+    match τ with
+    | ptarr τ1 τ2 => ValidPTy τ1 /\ ValidPTy τ2
+    | ptunit => True
+    | ptbool => True
+    | ptprod τ1 τ2 => ValidPTy τ1 /\ ValidPTy τ2
+    | ptsum τ1 τ2 => ValidPTy τ1 /\ ValidPTy τ2
+    | pEmulDV n p τ => ValidTy τ
+    end.
+
+  Lemma ValidPTy_invert_ptarr {τ1 τ2} :
+    ValidPTy (ptarr τ1 τ2) ->
+    ValidPTy τ1 /\ ValidPTy τ2.
+  Proof.
+    now induction 1.
+  Qed.
+  Hint Resolve ValidPTy_invert_ptarr : tyvalid_inv.
+
+  Lemma ValidPTy_invert_ptprod {τ1 τ2} :
+    ValidPTy (ptprod τ1 τ2) ->
+    ValidPTy τ1 /\ ValidPTy τ2.
+  Proof.
+    now induction 1.
+  Qed.
+  Hint Resolve ValidPTy_invert_ptprod : tyvalid_inv.
+
+  Lemma ValidPTy_invert_ptsum {τ1 τ2} :
+    ValidPTy (ptsum τ1 τ2) ->
+    ValidPTy τ1 /\ ValidPTy τ2.
+  Proof.
+    now induction 1.
+  Qed.
+  Hint Resolve ValidPTy_invert_ptsum : tyvalid_inv.
+
+  Lemma ValidPTy_invert_pEmulDV {n p τ} :
+    ValidPTy (pEmulDV n p τ) ->
+    ValidTy τ.
+  Proof.
+    now induction 1.
+  Qed.
+  Hint Resolve ValidPTy_invert_pEmulDV : tyvalid_inv.
+
+  Lemma validTy_fxToIs {τ} : ValidPTy τ -> ValidTy (fxToIs τ).
+  Proof.
+    induction τ;
+      intros vpτ;
+      cbn in vpτ;
+      destruct_conjs;
+      repeat match goal with
+      | H: ValidPTy ?τ, H2: ValidPTy ?τ -> _ |- _ => specialize (H2 H)
+      end;
+      cbn;
+      crushValidTy.
+  Qed.
+
+  Lemma validPTy_embed {τ} : ValidPTy (embed τ).
+  Proof.
+    induction τ; now cbn.
+  Qed.
+
+  Definition ValidPEnv (Γ : PEnv) : Prop :=
+    ∀ i τ, ⟪ i : τ p∈ Γ ⟫ → ValidPTy τ.
+  (* Inductive ValidPEnv : PEnv → Prop := *)
+  (* | ValidPEnvEmpty : ValidPEnv pempty *)
+  (* | ValidPEnvEvar {Γ τ} : *)
+  (*   ValidPEnv Γ → *)
+  (*   ValidPTy τ → *)
+  (*   ValidPEnv (Γ p▻ τ). *)
+
+  Lemma ValidPEnvEmpty : ValidPEnv pempty.
+  Proof.
+    intros i τ x; inversion x.
+  Qed.
+
+  Lemma ValidPEnvCons {Γ τ} : ValidPEnv Γ → ValidPTy τ → ValidPEnv (Γ p▻ τ).
+  Proof.
+    intros vΓ vτ i τ' x.
+    inversion x; subst; try assumption.
+    eapply (vΓ _ _ H3).
+  Qed.
+
+  Lemma validPEnv_embedCtx {Γ} : ValidPEnv (embedCtx Γ).
+  Proof.
+    induction Γ; eauto using ValidPEnvEmpty, ValidPEnvCons, validPTy_embed.
+  Qed.
+End ValidTy.
+
 Section OfType.
 
   Local Ltac crush :=
@@ -66,6 +161,7 @@ Section OfType.
              destruct tu eqn: ?; cbn in H
            | H: _ ∨ _ |- _ => destruct  H
            | [ |- _ ∧ _ ] => split
+         | |- ValidTy (fxToIs _) => eapply validTy_fxToIs
          end); eauto 20.
 
   Lemma OfType_unit : OfType ptunit F.unit I.unit.
@@ -78,16 +174,19 @@ Section OfType.
   Proof. crush. Qed.
 
   Lemma OfType_inl {τ₁ τ₂ ts tu} :
+    ValidPTy τ₁ → ValidPTy τ₂ →
     OfType τ₁ ts tu →
     OfType (ptsum τ₁ τ₂) (F.inl ts) (I.inl tu).
   Proof. crush. Qed.
 
   Lemma OfType_inr {τ₁ τ₂ ts tu} :
+    ValidPTy τ₁ → ValidPTy τ₂ →
     OfType τ₂ ts tu →
     OfType (ptsum τ₁ τ₂) (F.inr ts) (I.inr tu).
   Proof. crush. Qed.
 
   Lemma OfType_pair {τ₁ τ₂ ts₁ ts₂ tu₁ tu₂} :
+    ValidPTy τ₁ → ValidPTy τ₂ →
     OfType τ₁ ts₁ tu₁ →
     OfType τ₂ ts₂ tu₂ →
     OfType (ptprod τ₁ τ₂) (F.pair ts₁ ts₂) (I.pair tu₁ tu₂).
@@ -200,20 +299,13 @@ End OfType.
 
 Ltac crushOfType :=
   repeat
-    match goal with
+    (match goal with
+     | [ H: OfType _ _ _ |- ValidPTy _ ] => clear H   (* prevent an infinite loop *)
       | [ H: OfType ptunit _ _ |- _ ] => apply OfType_inversion_ptunit in H
       | [ H: OfType ptbool _ _ |- _ ] => apply OfType_inversion_ptbool in H
       | [ H: OfType (ptsum _ _) _ _ |- _ ] => apply OfType_inversion_ptsum in H
       | [ H: OfType (ptprod _ _) _ _ |- _ ] => apply OfType_inversion_ptprod in H
       | [ H: OfType (ptarr _ _) _ _ |- _ ] => apply OfType_inversion_ptarr in H
-      (* | [ H: OfTypeUtlc _ ?t |- ⟨ 0 ⊢ ?t ⟩ ] => exact (proj1 H) *)
-      (* | [ H: OfTypeUtlc ?τ ?t |- OfTypeUtlc' ?τ ?t ] => exact (proj2 H) *)
-      (* | [ H: OfTypeUtlc (ptarr _ _) _ |- _ ] => apply OfTypeUtlc_inversion_ptarr in H *)
-      (* | [ H: OfTypeUtlc (ptprod _ _) _ |- _ ] => apply OfTypeUtlc_inversion_ptprod in H *)
-      (* | [ H: OfTypeUtlc (ptsum _ _) _ |- _ ] => apply OfTypeUtlc_inversion_ptsum in H *)
-      (* | [ H: OfType (pEmulDV _ _) _ _ |- _ ] => apply OfType_inversion_pEmulDV in H *)
-      (* | [ H: OfTypeUtlc ptbool ?t  |- _ ] =>  change (OfTypeUtlc ptbool t) with (t = I.true ∨ t = I.false) in H *)
-      (* | [ H: OfTypeUtlc ptunit ?t  |- _ ] => change (OfTypeUtlc ptunit t) with (t = I.unit) in H; subst t *)
       | [ |- OfType ptunit F.unit I.unit ] => apply OfType_unit
       | [ |- OfType ptbool F.true I.true ] => apply OfType_true
       | [ |- OfType ptbool F.false I.false ] => apply OfType_false
@@ -223,4 +315,4 @@ Ltac crushOfType :=
       | [ |- OfType (ptarr _ _) (F.abs _ _) (I.abs _ _) ] => apply OfType_lambda
       (* | [ |- OfTypeUtlc _ _ ] => split *)
       | [ |- OfType (pEmulDV _ _ _) _ _ ] => apply OfType_pEmulDV
-    end.
+    end; try assumption; try reflexivity).

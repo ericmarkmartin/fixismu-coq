@@ -1,15 +1,14 @@
 Require Export LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
-Require Import LogRelFI.PseudoType.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.Size.
-Require Import StlcIso.SpecSyntax.
-Require Import StlcIso.SpecTyping.
-Require Import StlcIso.SpecEvaluation.
-Require Import StlcIso.Inst.
-Require Import StlcIso.Size.
+Require Import StlcIsoValid.SpecSyntax.
+Require Import StlcIsoValid.SpecTyping.
+Require Import StlcIsoValid.SpecEvaluation.
+Require Import StlcIsoValid.Inst.
+Require Import StlcIsoValid.Size.
 Require Import UValFI.UVal.
 
 Require Import Coq.Program.Basics.

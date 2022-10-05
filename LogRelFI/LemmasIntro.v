@@ -43,7 +43,8 @@ Local Ltac crush :=
      subst*;
      repeat crushLRMatch;
      crushOfType;
-     crushTyping;
+     repeat apply validTy_fxToIs;
+     F.crushTyping;
      I.crushTyping;
      trivial;
      try reflexivity
@@ -53,14 +54,14 @@ Section ValueRelation.
 
   (* Lambda abstraction *)
   Lemma valrel_lambda {d τ' τ ts tu w} :
+    ValidPTy τ → ValidPTy τ' → 
     OfType (ptarr τ' τ) (F.abs (repEmul τ') ts) (I.abs (fxToIs τ') tu) →
     (∀ w' vs vu, w' < w → (d = dir_gt -> I.size vu <= w') -> valrel d w' τ' vs vu → termrel d w' τ (ts [beta1 vs]) (tu [beta1 vu])) →
     valrel d w (ptarr τ' τ) (F.abs (repEmul τ') ts) (I.abs (fxToIs τ') tu).
   Proof.
-    intros ot hyp. crush.
-    repeat eexists; try reflexivity.
-    intros w' fw ts' tu' szvu vr.
-    apply hyp; crush.
+    crush.
+    repeat eexists; crush.
+    now eapply H2.
   Qed.
 
   (* Unit *)
@@ -80,6 +81,7 @@ Section ValueRelation.
 
   (* Pair *)
   Lemma valrel_pair'' {d w τ₁ τ₂ ts₁ ts₂ tu₁ tu₂} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     OfType τ₁ ts₁ tu₁ →
     OfType τ₂ ts₂ tu₂ →
     (forall w', w' < w → valrel d w' τ₁ ts₁ tu₁) →
@@ -90,18 +92,21 @@ Section ValueRelation.
   Qed.
 
   Lemma valrel_pair' {d w τ₁ τ₂ ts₁ ts₂ tu₁ tu₂} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     valrel d w τ₁ ts₁ tu₁ →
     valrel d w τ₂ ts₂ tu₂ →
     valrel d (S w) (ptprod τ₁ τ₂) (F.pair ts₁ ts₂) (I.pair tu₁ tu₂).
   Proof. crush. Qed.
 
   Lemma valrel_pair {d w τ₁ τ₂ ts₁ ts₂ tu₁ tu₂} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     valrel d w τ₁ ts₁ tu₁ →
     valrel d w τ₂ ts₂ tu₂ →
     valrel d w (ptprod τ₁ τ₂) (F.pair ts₁ ts₂) (I.pair tu₁ tu₂).
   Proof. crush. Qed.
 
   Lemma valrel_0_pair {d τ₁ τ₂ vs₁ vu₁ vs₂ vu₂} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     OfType τ₁ vs₁ vu₁ →
     OfType τ₂ vs₂ vu₂ →
     valrel d 0 (ptprod τ₁ τ₂) (F.pair vs₁ vs₂) (I.pair vu₁ vu₂).
@@ -109,21 +114,25 @@ Section ValueRelation.
 
   (* Inl *)
   Lemma valrel_0_inl {d τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     OfType τ₁ vs vu →
     valrel d 0 (ptsum τ₁ τ₂) (F.inl vs) (I.inl vu).
   Proof. crush. Qed.
 
   Lemma valrel_inl {d w τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     valrel d w τ₁ vs vu →
     valrel d w (ptsum τ₁ τ₂) (F.inl vs) (I.inl vu).
   Proof. crush. Qed.
 
   Lemma valrel_inl' {d w τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     valrel d w τ₁ vs vu →
     valrel d (S w) (ptsum τ₁ τ₂) (F.inl vs) (I.inl vu).
   Proof. crush. Qed.
 
   Lemma valrel_inl'' {d w τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     OfType τ₁ vs vu →
     (∀ w', w' < w → valrel d w' τ₁ vs vu) →
     valrel d w (ptsum τ₁ τ₂) (F.inl vs) (I.inl vu).
@@ -131,21 +140,25 @@ Section ValueRelation.
 
   (* Inr *)
   Lemma valrel_0_inr {d τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     OfType τ₂ vs vu →
     valrel d 0 (ptsum τ₁ τ₂) (F.inr vs) (I.inr vu).
   Proof. crush. Qed.
 
   Lemma valrel_inr {d w τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     valrel d w τ₂ vs vu →
     valrel d w (ptsum τ₁ τ₂) (F.inr vs) (I.inr vu).
   Proof. crush. Qed.
 
   Lemma valrel_inr' {d w τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     valrel d w τ₂ vs vu →
     valrel d (S w) (ptsum τ₁ τ₂) (F.inr vs) (I.inr vu).
   Proof. crush. Qed.
 
   Lemma valrel_inr'' {d w τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     OfType τ₂ vs vu →
     (∀ w', w' < w → valrel d w' τ₂ vs vu) →
     valrel d w (ptsum τ₁ τ₂) (F.inr vs) (I.inr vu).
@@ -249,6 +262,7 @@ Section ValueRelation.
     destruct val as ((? & ?) & (? & ?)).
     destruct vr as (? & ?).
     simpl in H0.
+    simpl in H2.
     F.stlcCanForm.
     I.stlcCanForm.
     destruct H as (? & ?).
@@ -256,12 +270,13 @@ Section ValueRelation.
   Qed.
 
   Lemma valrel_inSum_l {d w n p vs vs' vu vu' τl τr} :
+    ValidTy τl -> ValidTy τr ->
     OfType (pEmulDV n p τl) vs vu →
     (forall w', w' < w → valrel d w' (pEmulDV n p τl) vs vu) →
     vs' = F.inl vs ∧ vu' = I.inl vu →
     valrel d w (pEmulDV (S n) p (I.tsum τl τr)) (F.inl vs') vu'.
   Proof.
-    intros ot vr eq.
+    intros vτl vτr ot vr eq.
     destruct (OfType_implies_Value ot).
     assert (F.Value vs') by (crush).
     assert (I.Value vu') by (crush).
@@ -277,12 +292,13 @@ Section ValueRelation.
   Qed.
 
   Lemma valrel_inSum_r {d w n p vs vs' vu vu' τl τr} :
+    ValidTy τl -> ValidTy τr ->
     OfType (pEmulDV n p τr) vs vu →
     (forall w', w' < w → valrel d w' (pEmulDV n p τr) vs vu) →
     vs' = F.inr vs ∧ vu' = I.inr vu →
     valrel d w (pEmulDV (S n) p (I.tsum τl τr)) (F.inl vs') vu'.
   Proof.
-    intros ot vr eq.
+    intros vτl vτr ot vr eq.
     destruct (OfType_implies_Value ot).
     assert (F.Value vs') by (crush).
     assert (I.Value vu') by (crush).
@@ -319,6 +335,7 @@ Section ValueRelation.
   (* Qed. *)
 
   Lemma valrel_inSum' {d w n p vs vs' vu vu' τl τr} :
+    ValidTy τl -> ValidTy τr ->
     (
       valrel d w (pEmulDV n p τl) vs vu
       ∧ (vs' = F.inl vs ∧ vu' = I.inl vu)
@@ -328,24 +345,28 @@ Section ValueRelation.
     ) →
     valrel d (S w) (pEmulDV (S n) p (I.tsum τl τr)) (F.inl vs') vu'.
   Proof.
+    intros vτl vτr.
     destruct 1;
     destruct H;
-    [refine (valrel_inSum_l _ _ H0) | refine (valrel_inSum_r _ _ H0)];
+    [refine (valrel_inSum_l _ _ _ _ H0) | refine (valrel_inSum_r _ _ _ _ H0)];
     crush.
   Qed.
 
   Lemma valrel_inSum'' {d w n p vs vu τl τr} :
+    ValidTy τl -> ValidTy τr ->
     valrel d w (ptsum (pEmulDV n p τl) (pEmulDV n p τr)) vs vu →
     valrel d w (pEmulDV (S n) p (I.tsum τl τr)) (F.inl vs) vu.
   Proof.
-   intros vr.
+   intros vτl vτr vr.
    rewrite valrel_fixp in vr.
    destruct vr as [val vr].
    destruct val as ((? & ?) & ? & ?).
    simpl in H0.
-   stlcCanForm;
+   simpl in H2.
+   F.stlcCanForm;
+   I.stlcCanForm;
      simpl in vr; unfold sum_rel in vr;
-     destruct vu; try contradiction;
+     try contradiction;
      [eapply valrel_inSum_l | eapply valrel_inSum_r]; auto;
      crush.
   Qed.
@@ -432,15 +453,17 @@ Section ValueRelation.
 
 
   Lemma valrel_inRec {d w n p vs vu τ} :
+    ValidTy (trec τ) →
     valrel d w (pEmulDV n p τ[beta1 (I.trec τ)]) vs vu →
     valrel d (S w) (pEmulDV (S n) p (I.trec τ)) (F.inl vs) (I.fold_ vu).
   Proof.
-    intros vr.
+    intros [clτ crτ] vr.
     crush.
     - destruct (valrel_implies_OfType vr) as [[_ ?] _].
       eauto.
     - destruct (valrel_implies_OfType vr) as (_ & _ & ?).
       eauto.
+    - now constructor.
     - right. exists vs. split.
       + crush.
       + exists vu. split. reflexivity.
@@ -453,6 +476,7 @@ Section ValueRelation.
   Qed.
 
   Lemma valrel_inRec' {d w n p vs vu τ} :
+    ValidTy (trec τ) →
     valrel d w (pEmulDV n p τ[beta1 (I.trec τ)]) vs vu →
     valrel d w (pEmulDV (S n) p (I.trec τ)) (F.inl vs) (I.fold_ vu).
   Proof.
@@ -610,11 +634,12 @@ Section TermRelation.
 
   (* Pair *)
   Lemma termrel_pair {d w τ₁ τ₂ ts₁ ts₂ tu₁ tu₂} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     termrel d w τ₁ ts₁ tu₁ →
     (∀ w', w' ≤ w → termrel d w' τ₂ ts₂ tu₂) →
     termrel d w (ptprod τ₁ τ₂) (F.pair ts₁ ts₂) (I.pair tu₁ tu₂).
   Proof.
-    intros tr₁ tr₂.
+    intros vτ₁ vτ₂ tr₁ tr₂.
     change (F.pair _ _) with (F.pctx_app ts₁ (F.ppair₁ F.phole ts₂)).
     change (I.pair _ _) with (I.pctx_app tu₁ (I.ppair₁ I.phole tu₂)).
     refine (termrel_ectx _ _ tr₁ _); crush.
@@ -751,10 +776,11 @@ Section TermRelation.
 
   (* Inl *)
   Lemma termrel_inl {d w τ₁ τ₂ ts tu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     termrel d w τ₁ ts tu →
     termrel d w (ptsum τ₁ τ₂) (F.inl ts) (I.inl tu).
   Proof.
-    intros tr.
+    intros vτ₁ vτ₂ tr.
     change (F.inl ts) with (F.pctx_app ts (F.pinl F.phole)).
     change (I.inl tu) with (I.pctx_app tu (I.pinl I.phole)).
     refine (termrel_ectx _ _ tr _); crush.
@@ -763,10 +789,11 @@ Section TermRelation.
 
   (* Inr *)
   Lemma termrel_inr {d w τ₁ τ₂ ts tu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     termrel d w τ₂ ts tu →
     termrel d w (ptsum τ₁ τ₂) (F.inr ts) (I.inr tu).
   Proof.
-    intros tr.
+    intros vτ₁ vτ₂ tr.
     change (F.inr ts) with (F.pctx_app ts (F.pinr F.phole)).
     change (I.inr tu) with (I.pctx_app tu (I.pinr I.phole)).
     refine (termrel_ectx _ _ tr _); crush.
@@ -881,10 +908,12 @@ Section TermRelation.
 
   (* Fixt *)
   Lemma termrel_fix' {d w τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ → ValidPTy τ₂ →
     valrel d w (ptarr (ptarr τ₁ τ₂) (ptarr τ₁ τ₂)) vs vu →
     termrel d w (ptarr τ₁ τ₂) (F.fixt (repEmul τ₁) (repEmul τ₂) vs) (I.ufix₁ vu (fxToIs τ₁) (fxToIs τ₂)).
   Proof.
     (* well-founded induction on w *)
+    intros vτ₁ vτ₂.
     revert w vs vu.
     refine (well_founded_ind lt_wf
                              (fun w =>
@@ -930,8 +959,11 @@ Section TermRelation.
     - (* first the OfType relation *)
       crush.
       eapply I.ufix₁_typing.
-      (* eapply ufix₁_ws. *)
       crush.
+      crush.
+      crush.
+      crush.
+      apply ValidTy_arr; crush.
     - (* prove the termrel of the body of the abstractions *)
       repeat eexists; try reflexivity.
       intros w' fw ts' tu' szvu vr.
@@ -948,6 +980,7 @@ Section TermRelation.
              well-founded induction on worlds *)
       refine (indHyp _ _ _ _ _); crush.
       unfold OfType, OfTypeStlcFix, OfTypeStlcIso.
+      apply ValidTy_arr;
       crush.
       repeat eexists; try reflexivity.
       intros w'' fw'.
@@ -955,10 +988,11 @@ Section TermRelation.
   Qed.
 
   Lemma termrel_fix {d w τ₁ τ₂ ts tu} :
+    ValidPTy τ₁ → ValidPTy τ₂ →
     termrel d w (ptarr (ptarr τ₁ τ₂) (ptarr τ₁ τ₂)) ts tu →
     termrel d w (ptarr τ₁ τ₂) (F.fixt (repEmul τ₁) (repEmul τ₂) ts) (I.app (I.ufix (fxToIs τ₁) (fxToIs τ₂)) tu).
   Proof.
-    intros tr.
+    intros vτ₁ vτ₂ tr.
 
     (* first normalize ts and tu *)
     change (F.fixt _ _ _) with (F.pctx_app ts (F.pfixt (repEmul τ₁) (repEmul τ₂) F.phole)).

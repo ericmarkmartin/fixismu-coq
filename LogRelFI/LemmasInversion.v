@@ -11,11 +11,11 @@ Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.LemmasTyping.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.Size.
-Require Import StlcIso.SpecSyntax.
-Require Import StlcIso.SpecEvaluation.
-Require Import StlcIso.LemmasEvaluation.
-Require Import StlcIso.SpecTyping.
-Require Import StlcIso.Inst.
+Require Import StlcIsoValid.SpecSyntax.
+Require Import StlcIsoValid.SpecEvaluation.
+Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIsoValid.SpecTyping.
+Require Import StlcIsoValid.Inst.
 Require Import UValFI.UVal.
 
 Require Import Lia.
@@ -95,6 +95,7 @@ Section ValrelInversion.
   Qed.
 
   Lemma valrel_ptarr_inversion {d w τ₁ τ₂ vs vu} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     valrel d w (ptarr τ₁ τ₂) vs vu →
     ∃ tsb tub,
       vs = F.abs (repEmul τ₁) tsb ∧ vu = I.abs (fxToIs τ₁) tub ∧
@@ -106,7 +107,7 @@ Section ValrelInversion.
         valrel d w' τ₁ vs' vu' →
         termrel d w' τ₂ (tsb[beta1 vs']) (tub[beta1 vu']).
   Proof.
-    intros vr.
+    intros vτ₁ vτ₂ vr.
     destruct (valrel_implies_Value vr) as [? ?].
     destruct (OfType_inversion_ptarr (valrel_implies_OfType vr))
       as (tsb & tub & ? & ? & ?).
@@ -253,6 +254,7 @@ Section ValrelInversion.
     valrel dir w (ptprod (pEmulDV n p τ₁) (pEmulDV n p τ₂)) vs vu.
   Proof.
     intros vr.
+    assert (ValidEnv I.empty) by eauto with tyvalid.
     destruct (valrel_implies_OfType vr) as [[? ?] [? ?]].
     destruct (invert_valrel_pEmulDV_inProd' vr) as (? & ? & ? & ? & ? & ? & ? & ?); subst.
     apply valrel_pair''; crush.
@@ -307,10 +309,12 @@ Section ValrelInversion.
   Qed.
 
   Lemma invert_valrel_pEmulDV_inSum {dir w n p vs vu τ₁ τ₂} :
+    ValidTy τ₁ -> ValidTy τ₂ ->
     valrel dir w (pEmulDV (S n) p (I.tsum τ₁ τ₂)) (F.inl vs) vu →
     valrel dir w (ptsum (pEmulDV n p τ₁) (pEmulDV n p τ₂)) vs vu.
   Proof.
-    intros vr.
+    assert (ValidEnv I.empty) by eauto with tyvalid.
+    intros vτ₁ vτ₂ vr.
     destruct (valrel_implies_OfType vr) as [[? ?] [? ?]].
     destruct (invert_valrel_pEmulDV_inSum'' vr) as (? & ? & [(? & ? & ?) | (? & ? & ?)]);
       subst;
@@ -319,16 +323,17 @@ Section ValrelInversion.
   Qed.
 
   Lemma invert_valrel_pEmulDV_sum {dir w n p vs vu τ₁ τ₂} :
+    ValidTy τ₁ -> ValidTy τ₂ ->
     valrel dir w (pEmulDV (S n) p (I.tsum τ₁ τ₂)) vs vu →
     (vs = unkUVal (S n) ∧ p = imprecise)
     ∨ exists vs', vs = F.inl vs' ∧ valrel dir w (ptsum (pEmulDV n p τ₁) (pEmulDV n p τ₂)) vs' vu.
   Proof.
-    intro vr.
+    intros vτ₁ vτ₂ vr.
     destruct (valrel_implies_OfType vr) as [[? ?] [? ?]].
     cbv [UValFI UValFI' fxToIs repEmul] in *.
     F.stlcCanForm; [right | right | eauto using invert_valrel_pEmulDV_unk];
     [exists (F.inl x0) | exists (F.inr x0)];
-    crush; exact (invert_valrel_pEmulDV_inSum vr).
+    crush; exact (invert_valrel_pEmulDV_inSum vτ₁ vτ₂ vr).
   Qed.
 
   Lemma invert_valrel_pEmulDV_inArr {dir w n p vs vu τ₁ τ₂} :
