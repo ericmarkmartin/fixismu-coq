@@ -691,11 +691,8 @@ Proof.
         refine (eval_ctx₀ phole (eval_case_inl _) I); eauto.
         subst; cbn; crush; rewrite downgrade_sub, upgrade_sub.
         change ((beta1 x)↑ (wk 0)) with x [wk].
-        replace x[wk] with x; [econstructor|].
-        eapply eq_sym, wsClosed_invariant.
-        refine (F.wt_implies_ws H1).
-        (* eauto using inArr_Value, downgrade_eval_inArr, inArr_T,  *)
-        (* downgrade_T, upgrade_T with typing. *)
+        rewrite (wsClosed_invariant (x := x) (F.wt_implies_ws H1) (wk (Wk := wkIx))).
+        eauto with eval.
       * exists (unkUVal (S n)).
         repeat split.
         exact unkUValT.
@@ -858,11 +855,8 @@ Proof.
         refine (eval_ctx₀ phole (eval_case_inl _) I); eauto.
         cbn; crush; rewrite downgrade_sub, upgrade_sub.
         change ((beta1 x)↑ (wk 0)) with x [wk].
-        replace x[wk] with x; [econstructor|].
-        eapply eq_sym, wsClosed_invariant.
-        refine (F.wt_implies_ws H1).
-        (* eauto using inArr_Value, downgrade_eval_inArr, inArr_T,  *)
-        (* downgrade_T, upgrade_T with typing. *)
+        rewrite (wsClosed_invariant (x := x) (F.wt_implies_ws H1) (wk (Wk := wkIx))).
+        eauto with eval.
       * exists (unkUVal (S (n + d))).
         repeat split.
         exact unkUValT.
