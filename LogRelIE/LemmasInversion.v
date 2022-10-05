@@ -500,7 +500,8 @@ Proof.
     intros ((vvs & tvs) & (vvu & tvu));
   cbn in *;
   repeat split; cbn; try assumption;
-  try rewrite <-UValIE_unfoldn in *;
+  rewrite <-?UValIE_unfoldn in tvs;
+  rewrite <-?UValIE_unfoldn;
     try assumption; crushValidTy.
   - refine (WtEq _ _ _ _ tvu);
       eauto using E.ValidTy_unfoldn with tyvalid.

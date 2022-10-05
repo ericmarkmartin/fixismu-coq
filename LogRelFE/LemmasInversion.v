@@ -569,8 +569,9 @@ Proof.
     intros ((vvs & tvs) & (vvu & tvu));
   cbn in *;
   repeat split; cbn; try assumption;
-  try rewrite <-UValFE_unfoldn in *;
-    try assumption; E.crushValidTy.
+    rewrite <-?UValFE_unfoldn in tvs;
+    rewrite <-?UValFE_unfoldn;
+    E.crushValidTy.
   - refine (WtEq _ _ _ _ tvu);
       eauto using E.ValidTy_unfoldn with tyvalid.
     eapply ty_eq_peel_recs; E.crushValidTy.
