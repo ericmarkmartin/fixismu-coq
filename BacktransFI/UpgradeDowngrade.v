@@ -1,4 +1,4 @@
-Require Import StlcIso.SpecSyntax.
+Require Import StlcIsoValid.SpecSyntax.
 Require Import StlcFix.SpecSyntax.
 Require Import StlcFix.Inst.
 Require Import StlcFix.SpecTyping.
@@ -25,6 +25,7 @@ Local Ltac crush :=
   intros; cbn in * |-;
   repeat
     (repeat crushStlcSyntaxMatchH;
+     repeat crushRecTypesMatchH;
      repeat crushDbSyntaxMatchH;
      repeat crushRepEmulEmbed;
      repeat I.crushStlcSyntaxMatchH;
@@ -1064,8 +1065,9 @@ Proof.
 Qed.
 
 Lemma downgrade_inProd_works {n d w dir p vs vu τ τ'} :
+  ValidTy τ -> ValidTy τ' ->
   valrel dir w (pEmulDV (S (n + d)) p (I.tprod τ τ')) (F.inl vs) vu →
-  (forall w' vs₁ vu₁ τ, w' < w →
+  (forall w' vs₁ vu₁ τ, w' < w → ValidTy τ →
               valrel dir w' (pEmulDV (n + d) p τ) vs₁ vu₁ →
               ∃ vs₁', app (downgrade n d τ) vs₁ -->* vs₁' ∧
                       valrel dir w' (pEmulDV n p τ) vs₁' vu₁) →
@@ -1073,7 +1075,7 @@ Lemma downgrade_inProd_works {n d w dir p vs vu τ τ'} :
     app (downgrade (S n) d (I.tprod τ τ')) (F.inl vs) -->* v' ∧
     valrel dir w (pEmulDV (S n) p (I.tprod τ τ')) v' vu.
 Proof.
-  intros vr ih.
+  intros vτ vτ' vr ih.
   pose proof (valrel_implies_OfType vr) as ot''.
   destruct (valrel_implies_OfType vr) as [[vvs tvs] [vvu tvu]].
   destruct (invert_valrel_pEmulDV_inProd' vr) as (vs1 & vs2 & vu1 & vu2 & -> & -> & vr1 & vr2).
@@ -1087,9 +1089,11 @@ Proof.
     exists (inl (pair x4 x5)); split; I.crushTyping.
     * eapply downgrade_eval_inProd; eauto.
     * subst.
-      apply valrel_inProd'';
-        apply valrel_0_pair;
-        crush.
+      assert (ValidEnv I.empty) by eauto with tyvalid.
+      apply valrel_inProd''; eauto;
+        apply valrel_0_pair; eauto.
+      crushOfType; I.crushTyping; eauto using typed_terms_are_valid.
+      crushOfType; I.crushTyping; eauto; eauto using typed_terms_are_valid.
   + (* w = S w *)
     (* destruct vr as (? & [([=] & _)|(? & -> & vr')]). *)
     (* unfold prod_rel in vr'; cbn in vr'. *)
@@ -1098,8 +1102,8 @@ Proof.
     specialize (vr1 w wlt).
     specialize (vr2 w wlt).
     cbn in *.
-    destruct (ih w _ _ _ wlt vr1) as (vs1' & es1 & vr1').
-    destruct (ih w _ _ _ wlt vr2) as (vs2' & es2 & vr2').
+    destruct (ih w _ _ _ wlt vτ vr1) as (vs1' & es1 & vr1').
+    destruct (ih w _ _ _ wlt vτ' vr2) as (vs2' & es2 & vr2').
     destruct vvs as (vvs1 & vvs2).
     destruct (valrel_implies_Value vr1').
     destruct (valrel_implies_Value vr2').
@@ -1110,8 +1114,9 @@ Proof.
 Qed.
 
 Lemma upgrade_inProd_works {n d w dir p vs vu τ τ'} :
+  ValidTy τ -> ValidTy τ' ->
   valrel dir w (pEmulDV (S n) p (I.tprod τ τ')) (F.inl vs) vu →
-  (forall w' vs₁ vu₁ τ, w' < w →
+  (forall w' vs₁ vu₁ τ, w' < w → ValidTy τ →
               valrel dir w' (pEmulDV n p τ) vs₁ vu₁ →
               (* valrel dir w' (pEmulDV (n + d) p τ') vs₁ vu₁) → *)
               (* ∃ vs₁', app (downgrade n d (I.tprod τ τ')) vs₁ -->* vs₁' ∧ *)
@@ -1122,7 +1127,7 @@ Lemma upgrade_inProd_works {n d w dir p vs vu τ τ'} :
     app (upgrade (S n) d (I.tprod τ τ')) (F.inl vs) -->* v' ∧
     valrel dir w (pEmulDV (S (n + d)) p (I.tprod τ τ')) v' vu.
 Proof.
-  intros vr ih.
+  intros vτ vτ' vr ih.
   pose proof (valrel_implies_OfType vr) as ot''.
   destruct (valrel_implies_OfType vr) as [[vvs tvs] [vvu tvu]].
   destruct (invert_valrel_pEmulDV_inProd' vr) as (vs1 & vs2 & vu1 & vu2 & -> & -> & vr1 & vr2).
@@ -1136,15 +1141,17 @@ Proof.
     exists (inl (pair x4 x5)); split; I.crushTyping.
     * eapply upgrade_eval_inProd; eauto.
     * subst.
-      apply valrel_inProd'';
-        apply valrel_0_pair;
-        crush.
+      assert (ValidEnv I.empty) by eauto with tyvalid.
+      apply valrel_inProd''; eauto;
+        apply valrel_0_pair; eauto.
+      crushOfType; I.crushTyping; eauto using typed_terms_are_valid.
+      crushOfType; I.crushTyping; eauto; eauto using typed_terms_are_valid.
   + assert (wlt : w < S w) by eauto with arith.
     specialize (vr1 w wlt).
     specialize (vr2 w wlt).
     cbn in *.
-    destruct (ih w _ _ _ wlt vr1) as (vs1' & es1 & vr1').
-    destruct (ih w _ _ _ wlt vr2) as (vs2' & es2 & vr2').
+    destruct (ih w _ _ _ wlt vτ vr1) as (vs1' & es1 & vr1').
+    destruct (ih w _ _ _ wlt vτ' vr2) as (vs2' & es2 & vr2').
     destruct vvs as (vvs1 & vvs2).
     destruct (valrel_implies_Value vr1').
     destruct (valrel_implies_Value vr2').
@@ -1155,8 +1162,9 @@ Proof.
 Qed.
 
 Lemma downgrade_inSum_works {n d w dir p vs vu τ τ'} :
+  ValidTy τ -> ValidTy τ' ->
   valrel dir w (pEmulDV (S (n + d)) p (I.tsum τ τ')) (F.inl vs) vu →
-  (forall w' vs₁ vu₁ τ, w' < w →
+  (forall w' vs₁ vu₁ τ, w' < w → ValidTy τ →
               valrel dir w' (pEmulDV (n + d) p τ) vs₁ vu₁ →
               (* valrel dir w' (pEmulDV (n + d) p τ') vs₁ vu₁) → *)
               (* ∃ vs₁', app (downgrade n d (I.tsum τ τ')) vs₁ -->* vs₁' ∧ *)
@@ -1167,7 +1175,7 @@ Lemma downgrade_inSum_works {n d w dir p vs vu τ τ'} :
     app (downgrade (S n) d (I.tsum τ τ')) (F.inl vs) -->* v' ∧
     valrel dir w (pEmulDV (S n) p (I.tsum τ τ')) v' vu.
 Proof.
-  intros vr ih.
+  intros vτ vτ' vr ih.
   pose proof (valrel_implies_OfType vr) as ot''.
   destruct (valrel_implies_OfType vr) as [[? ?] [? ?]].
   destruct (invert_valrel_pEmulDV_inSum'' vr) as (vs' & vu' & ?); subst.
@@ -1176,33 +1184,60 @@ Proof.
   + (* w = 0 *)
     destruct (canonUValS_Sum H H0) as [(? & ? & ? & ?) | ?]; [| inversion H4].
     F.stlcCanForm; inversion H5; subst;
-    destruct (downgrade_reduces H8 H4) as (vs'' & vvs'' & ty' & es');
+  [destruct (downgrade_reduces H8 H4) as (vs'' & vvs'' & ty' & es')
+  |destruct (downgrade_reduces H8 H4) as (vs'' & vvs'' & ty' & es')];
     destruct H3 as [(? & ? & ?) | (? & ? & ?)]; try (inversion H3; fail); inversion H3; subst;
-    [exists ((F.inl (F.inl vs''))) | exists ((F.inl (F.inr vs'')))];
-    [assert (forall w', w' < 0 → valrel dir w' (pEmulDV n p τ) vs'' vu') by lia
-    |assert (forall w', w' < 0 → valrel dir w' (pEmulDV n p τ') vs'' vu') by lia];
-    (split; [apply (downgrade_eval_inSum H4 vvs''); crush|]);
-    [assert (OfType (pEmulDV n p τ) vs'' vu') by crush
-    |assert (OfType (pEmulDV n p τ') vs'' vu') by crush];
-    apply valrel_inSum'';
-    [apply valrel_0_inl | apply valrel_0_inr];
-    crush.
+    assert (ValidEnv I.empty) by (eauto with tyvalid).
+    * exists ((F.inl (F.inl vs''))).
+      assert (forall w', w' < 0 → valrel dir w' (pEmulDV n p τ) vs'' vu') by lia.
+      split; [apply (downgrade_eval_inSum H4 vvs''); crush|].
+      crush.
+      I.crushTyping;
+      eauto using typed_terms_are_valid;
+      now destruct (ValidTy_invert_sum H10).
+      right. eexists. split; [reflexivity|].
+      unfold vrsum, sum_rel, latervr.
+       crush.
+    * exists ((F.inl (F.inr vs''))).
+      assert (forall w', w' < 0 → valrel dir w' (pEmulDV n p τ') vs'' vu') by lia.
+      split; [apply (downgrade_eval_inSum H4 vvs''); crush|].
+      crush.
+      I.crushTyping;
+      eauto using typed_terms_are_valid;
+      now destruct (ValidTy_invert_sum H10).
+      right. eexists. split; [reflexivity|].
+      unfold vrsum, sum_rel, latervr.
+      crush.
   + (* w = S w *)
-    assert (wlt : w < S w) by eauto with arith;
+    assert (wlt : w < S w) by eauto with arith.
     destruct H3 as [(? & ? & vr') | (? & ? & vr')]; try (inversion H3; fail); subst;
     specialize (vr' w wlt);
     cbn in H;
-    destruct (ih w _ _ _ wlt vr') as (vs'' & es' & vr'');
-    destruct (valrel_implies_Value vr'');
-    [exists (F.inl (F.inl vs'')) | exists (F.inl (F.inr vs''))];
-    (split; [
-       apply (downgrade_eval_inSum H H3); eauto
-       | eapply (valrel_inSum'); (left; eauto; fail) || (right; eauto; fail)]).
+    assert (ValidEnv I.empty) by eauto with tyvalid.
+    * destruct (ih w _ _ _ wlt vτ vr') as (vs'' & es' & vr'').
+      destruct (valrel_implies_Value vr'').
+      exists (F.inl (F.inl vs'')).
+      split.
+      apply (downgrade_eval_inSum H H4); eauto.
+      assert (vτs := I.typed_terms_are_valid _ _ H3 H2).
+      destruct (ValidTy_invert_sum vτs).
+      eapply valrel_inSum'; try assumption.
+      left; crush.
+    * destruct (ih w _ _ _ wlt vτ' vr') as (vs'' & es' & vr'').
+      destruct (valrel_implies_Value vr'').
+      exists (F.inl (F.inr vs'')).
+      split.
+      apply (downgrade_eval_inSum H H4); eauto.
+      assert (vτs := I.typed_terms_are_valid _ _ H3 H2).
+      destruct (ValidTy_invert_sum vτs).
+      eapply valrel_inSum'; try assumption.
+      right; crush.
 Qed.
 
 Lemma upgrade_inSum_works {n d w dir p vs vu τ τ'} :
+  ValidTy τ -> ValidTy τ' ->
   valrel dir w (pEmulDV (S n) p (I.tsum τ τ')) (F.inl vs) vu →
-  (forall w' vs₁ vu₁ τ, w' < w →
+  (forall w' vs₁ vu₁ τ, w' < w → ValidTy τ →
               valrel dir w' (pEmulDV n p τ) vs₁ vu₁ →
               (* valrel dir w' (pEmulDV (n + d) p τ') vs₁ vu₁) → *)
               (* ∃ vs₁', app (downgrade n d (I.tsum τ τ')) vs₁ -->* vs₁' ∧ *)
@@ -1213,7 +1248,7 @@ Lemma upgrade_inSum_works {n d w dir p vs vu τ τ'} :
     app (upgrade (S n) d (I.tsum τ τ')) (F.inl vs) -->* v' ∧
     valrel dir w (pEmulDV (S (n + d)) p (I.tsum τ τ')) v' vu.
 Proof.
-  intros vr ih.
+  intros vτ vτ' vr ih.
   pose proof (valrel_implies_OfType vr) as ot''.
   destruct (valrel_implies_OfType vr) as [[? ?] [? ?]].
   destruct (invert_valrel_pEmulDV_inSum'' vr) as (vs' & vu' & ?); subst.
@@ -1222,34 +1257,55 @@ Proof.
   + (* w = 0 *)
     destruct (canonUValS_Sum H H0) as [(? & ? & ? & ?) | ?]; [| inversion H4].
     F.stlcCanForm; inversion H5; subst;
-    destruct (upgrade_reduces d H8 H4) as (vs'' & vvs'' & ty' & es');
+    [destruct (upgrade_reduces d H8 H4) as (vs'' & vvs'' & ty' & es')
+    | destruct (upgrade_reduces d H8 H4) as (vs'' & vvs'' & ty' & es')
+    ];
     destruct H3 as [(? & ? & ?) | (? & ? & ?)]; try (inversion H3; fail); inversion H3; subst;
     [exists ((F.inl (F.inl vs''))) | exists ((F.inl (F.inr vs'')))];
     [assert (forall w', w' < 0 → valrel dir w' (pEmulDV n p τ) vs'' vu') by lia
     |assert (forall w', w' < 0 → valrel dir w' (pEmulDV n p τ') vs'' vu') by lia];
     (split; [apply (upgrade_eval_inSum H4 vvs''); crush|]);
-    [assert (OfType (pEmulDV (n + d) p τ) vs'' vu') by crush
-    |assert (OfType (pEmulDV (n + d) p τ') vs'' vu') by crush];
-    apply valrel_inSum'';
-    [apply valrel_0_inl | apply valrel_0_inr];
-    crush.
+    assert (ValidEnv I.empty) by eauto with tyvalid;
+    assert (vτs := I.typed_terms_are_valid _ _ H9 H2);
+    destruct (ValidTy_invert_sum vτs);
+    apply valrel_inSum''; try assumption.
+    * apply valrel_0_inl; try now cbn.
+      cbn in *.
+      assert (ValidEnv I.empty) by eauto with tyvalid.
+      crushOfType; I.crushTyping; eauto using typed_terms_are_valid.
+    * apply valrel_0_inr; try now cbn.
+      cbn in *.
+      assert (ValidEnv I.empty) by eauto with tyvalid.
+      crushOfType; I.crushTyping; eauto using typed_terms_are_valid.
   + (* w = S w *)
     assert (wlt : w < S w) by eauto with arith;
     destruct H3 as [(? & ? & vr') | (? & ? & vr')]; try (inversion H3; fail); subst;
     specialize (vr' w wlt);
-    cbn in H;
-    destruct (ih w _ _ _ wlt vr') as (vs'' & es' & vr'');
-    destruct (valrel_implies_Value vr'');
-    [exists (F.inl (F.inl vs'')) | exists (F.inl (F.inr vs''))];
-    (split; [
-       apply (upgrade_eval_inSum H H3); eauto
-       | eapply (valrel_inSum'); (left; eauto; fail) || (right; eauto; fail)]).
+    cbn in H.
+    assert (ValidEnv I.empty) by eauto with tyvalid;
+    assert (vτs := I.typed_terms_are_valid _ _ H3 H2);
+    destruct (ValidTy_invert_sum vτs).
+    * destruct (ih w _ _ _ wlt vτ vr') as (vs'' & es' & vr'').
+      destruct (valrel_implies_Value vr'').
+      exists (F.inl (F.inl vs'')).
+      split.
+      apply (upgrade_eval_inSum H H6); eauto.
+      eapply valrel_inSum'; try assumption.
+      left; eauto.
+    * destruct (ih w _ _ _ wlt vτ' vr') as (vs'' & es' & vr'').
+      destruct (valrel_implies_Value vr'').
+      exists (F.inl (F.inr vs'')).
+      split.
+      apply (upgrade_eval_inSum H H3); eauto.
+      eapply valrel_inSum'; try assumption.
+      right; eauto.
 Qed.
 
 
 Lemma downgrade_inRec_works {n d w dir p vs vu τ} :
+  ValidTy (I.trec τ) ->
   valrel dir w (pEmulDV (S (n + d)) p (I.trec τ)) (F.inl vs) vu →
-  (forall w' vs₁ vu₁ τ, w' < w →
+  (forall w' vs₁ vu₁ τ, w' < w → ValidTy τ →
               valrel dir w' (pEmulDV (n + d) p τ) vs₁ vu₁ →
               ∃ vs₁', app (downgrade n d τ) vs₁ -->* vs₁' ∧
                       valrel dir w' (pEmulDV n p τ) vs₁' vu₁) →
@@ -1257,7 +1313,7 @@ Lemma downgrade_inRec_works {n d w dir p vs vu τ} :
     app (downgrade (S n) d (I.trec τ)) (F.inl vs) -->* v' ∧
     valrel dir w (pEmulDV (S n) p (I.trec τ)) v' vu.
 Proof.
-  intros vr ih.
+  intros vτ vr ih.
   destruct (valrel_implies_OfType vr) as [[? ?] [? ?]].
   simpl in H0, H2.
   assert (exists vu', vu = fold_ vu') by (dependent destruction H2; crush).
@@ -1277,18 +1333,19 @@ Proof.
   + (* w = S w *)
     pose proof (invert_valrel_pEmulDV_inRec vr).
     assert (wlt : w < S w) by eauto with arith.
-    destruct (ih _ _ _ _ wlt H3) as (? & ? & ?).
+    assert (ValidTy τ[beta1 (I.trec τ)]) by (now apply ValidTy_unfold_trec).
+    destruct (ih _ _ _ _ wlt H4 H3) as (? & ? & ?).
     exists (F.inl x).
     split.
-    destruct (valrel_implies_OfType H5) as [[? _] _].
+    destruct (valrel_implies_OfType H6) as [[? _] _].
     apply downgrade_eval_inRec; crush.
-    apply valrel_inRec.
-    assumption.
+    now apply valrel_inRec.
 Qed.
 
 Lemma upgrade_inRec_works {n d w dir p vs vu τ} :
+  ValidTy (I.trec τ) →
   valrel dir w (pEmulDV (S n) p (I.trec τ)) (F.inl vs) vu →
-  (forall w' vs₁ vu₁ τ, w' < w →
+  (forall w' vs₁ vu₁ τ, w' < w → ValidTy τ →
               valrel dir w' (pEmulDV n p τ) vs₁ vu₁ →
               ∃ vs₁', app (upgrade n d τ) vs₁ -->* vs₁' ∧
                       valrel dir w' (pEmulDV (n + d) p τ) vs₁' vu₁) →
@@ -1296,7 +1353,7 @@ Lemma upgrade_inRec_works {n d w dir p vs vu τ} :
     app (upgrade (S n) d (I.trec τ)) (F.inl vs) -->* v' ∧
     valrel dir w (pEmulDV (S (n + d)) p (I.trec τ)) v' vu.
 Proof.
-  intros vr ih.
+  intros vτ vr ih.
   destruct (valrel_implies_OfType vr) as [[? ?] [? ?]].
   simpl in H0, H2.
   assert (exists vu', vu = fold_ vu') by (dependent destruction H2; crush).
@@ -1316,22 +1373,26 @@ Proof.
   + (* w = S w *)
     pose proof (invert_valrel_pEmulDV_inRec vr).
     assert (wlt : w < S w) by eauto with arith.
-    destruct (ih _ _ _ _ wlt H3) as (? & ? & ?).
+    assert (ValidTy τ[beta1 (I.trec τ)]) by (now apply ValidTy_unfold_trec).
+    destruct (ih _ _ _ _ wlt H4 H3) as (? & ? & ?).
     exists (F.inl x).
     split.
-    destruct (valrel_implies_OfType H5) as [[? _] _].
+    destruct (valrel_implies_OfType H6) as [[? _] _].
     apply upgrade_eval_inRec; crush.
-    apply valrel_inRec.
-    assumption.
+    now apply valrel_inRec.
 Qed.
 
+
 Lemma downgrade_inArr_works {n d w dir p vs vu τ τ'} :
+  ValidTy τ -> ValidTy τ' ->
   valrel dir w (pEmulDV (S (n + d)) p (I.tarr τ τ')) (F.inl vs) vu →
   (forall w' vs₁ vu₁ τ, w' < w →
+                   ValidTy τ ->
               valrel dir w' (pEmulDV (n + d) p τ) vs₁ vu₁ →
               ∃ vs₁', app (downgrade n d τ) vs₁ -->* vs₁' ∧
                       valrel dir w' (pEmulDV n p τ) vs₁' vu₁) →
   (forall w' vs₁ vu₁ τ, w' < w →
+                   ValidTy τ ->
               valrel dir w' (pEmulDV n p τ) vs₁ vu₁ →
               ∃ vs₁', app (upgrade n d τ) vs₁ -->* vs₁' ∧
                       valrel dir w' (pEmulDV (n + d) p τ) vs₁' vu₁) →
@@ -1339,33 +1400,36 @@ Lemma downgrade_inArr_works {n d w dir p vs vu τ τ'} :
     app (downgrade (S n) d (I.tarr τ τ')) (F.inl vs) -->* v' ∧
     valrel dir w (pEmulDV (S n) p (I.tarr τ τ')) v' vu.
 Proof.
-  intros vr ihd ihu.
+  intros vτ vτ' vr ihd ihu.
   destruct (valrel_implies_OfType vr) as [[vvs tyvs] [vvu tyvu]].
   exists (F.inl (abs (UValFI n τ) (app (downgrade n d τ') (app (vs[wk]) (app (upgrade n d τ) (var 0)))))).
   split.
-  - eapply downgrade_eval_inArr; crush.
-  - eapply valrel_inArr.
-    apply invert_valrel_pEmulDV_inArr in vr.
+  - eapply downgrade_eval_inArr; crush; crushValidTy.
+  - eapply valrel_inArr; try assumption.
+    apply invert_valrel_pEmulDV_inArr in vr; try assumption.
     simpl in vvs.
-    apply valrel_ptarr_inversion in vr; destruct_conjs; subst.
+    apply valrel_ptarr_inversion in vr;
+      cbn; try assumption; destruct_conjs; subst.
     simpl in *.
 
     (* unfold the valrel-ptarr *)
     change (abs (UValFI n τ)) with (abs (repEmul (pEmulDV n p τ))).
     change (I.abs τ) with (I.abs (fxToIs (pEmulDV n p τ))).
-    apply valrel_lambda; crushOfType; crushTyping;
-    eauto using downgrade_T, upgrade_T.
-    rewrite -> ?upgrade_sub, ?downgrade_sub.
+    apply valrel_lambda; cbn; try assumption.
+    crushOfType; crushTyping; I.crushTyping;
+    eauto using downgrade_T, upgrade_T; crushValidTy.
+    crush.
+    rewrite -> ?upgrade_sub, ?downgrade_sub; crushValidTy.
 
     rewrite <- ap_liftSub; rewrite <- up_liftSub;
     rewrite -> liftSub_wkm; rewrite (apply_wkm_beta1_up_cancel vr vs).
 
     (* first execute the upgrade *)
-    specialize (ihu w' _ _ _ H0 H5).
+    specialize (ihu w' _ _ _ H0 vτ H5).
     destruct ihu as (vs' & eups & vr').
     enough (termrel dir w' (pEmulDV n p τ')
                     (app (downgrade n d τ') (app (abs (UValFI (n + d) τ) vr) vs')) (H [beta1 vu])) as tr'
-        by (refine (termrel_antired_star_left (evalstar_ctx' eups _ _ _) tr'); 
+        by (refine (termrel_antired_star_left (evalstar_ctx' eups _ _ _) tr');
             inferContext; crush; eauto using downgrade_value).
 
     (* now beta-reduce *)
@@ -1385,7 +1449,7 @@ Proof.
 
     (* now execute the downgrade *)
     assert (wlt0 : w'0 < w) by lia.
-    specialize (ihd w'0 _ _ _ wlt0 H8).
+    specialize (ihd w'0 _ _ _ wlt0 vτ' H6).
     destruct ihd as (vs'' & edowns & vr'').
     enough (termrel dir w'0 (pEmulDV n p τ')
                     vs'' vu0) as tr'
@@ -1393,17 +1457,19 @@ Proof.
             inferContext; crush; eauto using downgrade_value).
 
     (* conclude *)
-    apply valrel_in_termrel.
-    assumption.
+    now apply valrel_in_termrel.
 Qed.
 
 Lemma upgrade_inArr_works {n d w dir p vs vu τ τ'} :
+  ValidTy τ -> ValidTy τ' ->
   valrel dir w (pEmulDV (S n) p (I.tarr τ τ')) (F.inl vs) vu →
   (forall w' vs₁ vu₁ τ, w' < w →
+                   ValidTy τ ->
               valrel dir w' (pEmulDV (n + d) p τ) vs₁ vu₁ →
               ∃ vs₁', app (downgrade n d τ) vs₁ -->* vs₁' ∧
                       valrel dir w' (pEmulDV n p τ) vs₁' vu₁) →
   (forall w' vs₁ vu₁ τ, w' < w →
+                   ValidTy τ ->
               valrel dir w' (pEmulDV n p τ) vs₁ vu₁ →
               ∃ vs₁', app (upgrade n d τ) vs₁ -->* vs₁' ∧
                       valrel dir w' (pEmulDV (n + d) p τ) vs₁' vu₁) →
@@ -1411,29 +1477,32 @@ Lemma upgrade_inArr_works {n d w dir p vs vu τ τ'} :
     app (upgrade (S n) d (I.tarr τ τ')) (F.inl vs) -->* v' ∧
     valrel dir w (pEmulDV (S (n + d)) p (I.tarr τ τ')) v' vu.
 Proof.
-  intros vr ihd ihu.
+  intros vτ vτ' vr ihd ihu.
   destruct (valrel_implies_OfType vr) as [[vvs tyvs] [vvu tyvu]].
   exists (F.inl (abs (UValFI (n + d) τ) (app (upgrade n d τ') (app (vs[wk]) (app (downgrade n d τ) (var 0)))))).
   split.
-  - eapply upgrade_eval_inArr; crush.
-  - eapply valrel_inArr.
+  - eapply upgrade_eval_inArr; crush; crushValidTy.
+  - eapply valrel_inArr; try assumption.
     apply invert_valrel_pEmulDV_inArr in vr.
     simpl in vvs.
-    apply valrel_ptarr_inversion in vr; destruct_conjs; subst.
+    apply valrel_ptarr_inversion in vr;
+      cbn; try assumption; destruct_conjs; subst.
     simpl in *.
 
     (* unfold the valrel-ptarr *)
     change (abs (UValFI (n + d) τ)) with (abs (repEmul (pEmulDV (n + d) p τ))).
     change (I.abs τ) with (I.abs (fxToIs (pEmulDV (n + d) p τ))).
-    apply valrel_lambda; crushOfType; crushTyping;
+    apply valrel_lambda; cbn; try assumption.
+    crushOfType; crushTyping; I.crushTyping;
     eauto using downgrade_T, upgrade_T.
-    rewrite -> ?upgrade_sub, ?downgrade_sub.
+    crush.
+    rewrite -> ?upgrade_sub, ?downgrade_sub; crushValidTy.
 
     rewrite <- ap_liftSub; rewrite <- up_liftSub;
     rewrite -> liftSub_wkm; rewrite (apply_wkm_beta1_up_cancel vr vs).
 
     (* first execute the upgrade *)
-    specialize (ihd w' _ _ _ H0 H5).
+    specialize (ihd w' _ _ _ H0 vτ H5).
     destruct ihd as (vs' & edowns & vr').
     enough (termrel dir w' (pEmulDV (n + d) p τ')
                     (app (upgrade n d τ') (app (abs (UValFI n τ) vr) vs')) (H [beta1 vu])) as tr'
@@ -1457,7 +1526,7 @@ Proof.
 
     (* now execute the downgrade *)
     assert (wlt0 : w'0 < w) by lia.
-    specialize (ihu w'0 _ _ _ wlt0 H8).
+    specialize (ihu w'0 _ _ _ wlt0 vτ' H6).
     destruct ihu as (vs'' & eups & vr'').
     enough (termrel dir w'0 (pEmulDV (n + d) p τ')
                     vs'' vu0) as tr'
@@ -1465,8 +1534,7 @@ Proof.
             inferContext; crush; eauto using upgrade_value).
 
     (* conclude *)
-    apply valrel_in_termrel.
-    assumption.
+    now apply valrel_in_termrel.
 Qed.
 
 Lemma downgrade_zero_works {d v vu dir w p τ} :
@@ -1514,21 +1582,21 @@ Proof.
   ]).
 Qed.
 
-
 Lemma downgrade_S_works {n d v vu dir w p τ} :
+  ValidTy τ ->
   dir_world_prec (S n) w dir p →
   valrel dir w (pEmulDV (S (n + d)) p τ) v vu →
-  (forall v vu w' τ, dir_world_prec n w' dir p → valrel dir w' (pEmulDV (n + d) p τ) v vu →
+  (forall v vu w' τ, dir_world_prec n w' dir p → ValidTy τ → valrel dir w' (pEmulDV (n + d) p τ) v vu →
                    exists v',
                      app (downgrade n d τ) v -->* v' ∧ valrel dir w' (pEmulDV n p τ) v' vu) →
-  (forall v vu w' τ, dir_world_prec n w' dir p → valrel dir w' (pEmulDV n p τ) v vu →
+  (forall v vu w' τ, dir_world_prec n w' dir p → ValidTy τ → valrel dir w' (pEmulDV n p τ) v vu →
                    exists v',
                      app (upgrade n d τ) v -->* v' ∧ valrel dir w' (pEmulDV (n + d) p τ) v' vu) →
-  exists v', 
+  exists v',
     app (downgrade (S n) d τ) v -->* v' ∧
     valrel dir w (pEmulDV (S n) p τ) v' vu.
 Proof.
-  intros dwp vr IHdown IHup.
+  intros vτ dwp vr IHdown IHup.
   destruct (valrel_implies_Value vr);
   destruct (valrel_implies_OfType vr) as [[vv ty] [vvu tyvu]].
   simpl in ty, tyvu.
@@ -1537,7 +1605,7 @@ Proof.
   ].
   dependent destruction τ.
   - (* inArr *)
-    eapply (downgrade_inArr_works vr); crush.
+    unshelve eapply (downgrade_inArr_works _ _ vr); crushValidTy; crush.
     + eapply IHdown; try assumption; eapply dwp_invert_S'; crush.
     + eapply IHup; try assumption; eapply dwp_invert_S'; crush.
   - (* inUnit *)
@@ -1549,13 +1617,15 @@ Proof.
     exists (inl x); crush.
     eauto using downgrade_eval_inBool, invert_valrel_pEmulDV_inUnit', valrel_inUnit.
   - (* inProd *)
-    eapply (downgrade_inProd_works vr); crush;
+    (* unshelve eapply (downgrade_inProd_works _ _ vr); crushValidTy; crush. *)
+    destruct (ValidTy_invert_prod vτ) as (vτ1 & vτ2).
+    eapply (downgrade_inProd_works vτ1 vτ2 vr); crush.
     eapply IHdown; try assumption; eapply dwp_invert_S'; crush.
   - (* inSum *)
-    eapply (downgrade_inSum_works vr); crush;
+    unshelve eapply (downgrade_inSum_works _ _ vr); crushValidTy; crush;
     eapply IHdown; try assumption; eapply dwp_invert_S'; crush.
   - (* inRec *)
-    eapply (downgrade_inRec_works vr); crush;
+    unshelve eapply (downgrade_inRec_works _ vr); crushValidTy; crush;
     eapply IHdown; try assumption; eapply dwp_invert_S'; crush.
   - (* tvar *)
     contradiction (invert_valrel_pEmulDV_inVar vr).
@@ -1575,7 +1645,6 @@ Proof.
   destruct (dwp_zero dwp).
   eauto using upgrade_zero_eval, valrel_unk, dwp_zero.
 Qed.
-
 
 Lemma upgrade_inr_works {n d v vu dir w p τ} :
   valrel dir w (pEmulDV (S n) p τ) (F.inr v) vu →
@@ -1609,20 +1678,21 @@ Qed.
 
 
 Lemma upgrade_S_works {n d v vu dir w p τ} :
+  ValidTy τ →
   dir_world_prec (S n) w dir p →
   valrel dir w (pEmulDV (S n) p τ) v vu →
-  (forall v vu w' τ, dir_world_prec n w' dir p → valrel dir w' (pEmulDV (n + d) p τ) v vu →
-                   exists v', 
+  (forall v vu w' τ, dir_world_prec n w' dir p → ValidTy τ → valrel dir w' (pEmulDV (n + d) p τ) v vu →
+                   exists v',
                      app (downgrade n d τ) v -->* v' ∧ valrel dir w' (pEmulDV n p τ) v' vu) →
-  (forall v vu w' τ, dir_world_prec n w' dir p → valrel dir w' (pEmulDV n p τ) v vu →
-                   exists v', 
+  (forall v vu w' τ, dir_world_prec n w' dir p → ValidTy τ → valrel dir w' (pEmulDV n p τ) v vu →
+                   exists v',
                      app (upgrade n d τ) v -->* v' ∧ valrel dir w' (pEmulDV (n + d) p τ) v' vu) →
-  exists v', 
+  exists v',
     app (upgrade (S n) d τ) v -->* v' ∧
     valrel dir w (pEmulDV (S n + d) p τ) v' vu.
 Proof.
   change (S n + d) with (S (n + d)).
-  intros dwp vr IHdown IHup.
+  intros vτ dwp vr IHdown IHup.
   destruct (valrel_implies_Value vr);
   destruct (valrel_implies_OfType vr) as [[vv ty] [vvu tyvu]].
   simpl in ty, tyvu.
@@ -1631,7 +1701,7 @@ Proof.
   ].
   dependent destruction τ.
   - (* inArr *)
-    eapply (upgrade_inArr_works vr); crush.
+    unshelve eapply (upgrade_inArr_works _ _ vr); crushValidTy; crush.
     + eapply IHdown; try assumption; eapply dwp_invert_S'; crush.
     + eapply IHup; try assumption; eapply dwp_invert_S'; crush.
   - (* inUnit *)
@@ -1647,28 +1717,30 @@ Proof.
     eapply (F.eval_ctx₀' (F.eval_beta H)); F.inferContext; now cbn.
     crush.
   - (* inProd *)
-    eapply (upgrade_inProd_works vr); crush;
+    unshelve eapply (upgrade_inProd_works _ _ vr); crushValidTy; crush;
     eapply IHup; try assumption; eapply dwp_invert_S'; crush.
   - (* inSum *)
-    eapply (upgrade_inSum_works vr); crush;
+    unshelve eapply (upgrade_inSum_works _ _ vr); crushValidTy; crush;
     eapply IHup; try assumption; eapply dwp_invert_S'; crush.
   - (* inRec *)
-    eapply (upgrade_inRec_works vr); crush;
+    unshelve eapply (upgrade_inRec_works _ vr); crushValidTy; crush;
     eapply IHup; try assumption; eapply dwp_invert_S'; crush.
   - (* tvar *)
     contradiction (invert_valrel_pEmulDV_inVar vr).
 Qed.
 
 Lemma downgrade_works {n d v vu dir w p τ} :
+  ValidTy τ ->
   dir_world_prec n w dir p →
   valrel dir w (pEmulDV (n + d) p τ) v vu →
-  exists v', 
+  exists v',
     app (downgrade n d τ) v -->* v' ∧
     valrel dir w (pEmulDV n p τ) v' vu
 with upgrade_works {n v vu dir w p τ} d :
+       ValidTy τ →
        dir_world_prec n w dir p →
        valrel dir w (pEmulDV n p τ) v vu →
-       exists v', 
+       exists v',
          app (upgrade n d τ) v -->* v' ∧
          valrel dir w (pEmulDV (n + d) p τ) v' vu.
 Proof.
@@ -1680,7 +1752,7 @@ Proof.
     + intros; apply downgrade_zero_works; trivial.
     + specialize (downgrade_works n).
       specialize (upgrade_works n).
-      auto using downgrade_S_works.
+      eauto using downgrade_S_works.
   - destruct n.
     + intros; apply upgrade_zero_works; trivial.
     + specialize (downgrade_works n).
@@ -1689,50 +1761,55 @@ Proof.
 Qed.
 
 Lemma downgrade_works' {n d v vu dir w p τ} :
+  ValidTy τ ->
   dir_world_prec n w dir p →
   valrel dir w (pEmulDV (n + d) p τ) v vu →
   termrel dir w (pEmulDV n p τ) (app (downgrade n d τ) v) vu.
 Proof.
-  intros dwp vr.
-  destruct (downgrade_works dwp vr) as (v' & es & vr').
+  intros vτ dwp vr.
+  destruct (downgrade_works vτ dwp vr) as (v' & es & vr').
   apply valrel_in_termrel in vr'.
   refine (termrel_antired_star_left es vr').
 Qed.
 
 Lemma downgrade_works'' {n d v vu dir w p τ} :
+  ValidTy τ ->
   dir_world_prec n w dir p →
   valrel dir w (pEmulDV (n + d) p τ) v vu →
   termrel₀ dir w (pEmulDV n p τ) (app (downgrade n d τ) v) vu.
 Proof.
-  intros dwp vr.
-  destruct (downgrade_works dwp vr) as (v' & es & vr').
+  intros vτ dwp vr.
+  destruct (downgrade_works vτ dwp vr) as (v' & es & vr').
   apply valrel_in_termrel₀ in vr'.
   refine (termrel₀_antired_star_left es vr').
 Qed.
 
 Lemma upgrade_works' {n v vu dir w p τ} d :
+  ValidTy τ ->
   dir_world_prec n w dir p →
   valrel dir w (pEmulDV n p τ) v vu →
   termrel dir w (pEmulDV (n + d) p τ) (app (upgrade n d τ) v) vu.
 Proof.
-  intros dwp vr.
-  destruct (upgrade_works d dwp vr) as (v' & es & vr').
+  intros vτ dwp vr.
+  destruct (upgrade_works d vτ dwp vr) as (v' & es & vr').
   apply valrel_in_termrel in vr'.
   refine (termrel_antired_star_left es vr').
 Qed.
 
 Lemma upgrade_works'' {n v vu dir w p τ} d :
+  ValidTy τ →
   dir_world_prec n w dir p →
   valrel dir w (pEmulDV n p τ) v vu →
   termrel₀ dir w (pEmulDV (n + d) p τ) (app (upgrade n d τ) v) vu.
 Proof.
-  intros dwp vr.
-  destruct (upgrade_works d dwp vr) as (v' & es & vr').
+  intros vτ dwp vr.
+  destruct (upgrade_works d vτ dwp vr) as (v' & es & vr').
   apply valrel_in_termrel₀ in vr'.
   refine (termrel₀_antired_star_left es vr').
 Qed.
 
 Lemma compat_upgrade {Γ ts dir m tu n p τ} d :
+  ValidTy τ →
   dir_world_prec n m dir p →
   ⟪ Γ ⊩ ts ⟦ dir , m ⟧ tu : pEmulDV n p τ⟫ →
   ⟪ Γ ⊩ app (upgrade n d τ) ts ⟦ dir , m ⟧ tu : pEmulDV (n + d) p τ ⟫.
@@ -1742,16 +1819,17 @@ Proof.
   - eauto using upgrade_T with typing.
   - I.crushTyping.
   - intros.
-    specialize (H2 w H3 _ _ H4).
+    specialize (H3 w H4 _ _ H5).
     simpl; repeat crushStlcSyntaxMatchH.
     rewrite upgrade_sub.
-    eapply (termrel_ectx' H2); F.inferContext; I.inferContext; crush;
+    eapply (termrel_ectx' H3); F.inferContext; I.inferContext; crush;
     eauto using upgrade_value.
     simpl.
     eauto using upgrade_works', dwp_mono.
 Qed.
 
 Lemma compat_downgrade {Γ ts dir m tu n p d τ} :
+  ValidTy τ →
   dir_world_prec n m dir p →
   ⟪ Γ ⊩ ts ⟦ dir , m ⟧ tu : pEmulDV (n + d) p τ ⟫ →
   ⟪ Γ ⊩ app (downgrade n d τ) ts ⟦ dir , m ⟧ tu : pEmulDV n p τ ⟫.
@@ -1761,10 +1839,10 @@ Proof.
   - eauto using downgrade_T with typing.
   - I.crushTyping.
   - intros.
-    specialize (H2 w H3 _ _ H4).
+    specialize (H3 w H4 _ _ H5).
     simpl; repeat crushStlcSyntaxMatchH.
     rewrite downgrade_sub.
-    eapply (termrel_ectx' H2); F.inferContext; I.inferContext; crush;
+    eapply (termrel_ectx' H3); F.inferContext; I.inferContext; crush;
     eauto using downgrade_value.
     simpl.
     eauto using downgrade_works', dwp_mono.

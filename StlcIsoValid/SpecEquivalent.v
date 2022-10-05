@@ -8,6 +8,7 @@ Require Export StlcIsoValid.SpecAnnot.
  *)
 Definition PCtxEquivalent (Γ: Env) (t₁ t₂: Tm) (τ: Ty) : Prop :=
   ∀ C τ',
+    ValidTy τ' ->
     ⟪ ia⊢ C : Γ , τ → empty, τ' ⟫ →
     (pctx_app t₁ (eraseAnnot_pctx C))⇓ ↔ (pctx_app t₂ (eraseAnnot_pctx C))⇓.
 Notation "⟪  Γ i⊢ t₁ ≃ t₂ : τ  ⟫" :=
@@ -18,6 +19,6 @@ Lemma pctx_equiv_symm {Γ t₁ t₂ τ} :
   ⟪ Γ i⊢ t₁ ≃ t₂ : τ ⟫ → ⟪ Γ i⊢ t₂ ≃ t₁ : τ ⟫.
 Proof.
   unfold PCtxEquivalent.
-  intros equiv C τ' ty; split;
-  apply (equiv C τ' ty).
+  intros equiv C τ' vτ' ty; split;
+  apply (equiv C τ' vτ' ty).
 Qed.

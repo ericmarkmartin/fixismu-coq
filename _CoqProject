@@ -28,6 +28,8 @@ LogRelFI/LR.v
 LogRelFI/LemmasLR.v
 LogRelFI/LemmasIntro.v
 LogRelFI/LemmasInversion.v
+# LogRelFI/Contraction.v
+# LogRelFI/ValidPTy.v
 LogRelFI/LemmasPseudoType.v
 LogRelFI/PseudoType.v
 StlcFix/CanForm.v
@@ -43,21 +45,6 @@ StlcFix/SpecTyping.v
 StlcFix/SpecAnnot.v
 StlcFix/StlcOmega.v
 StlcFix/TypeSafety.v
-StlcIso/CanForm.v
-StlcIso/Inst.v
-StlcIso/InstAnnot.v
-StlcIso/LemmasEvaluation.v
-StlcIso/LemmasProgramContext.v
-StlcIso/LemmasTyping.v
-StlcIso/Size.v
-StlcIso/SpecEquivalent.v
-StlcIso/SpecEvaluation.v
-StlcIso/SpecSyntax.v
-StlcIso/SpecTyping.v
-StlcIso/SpecAnnot.v
-# StlcIso/StlcOmega.v
-StlcIso/TypeSafety.v
-StlcIso/Fix.v
 RecTypes/Contraction.v
 RecTypes/SpecTypes.v
 RecTypes/InstTy.v

@@ -1,13 +1,13 @@
 Require StlcFix.SpecSyntax.
-Require StlcIso.SpecSyntax.
+Require StlcIsoValid.SpecSyntax.
 Require Import BacktransFI.UValHelpers.
 Require Import StlcFix.SpecTyping.
 Require Import StlcFix.StlcOmega.
 Require Import StlcFix.LemmasTyping.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.LemmasEvaluation.
-Require Import StlcIso.SpecEvaluation.
-Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIsoValid.SpecEvaluation.
+Require Import StlcIsoValid.LemmasEvaluation.
 Require Import LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
@@ -17,7 +17,7 @@ Require Import LogRelFI.LemmasInversion.
 Require Import Lia.
 Require Import Db.Lemmas.
 Require Import UValFI.UVal.
-Require StlcIso.Fix.
+Require StlcIsoValid.Fix.
 Require Lia.
 
 Definition uvalApp_pctx₁ n ts₂ τ τ' :=
@@ -193,12 +193,13 @@ Proof.
 Qed.
 
 Lemma termrel_uvalApp {d w n p ts₁ tu₁ ts₂ tu₂ τ τ'} :
+  ValidTy τ → ValidTy τ' →
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p (I.tarr τ τ')) ts₁ tu₁ →
   (∀ w' : World, w' ≤ w → termrel d w' (pEmulDV n p τ) ts₂ tu₂) →
   termrel d w (pEmulDV n p τ') (uvalApp n ts₁ ts₂ τ τ') (I.app tu₁ tu₂).
 Proof.
-  intros dwp tr₁ tr₂.
+  intros vτ vτ' dwp tr₁ tr₂.
   unfold uvalApp, caseArrUp, caseArrUp_pctx.
   (* evaluate ts₁ and tu₁ *)
   eapply (termrel_ectx' tr₁); F.inferContext; I.inferContext.
@@ -245,7 +246,7 @@ Proof.
   simpl in H, H1.
   assert (valrel d w'' (pEmulDV n p (I.tarr τ τ')) vs₁ vu₁) by eauto using valrel_mono.
   assert (trupg : termrel d w'' (pEmulDV (n + 1) p (I.tarr τ τ')) (F.app (upgrade n 1 (I.tarr τ τ')) vs₁) vu₁)
-    by (eauto using upgrade_works', dwp_mono).
+    by (eapply upgrade_works'; crushValidTy; now eapply (dwp_mono dwp)).
   unfold caseArr.
   eapply (termrel_ectx' trupg); F.inferContext; I.inferContext; cbn; crush.
 

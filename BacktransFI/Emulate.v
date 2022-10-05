@@ -1,17 +1,17 @@
 Require StlcFix.SpecSyntax.
-Require StlcIso.SpecSyntax.
+Require StlcIsoValid.SpecSyntax.
 Require Import BacktransFI.UValHelpers.
 Require Import BacktransFI.UValHelpers2.
 Require Import StlcFix.SpecTyping.
-Require Import StlcIso.SpecTyping.
+Require Import StlcIsoValid.SpecTyping.
 Require Import StlcFix.StlcOmega.
 Require Import StlcFix.LemmasTyping.
 Require Import StlcFix.SpecEvaluation.
 Require Import StlcFix.LemmasEvaluation.
-Require Import StlcIso.SpecEvaluation.
-Require Import StlcIso.SpecAnnot.
-Require Import StlcIso.LemmasEvaluation.
-Require Import StlcIso.LemmasTyping.
+Require Import StlcIsoValid.SpecEvaluation.
+Require Import StlcIsoValid.SpecAnnot.
+Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIsoValid.LemmasTyping.
 Require Import LogRelFI.PseudoType.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
@@ -21,7 +21,7 @@ Require Import LogRelFI.LemmasInversion.
 Require Import Lia.
 Require Import Db.Lemmas.
 Require Import UValFI.UVal.
-Require StlcIso.Fix.
+Require StlcIsoValid.Fix.
 Require Lia.
 
 Set Asymmetric Patterns.
@@ -199,11 +199,12 @@ Proof.
 Qed.
 
 Lemma compat_emul_abs {n m d p Γ τ₁ τ₂ ts tu} :
+  ValidPEnv Γ -> ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n m d p →
   ⟪ Γ p▻ pEmulDV n p τ₁ ⊩ ts ⟦ d , m ⟧ tu : pEmulDV n p τ₂ ⟫ →
   ⟪ Γ ⊩ inArrDwn τ₁ τ₂ n (F.abs (UValFI n τ₁) ts) ⟦ d , m ⟧ I.abs τ₁ tu : pEmulDV n p (I.tarr τ₁ τ₂) ⟫.
 Proof.
-  intros dwp [ty [closed tr]].
+  intros vΓ vτ₁ vτ₂ dwp [ty [closed tr]].
   split; [|split].
   - eauto using inArrDwn_T with typing uval_typing.
   - crush.
@@ -224,7 +225,7 @@ Proof.
 
     change (UValFI n τ₁) with (repEmul (pEmulDV n p τ₁)).
 
-    refine (valrel_lambda _ _); crush.
+    refine (valrel_lambda _ _ _ _); crush.
 
     intros w' vs vu futw sz valrel.
     fold F.apTm I.apTm.
@@ -250,12 +251,13 @@ Qed.
 (* Qed. *)
 
 Lemma compat_emul_pair {n m d p Γ τ₁ τ₂ ts₁ tu₁ ts₂ tu₂} :
+  ValidPEnv Γ -> ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts₁ ⟦ d , m ⟧ tu₁ : pEmulDV n p τ₁ ⟫ →
   ⟪ Γ ⊩ ts₂ ⟦ d , m ⟧ tu₂ : pEmulDV n p τ₂ ⟫ →
   ⟪ Γ ⊩ inProdDwn τ₁ τ₂ n (F.pair ts₁ ts₂) ⟦ d , m ⟧ I.pair tu₁ tu₂ : pEmulDV n p (I.tprod τ₁ τ₂)⟫.
 Proof.
-  intros dwp tr₁ tr₂.
+  intros vΓ vτ₁ vτ₂ dwp tr₁ tr₂.
   destruct tr₁ as (? & ? & tr₁).
   destruct tr₂ as (? & ? & tr₂).
   split; [|split].
@@ -275,6 +277,7 @@ Proof.
 Qed.
 
 Lemma termrel_emul_caseof {n w d p τ₁ τ₂ τ ts₁ tu₁ ts₂ tu₂ ts₃ tu₃} :
+  ValidTy τ₁ -> ValidTy τ₂ -> ValidTy τ ->
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p (tsum τ₁ τ₂)) ts₁ tu₁ →
   (forall w' vs₂ vu₂, w' ≤ w →
@@ -285,7 +288,7 @@ Lemma termrel_emul_caseof {n w d p τ₁ τ₂ τ ts₁ tu₁ ts₂ tu₂ ts₃ 
                       termrel d w' (pEmulDV n p τ) (ts₃ [beta1 vs₃]) (tu₃ [beta1 vu₃])) →
   termrel d w (pEmulDV n p τ) (F.caseof (caseSumUp n ts₁ τ₁ τ₂) ts₂ ts₃) (I.caseof tu₁ tu₂ tu₃).
 Proof.
-  intros dwp tr₁ tr₂ tr₃.
+  intros vτ₁ vτ₂ vτ dwp tr₁ tr₂ tr₃.
   unfold caseSumUp.
   (* evaluate ts₁ and ts₂ *)
   eapply (termrel_ectx' tr₁); F.inferContext; I.inferContext; crush;
@@ -297,7 +300,7 @@ Proof.
 
   (* evaluate upgrade *)
   assert (trupg : termrel d w' (pEmulDV (n + 1) p (τ₁ r⊎ τ₂)) (F.app (upgrade n 1 (τ₁ r⊎ τ₂)) vs) vu)
-    by eauto using upgrade_works', dwp_mono.
+    by eauto using upgrade_works', dwp_mono with tyvalid.
   replace (n + 1) with (S n) in trupg by lia.
   eapply (termrel_ectx' trupg); F.inferContext; I.inferContext;
     crush.
@@ -308,7 +311,7 @@ Proof.
 
   (* case analysis *)
   destruct (valrel_implies_Value vr').
-  eapply invert_valrel_pEmulDV_for_caseUValSum in vr'.
+  eapply invert_valrel_pEmulDV_for_caseUValSum in vr'; try assumption.
   destruct vr' as [(vs₁' & ? & es & vr₁')|
                    (? & div)]; subst.
 
@@ -317,7 +320,9 @@ Proof.
     eapply (F.evalstar_ctx' es); F.inferContext; crush.
 
     cbn.
-    eapply termrel_caseof; eauto using valrel_in_termrel.
+    eapply termrel_caseof;
+      eauto using valrel_in_termrel with tyvalid; unfold ValidPTy; cbn;
+      eauto with tyvalid.
     + intros w''' vs₂' vu₂' fw'' vr₂. eapply tr₂; eauto with arith.
     + intros w''' vs₃' vu₃' fw'' vr₃. eapply tr₃; eauto with arith.
   - (* unk case *)
@@ -327,13 +332,14 @@ Proof.
 Qed.
 
 Lemma compat_emul_caseof {n m d p τ₁ τ₂ τ Γ ts₁ tu₁ ts₂ tu₂ ts₃ tu₃} :
+  ValidPEnv Γ -> ValidTy τ₁ -> ValidTy τ₂ -> ValidTy τ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts₁ ⟦ d , m ⟧ tu₁ : pEmulDV n p (τ₁ r⊎ τ₂) ⟫ →
   ⟪ Γ p▻ pEmulDV n p τ₁ ⊩ ts₂ ⟦ d , m ⟧ tu₂ : pEmulDV n p τ ⟫ →
   ⟪ Γ p▻ pEmulDV n p τ₂ ⊩ ts₃ ⟦ d , m ⟧ tu₃ : pEmulDV n p τ ⟫ →
   ⟪ Γ ⊩ F.caseof (caseSumUp n ts₁ τ₁ τ₂) ts₂ ts₃ ⟦ d , m ⟧ I.caseof tu₁ tu₂ tu₃ : pEmulDV n p τ ⟫.
 Proof.
-  intros dwp lr₁ lr₂ lr₃.
+  intros vΓ vτ₁ vτ₂ vτ dwp lr₁ lr₂ lr₃.
   destruct lr₁ as (? & ? & tr₁).
   destruct lr₂ as (? & ? & tr₂).
   destruct lr₃ as (? & ? & tr₃).
@@ -353,13 +359,14 @@ Proof.
 Qed.
 
 Lemma termrel_emul_ite {n w d p τ ts₁ tu₁ ts₂ tu₂ ts₃ tu₃} :
+  ValidTy τ ->
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p tbool) ts₁ tu₁ →
   (forall w', w' ≤ w → termrel d w' (pEmulDV n p τ) ts₂ tu₂) →
   (forall w', w' ≤ w → termrel d w' (pEmulDV n p τ) ts₃ tu₃) →
   termrel d w (pEmulDV n p τ) (F.ite (caseBoolUp n ts₁) ts₂ ts₃) (I.ite tu₁ tu₂ tu₃).
 Proof.
-  intros dwp tr₁ tr₂ tr₃.
+  intros vτ dwp tr₁ tr₂ tr₃.
   unfold caseBoolUp.
   (* evaluate ts₁ and ts₂ *)
   eapply (termrel_ectx' tr₁); F.inferContext; I.inferContext; crush;
@@ -371,7 +378,7 @@ Proof.
 
   (* evaluate upgrade *)
   assert (trupg : termrel d w' (pEmulDV (n + 1) p tbool) (F.app (upgrade n 1 tbool) vs) vu)
-    by eauto using upgrade_works', dwp_mono.
+    by eauto using upgrade_works', dwp_mono with tyvalid.
   replace (n + 1) with (S n) in trupg by lia.
   eapply (termrel_ectx' trupg); F.inferContext; I.inferContext; crush; [|now cbn].
 
@@ -400,13 +407,14 @@ Proof.
 Qed.
 
 Lemma compat_emul_ite {n m d p Γ τ ts₁ tu₁ ts₂ tu₂ ts₃ tu₃} :
+  ValidPEnv Γ -> ValidTy τ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts₁ ⟦ d , m ⟧ tu₁ : pEmulDV n p tbool ⟫ →
   ⟪ Γ ⊩ ts₂ ⟦ d , m ⟧ tu₂ : pEmulDV n p τ ⟫ →
   ⟪ Γ ⊩ ts₃ ⟦ d , m ⟧ tu₃ : pEmulDV n p τ ⟫ →
   ⟪ Γ ⊩ F.ite (caseBoolUp n ts₁) ts₂ ts₃ ⟦ d , m ⟧ I.ite tu₁ tu₂ tu₃ : pEmulDV n p τ ⟫.
 Proof.
-  intros dwp lr₁ lr₂ lr₃.
+  intros vΓ vτ dwp lr₁ lr₂ lr₃.
   destruct lr₁ as (? & ? & tr₁).
   destruct lr₂ as (? & ? & tr₂).
   destruct lr₃ as (? & ? & tr₃).
@@ -421,12 +429,13 @@ Proof.
 Qed.
 
 Lemma compat_emul_app {n m d p τ₁ τ₂ Γ ts₁ tu₁ ts₂ tu₂} :
+  ValidPEnv Γ -> ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts₁ ⟦ d , m ⟧ tu₁ : pEmulDV n p (tarr τ₁ τ₂)⟫ →
   ⟪ Γ ⊩ ts₂ ⟦ d , m ⟧ tu₂ : pEmulDV n p τ₁ ⟫ →
   ⟪ Γ ⊩ uvalApp n ts₁ ts₂ τ₁ τ₂ ⟦ d , m ⟧ I.app tu₁ tu₂ : pEmulDV n p τ₂ ⟫.
 Proof.
-  intros dwp (? & ? & tr₁) (? & ? & tr₂).
+  intros vΓ vτ₁ vτ₂ dwp (? & ? & tr₁) (? & ? & tr₂).
   split; [|split].
   - eauto using caseArrUp_T with typing uval_typing.
   - I.crushTyping.
@@ -465,7 +474,7 @@ Proof.
   (* do the upgrade *)
   unfold caseUnitUp_pctx; rewrite F.pctx_cat_app; cbn.
   assert (trupg : termrel d w' (pEmulDV (n + 1) p tunit) (F.app (upgrade n 1 tunit) vs) vu)
-    by eauto using upgrade_works', dwp_mono.
+    by eauto using upgrade_works', dwp_mono with tyvalid.
   replace (n + 1) with (S n) in trupg by lia.
   eapply (termrel_ectx' trupg); F.inferContext; I.inferContext; cbn; crush.
 
@@ -493,12 +502,13 @@ Proof.
 Qed.
 
 Lemma compat_emul_seq {n m d p Γ τ ts₁ tu₁ ts₂ tu₂} :
+  ValidPEnv Γ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts₁ ⟦ d , m ⟧ tu₁ : pEmulDV n p tunit ⟫ →
   ⟪ Γ ⊩ ts₂ ⟦ d , m ⟧ tu₂ : pEmulDV n p τ ⟫ →
   ⟪ Γ ⊩ F.seq (caseUnitUp n ts₁) ts₂ ⟦ d , m ⟧ I.seq tu₁ tu₂ : pEmulDV n p τ ⟫.
 Proof.
-  intros dwp (? & ? & tr₁) (? & ? & tr₂).
+  intros vΓ dwp (? & ? & tr₁) (? & ? & tr₂).
   split; [|split];
     eauto using caseUnitUp_T with typing uval_typing.
 
@@ -515,11 +525,12 @@ Proof.
 Qed.
 
 Lemma termrel_emul_inl {n w d p τ₁ τ₂ ts tu} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p τ₁) ts tu →
   termrel d w (pEmulDV n p (τ₁ r⊎ τ₂)) (inSumDwn τ₁ τ₂ n (F.inl ts)) (I.inl tu).
 Proof.
-  intros dwp tr.
+  intros vτ₁ vτ₂ dwp tr.
   unfold inSumDwn.
   eapply (termrel_ectx' tr); F.inferContext; I.inferContext; crush;
   eauto using inSumDwn_pctx_ectx.
@@ -529,11 +540,12 @@ Proof.
 Qed.
 
 Lemma compat_emul_inl {n m d p τ₁ τ₂ Γ ts tu} :
+  ValidPEnv Γ -> ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts ⟦ d , m ⟧ tu : pEmulDV n p τ₁ ⟫ →
   ⟪ Γ ⊩ inSumDwn τ₁ τ₂ n (F.inl ts) ⟦ d , m ⟧ I.inl tu : pEmulDV n p (τ₁ r⊎ τ₂) ⟫.
 Proof.
-  intros dwp lr.
+  intros vΓ vτ₁ vτ₂ dwp lr.
   destruct lr as (? & ? & tr).
   split; [|split].
   - simpl in *.
@@ -545,11 +557,12 @@ Proof.
 Qed.
 
 Lemma termrel_emul_fold_ {n w d p τ ts tu} :
+  ValidTy (trec τ) ->
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p (τ [beta1 (trec τ)])) ts tu →
   termrel d w (pEmulDV n p (trec τ)) (inRecDwn τ n ts) (I.fold_ tu).
 Proof.
-  intros dwp tr.
+  intros vτ dwp tr.
   unfold inRecDwn.
   eapply (termrel_ectx' tr); F.inferContext; I.inferContext; crush;
   eauto using inRecDwn_pctx_ectx.
@@ -559,11 +572,12 @@ Proof.
 Qed.
 
 Lemma compat_emul_fold_ {n m d p τ Γ ts tu} :
+  ValidTy (trec τ) ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts ⟦ d , m ⟧ tu : pEmulDV n p (τ [beta1 (trec τ)]) ⟫ →
   ⟪ Γ ⊩ (inRecDwn τ n ts) ⟦ d , m ⟧ I.fold_ tu : pEmulDV n p (trec τ) ⟫.
 Proof.
-  intros dwp lr.
+  intros vτ dwp lr.
   destruct lr as (? & ? & tr).
   split; [|split].
   - simpl in *.
@@ -575,11 +589,12 @@ Proof.
 Qed.
 
 Lemma termrel_emul_unfold_ {n w d p τ ts tu} :
+  ValidTy (trec τ) ->
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p (trec τ)) ts tu →
   termrel d w (pEmulDV n p (τ [beta1 (trec τ)])) (caseRecUp n ts τ) (I.unfold_ tu).
 Proof.
-  intros dwp tr.
+  intros vτ dwp tr.
   unfold caseRecUp.
   (* evaluate terms *)
   eapply (termrel_ectx' tr); F.inferContext; I.inferContext; crush;
@@ -618,11 +633,12 @@ Proof.
 Qed.
 
 Lemma compat_emul_unfold_ {n m d p τ Γ ts tu} :
+  ValidTy (trec τ) ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts ⟦ d , m ⟧ tu : pEmulDV n p (trec τ) ⟫ →
   ⟪ Γ ⊩ (caseRecUp n ts τ) ⟦ d , m ⟧ I.unfold_ tu : pEmulDV n p (τ [beta1 (trec τ)]) ⟫.
 Proof.
-  intros dwp lr.
+  intros vτ dwp lr.
   destruct lr as (? & ? & tr).
   split; [|split].
   - simpl in *.
@@ -636,11 +652,12 @@ Qed.
 
 
 Lemma termrel_emul_inr {n w d p τ₁ τ₂ ts tu} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p τ₂) ts tu →
   termrel d w (pEmulDV n p (τ₁ r⊎ τ₂)) (inSumDwn τ₁ τ₂ n (F.inr ts)) (I.inr tu).
 Proof.
-  intros dwp tr. unfold inSumDwn.
+  intros vτ₁ vτ₂ dwp tr. unfold inSumDwn.
   eapply (termrel_ectx' tr); F.inferContext; I.inferContext; crush;
   eauto using inSumDwn_pctx_ectx.
   intros w' fw vs vu vr.
@@ -649,11 +666,12 @@ Proof.
 Qed.
 
 Lemma compat_emul_inr {n m d p τ₁ τ₂ Γ ts tu} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts ⟦ d , m ⟧ tu : pEmulDV n p τ₂ ⟫ →
   ⟪ Γ ⊩ inSumDwn τ₁ τ₂ n (F.inr ts) ⟦ d , m ⟧ I.inr tu : pEmulDV n p (τ₁ r⊎ τ₂)⟫.
 Proof.
-  intros dwp lr.
+  intros vτ₁ vτ₂ dwp lr.
   destruct lr as (? & ? & tr).
   split; [|split].
   - simpl in *.
@@ -665,11 +683,12 @@ Proof.
 Qed.
 
 Lemma termrel_emul_proj₁ {n w d p τ₁ τ₂ ts tu} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p (I.tprod τ₁ τ₂)) ts tu →
   termrel d w (pEmulDV n p τ₁) (F.proj₁ (caseProdUp n ts τ₁ τ₂)) (I.proj₁ tu).
 Proof.
-  intros dwp tr.
+  intros vτ₁ vτ₂ dwp tr.
   unfold caseProdUp.
 
   (* evaluate ts and tu *)
@@ -682,7 +701,7 @@ Proof.
 
   (* execute the upgrade *)
   assert (trupg : termrel d w' (pEmulDV (n + 1) p (I.tprod τ₁ τ₂)) (F.app (upgrade n 1 (I.tprod τ₁ τ₂)) vs) vu)
-    by eauto using upgrade_works', dwp_mono.
+    by eauto using upgrade_works', dwp_mono with tyvalid.
   replace (n + 1) with (S n) in trupg by lia.
   eapply (termrel_ectx' trupg); F.inferContext; I.inferContext; crush; [|now cbn].
 
@@ -703,11 +722,12 @@ Proof.
 Qed.
 
 Lemma compat_emul_proj₁ {n m d p Γ τ₁ τ₂ ts tu} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts ⟦ d , m ⟧ tu : pEmulDV n p (I.tprod τ₁ τ₂) ⟫ →
   ⟪ Γ ⊩ F.proj₁ (caseProdUp n ts τ₁ τ₂) ⟦ d , m ⟧ I.proj₁ tu : pEmulDV n p τ₁ ⟫.
 Proof.
-  intros dwp lr.
+  intros vτ₁ vτ₂ dwp lr.
   destruct lr as (? & ? & tr).
   split; [|split].
   - simpl in *.
@@ -720,11 +740,12 @@ Proof.
 Qed.
 
 Lemma termrel_emul_proj₂ {n w d p τ₁ τ₂ ts tu} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n w d p →
   termrel d w (pEmulDV n p (I.tprod τ₁ τ₂)) ts tu →
   termrel d w (pEmulDV n p τ₂) (F.proj₂ (caseProdUp n ts τ₁ τ₂)) (I.proj₂ tu).
 Proof.
-  intros dwp tr.
+  intros vτ₁ vτ₂ dwp tr.
   unfold caseProdUp.
 
   (* evaluate ts and tu *)
@@ -737,7 +758,7 @@ Proof.
 
   (* execute the upgrade *)
   assert (trupg : termrel d w' (pEmulDV (n + 1) p (τ₁ r× τ₂)) (F.app (upgrade n 1 (τ₁ r× τ₂)) vs) vu)
-    by eauto using upgrade_works', dwp_mono.
+    by eauto using upgrade_works', dwp_mono with tyvalid.
   replace (n + 1) with (S n) in trupg by lia.
   eapply (termrel_ectx' trupg); F.inferContext; I.inferContext; crush; [|now cbn].
 
@@ -758,11 +779,12 @@ Proof.
 Qed.
 
 Lemma compat_emul_proj₂ {n m d p Γ τ₁ τ₂ ts tu} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   dir_world_prec n m d p →
   ⟪ Γ ⊩ ts ⟦ d , m ⟧ tu : pEmulDV n p (τ₁ r× τ₂) ⟫ →
   ⟪ Γ ⊩ F.proj₂ (caseProdUp n ts τ₁ τ₂) ⟦ d , m ⟧ I.proj₂ tu : pEmulDV n p τ₂ ⟫.
 Proof.
-  intros dwp lr.
+  intros vτ₁ vτ₂ dwp lr.
   destruct lr as (? & ? & tr).
   split; [|split].
   - simpl in *.
@@ -798,12 +820,28 @@ Proof.
   induction Γ; cbn; f_equal; trivial.
 Qed.
 
+Lemma ValidPEnv_cons {Γ τ} : ValidPEnv Γ -> ValidPTy τ -> ValidPEnv (Γ p▻ τ).
+Proof.
+  intros vΓ vτ i τ' iτ'.
+  inversion iτ'; subst; now eauto.
+Qed.
+
+Lemma ValidPEnv_toEmulDV {n p Γ} :
+  ValidEnv Γ ->
+  ValidPEnv (toEmulDV n p Γ).
+Proof.
+  induction Γ; cbn; eauto using ValidPEnvEmpty.
+  intros (vΓ & vτ)%ValidEnv_invert_cons.
+  now eauto using ValidPEnv_cons.
+Qed.
+
 Lemma emulate_works { Γ tu n p d m τ} :
+  ValidEnv Γ -> ValidTy τ ->
   dir_world_prec n m d p →
   ⟪ Γ ia⊢ tu : τ ⟫ →
   ⟪ toEmulDV n p Γ ⊩ F.eraseAnnot (emulate n tu) ⟦ d , m ⟧ eraseAnnot tu : pEmulDV n p τ ⟫.
 Proof.
-  intros dwp; induction 1;
+  intros vΓ vτ dwp; induction 1;
     cbn;
     rewrite ?eraseAnnot_inUnitDwnA, ?eraseAnnot_inBoolDwnA, ?eraseAnnot_inProdDwnA, ?eraseAnnot_inSumDwnA, ?eraseAnnot_inArrDwnA, ?eraseAnnot_inRecDwnA, ?eraseAnnot_caseUnitUpA, ?eraseAnnot_caseBoolUpA, ?eraseAnnot_caseProdUpA, ?eraseAnnot_caseSumUpA, ?eraseAnnot_caseRecUpA, ?eraseAnnot_uvalAppA;
     eauto using compat_emul_app, compat_emul_abs, compat_var, toEmulDV_entry
@@ -814,16 +852,32 @@ Proof.
     , compat_emul_fold_, compat_emul_unfold_
     , compat_emul_proj₁, compat_emul_proj₂
     , compat_emul_seq
-    , compat_emul_caseof.
+    , compat_emul_caseof
+    , ValidPEnv_toEmulDV
+    with tyvalid2.
+  - destruct (ValidTy_invert_arr vτ) as [vτ₁ vτ₂].
+    eapply compat_emul_abs; eauto using ValidPEnv_toEmulDV with tyvalid.
+  - assert (vτ₁ := typed_terms_are_valid _ _ vΓ (eraseAnnotT H0)).
+    assert (vτ₁₂ := typed_terms_are_valid _ _ vΓ (eraseAnnotT H)).
+    eapply compat_emul_app; eauto using ValidPEnv_toEmulDV with tyvalid.
+  - eapply compat_emul_ite; eauto using ValidPEnv_toEmulDV with tyvalid.
+  - assert (vτ₁₂ := typed_terms_are_valid _ _ vΓ (eraseAnnotT H)).
+    eapply compat_emul_proj₁; eauto using ValidPEnv_toEmulDV with tyvalid2.
+  - assert (vτ₁₂ := typed_terms_are_valid _ _ vΓ (eraseAnnotT H)).
+    eapply compat_emul_proj₂; eauto using ValidPEnv_toEmulDV with tyvalid2.
+  - eapply compat_emul_caseof; eauto using ValidPEnv_toEmulDV with tyvalid2.
+    eapply IHAnnotTyping2; eauto using ValidPEnv_toEmulDV, ValidPEnv_cons, ValidEnv_cons with tyvalid2.
+    eapply IHAnnotTyping3; eauto using ValidPEnv_toEmulDV, ValidPEnv_cons, ValidEnv_cons with tyvalid2.
 Qed.
 
 
 Lemma emulate_pctx_works { Γ τ Γₒ τₒ Cu n p d m} :
   dir_world_prec n m d p →
+  ValidEnv Γ -> ValidTy τ ->
   ⟪ ia⊢ Cu : Γₒ , τₒ → Γ , τ ⟫ →
   ⟪ ⊩ F.eraseAnnot_pctx (emulate_pctx n Cu) ⟦ d , m ⟧ eraseAnnot_pctx Cu : toEmulDV n p Γₒ , pEmulDV n p τₒ → toEmulDV n p Γ , pEmulDV n p τ ⟫.
 Proof.
-  intros dwp scp; unfold OpenLRCtxN; split; [|split].
+  intros dwp vΓ vτ scp; unfold OpenLRCtxN; split; [|split].
   - simpl.
     rewrite ?toEmulDV_repEmulCtx.
     eauto using F.eraseAnnot_pctxT, emulate_pctx_T.
@@ -855,14 +909,24 @@ Proof.
     , compat_emul_seq
     , compat_emul_caseof
     , compat_emul_fold_
-    , compat_emul_unfold_.
-    + eapply compat_emul_pair; eauto using emulate_works.
-    + eapply compat_emul_pair; eauto using emulate_works.
-    + eapply compat_emul_caseof; crush;
-        repeat change (toEmulDV n p Γ p▻ pEmulDV n p ?τ) with (toEmulDV n p (Γ r▻ τ));
-        eauto using emulate_works.
-    + eapply (emulate_works dwp) in H, H0.
-      eauto using emulate_works, compat_emul_caseof.
-    + eapply (emulate_works dwp) in H, H0.
-      eauto using emulate_works, compat_emul_caseof.
+    , compat_emul_unfold_
+    , ValidPEnv_toEmulDV
+      , ValidEnv_cons
+      with tyvalid2.
+    + assert (vτ₁ := typed_terms_are_valid _ _ vΓ (eraseAnnotT H0)).
+      eapply compat_emul_app; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons.
+      eapply IHscp; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+    + eapply compat_emul_ite; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+    + eapply compat_emul_ite; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+    + eapply compat_emul_ite; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+    + eapply compat_emul_pair; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+    + eapply compat_emul_pair; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+    + eapply emulate_works in H, H0; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+      eapply compat_emul_caseof; crush;
+        repeat change (toEmulDV n p Γ p▻ pEmulDV n p ?τ) with (toEmulDV n p (Γ i▻ τ))
+      ; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+    + eapply emulate_works in H, H0; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+      eauto using emulate_works, compat_emul_caseof, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+    + eapply emulate_works in H, H0; eauto using emulate_works, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
+      eauto using emulate_works, compat_emul_caseof, ValidPEnv_toEmulDV, ValidEnv_cons with tyvalid2.
 Qed.

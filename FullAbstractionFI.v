@@ -2,8 +2,8 @@ Require Import StlcFix.SpecTyping.
 Require Import StlcFix.SpecEquivalent.
 Require Import StlcFix.LemmasEvaluation.
 Require Import StlcFix.LemmasTyping.
-Require Import StlcIso.SpecEquivalent.
-Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIsoValid.SpecEquivalent.
+Require Import StlcIsoValid.LemmasEvaluation.
 
 Require Import CompilerFI.CompilerFI.
 
@@ -27,6 +27,7 @@ Proof.
   (* sufficient to prove one direction of equi-termination *)
   revert t₁ t₂ τ.
   enough (∀ {t₁ t₂ τ τ'},
+             ValidTy τ' ->
             ⟪ F.empty ⊢ t₁ : τ ⟫ →
             ⟪ F.empty ⊢ t₂ : τ ⟫ →
             ⟪ F.empty ⊢ t₁ ≃ t₂ : τ ⟫ →
@@ -36,9 +37,9 @@ Proof.
           assert (⟪ F.empty ⊢ t₂ ≃ t₁ : τ ⟫)
             by (apply F.pctx_equiv_symm; assumption);
           split;
-          refine (Hltor _ _ _ _ _ _ _ _ _); eassumption).
+          refine (Hltor _ _ _ _ _ _ _ _ _ _); eassumption).
 
-  intros t₁ t₂ τ τ' ty₁ ty₂ ceq Cu tCu term.
+  intros t₁ t₂ τ τ' vτ' ty₁ ty₂ ceq Cu tCu term.
   destruct (I.Terminating_TermHor term) as [n termN]; clear term.
 
   assert (⟪ pempty ⊩ t₁ ⟦ dir_gt , S n ⟧ compfi t₁ : embed τ ⟫) as lre₁
@@ -52,7 +53,7 @@ Proof.
   assert (⟪ ⊩ F.eraseAnnot_pctx (emulate_pctx (S (S n)) Cu) ⟦ dir_gt , S n ⟧ (eraseAnnot_pctx Cu) :
               pempty , pEmulDV (S (S n)) precise (compfi_ty τ) → pempty , pEmulDV (S (S n)) precise τ' ⟫) as lrem₁ by
       (change pempty with (toEmulDV (S (S n)) precise I.empty);
-       eapply emulate_pctx_works; eauto using dwp_precise with arith).
+       eapply emulate_pctx_works; eauto using dwp_precise with arith tyvalid).
 
   pose proof (proj2 (proj2 lrem₁) _ _ lrpe₁) as lrfull₁.
 
@@ -68,6 +69,7 @@ Proof.
     by (change F.empty with (toUVals (S (S n)) I.empty);
         eapply F.eraseAnnot_pctxT, emulate_pctx_T; assumption).
 
+  assert (vε : ValidEnv I.empty) by eauto with tyvalid.
   pose proof (tEmCu := emulate_pctx_T (n := S (S n)) tCu).
   assert (F.Terminating (F.pctx_app t₂ (F.eraseAnnot_pctx (F.pctxA_cat
                  (F.a_papp₂ τ (UValFI (S (S n)) (compfi_ty τ)) (injectA (S (S n)) τ) F.a_phole)
