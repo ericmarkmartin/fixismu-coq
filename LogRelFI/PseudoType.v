@@ -45,6 +45,10 @@ Inductive PTy : Set :=
 | ptsum (τ₁ τ₂ : PTy)
 | pEmulDV (n : nat) (p : Prec) (τ : I.Ty).
 
+Notation "A p⊎ B" := (ptsum A B) (at level 85, right associativity).
+Notation "A p× B" := (ptprod A B) (at level 85, right associativity).
+Notation "A p⇒ B" := (ptarr A B) (at level 85, right associativity).
+
 Fixpoint repEmul (τ : PTy) : F.Ty :=
   match τ with
     | ptarr τ₁ τ₂ => F.tarr (repEmul τ₁) (repEmul τ₂)
@@ -111,6 +115,58 @@ Fixpoint pdom (Γ : PEnv) : Dom :=
     | pempty => 0
     | pevar Γ _ => S (pdom Γ)
   end.
+
+Inductive wsPTy (γ : Dom) : PTy → Prop :=
+| WsPTUnit : wsPTy γ ptunit
+| WsPBool : wsPTy γ ptbool
+| WsPFn {τ τ'} : wsPTy γ τ → wsPTy γ τ' → wsPTy γ (τ p⇒ τ')
+| WsPSum {τ τ'} : wsPTy γ τ → wsPTy γ τ' → wsPTy γ (τ p⊎ τ')
+| WsPProd {τ τ'} : wsPTy γ τ → wsPTy γ τ' → wsPTy γ (τ p× τ')
+| WsPEmulDv {n p τ} : wsTy 0 τ → wsPTy γ (pEmulDV n p τ).
+
+Section WellScoping.
+
+  Inductive innerPClosed : PTy → Prop :=
+    | innerPUnitClosed : innerPClosed ptunit
+    | innerPBoolClosed : innerPClosed ptbool
+    | innerPFnClosed {τ τ'} : innerPClosed τ → innerPClosed τ' → innerPClosed (τ p⇒ τ)
+    | innerPSumClosed {τ τ'} : innerPClosed τ → innerPClosed τ' → innerPClosed (τ p⊎ τ)
+    | innerPProdClosed {τ τ'} : innerPClosed τ → innerPClosed τ' → innerPClosed (τ p× τ)
+    | innerPEmulDvClosed {n p τ} : ⟨ 0 ⊢ τ ⟩ → innerPClosed (pEmulDV n p τ).
+
+  Lemma WsPTy_mono {n m : nat} {τ} : n <= m → wsPTy n τ → wsPTy m τ.
+  Proof.
+    intros ineq cτn.
+    revert m ineq.
+    induction cτn; constructor; eauto.
+  Qed.
+
+End WellScoping.
+
+#[export]
+Instance WsPTy : Ws PTy := wsPTy.
+
+Section Application.
+
+  Context {Y: Type}.
+  Context {vrY: Vr Y}.
+  Context {wkY: Wk Y}.
+
+  Context {vrPTy: Vr PTy}.
+  Context {liftYPTy: Lift Y PTy}.
+
+  Fixpoint apPTy (ζ: Sub Y) (τ: PTy) {struct τ} : PTy :=
+    match τ with
+      | ptarr τ₁ τ₂ => ptarr (apPTy ζ τ₁) (apPTy ζ τ₂)
+      | ptunit => ptunit
+      | ptbool => ptbool
+      | ptprod τ₁ τ₂ => ptprod (apPTy ζ τ₁) (apPTy ζ τ₂)
+      | ptsum τ₁ τ₂ => ptsum (apPTy ζ τ₁) (apPTy ζ τ₂)
+      | pEmulDV n p τ => pEmulDV n p τ
+    end.
+
+  Global Arguments apPTy ζ !τ.
+End Application.
 
 Reserved Notation "⟪  i : T p∈ Γ  ⟫"
   (at level 0, i at level 98, Γ at level 98).
@@ -206,4 +262,3 @@ Proof.
   split; [assumption|].
   now rewrite <-eq.
 Qed.
-

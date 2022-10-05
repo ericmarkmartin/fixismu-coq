@@ -1,7 +1,7 @@
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.SpecEquivalent.
-Require Import StlcIsoValid.LemmasEvaluation.
-Require Import StlcIsoValid.LemmasTyping.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecEquivalent.
+Require Import StlcIso.LemmasEvaluation.
+Require Import StlcIso.LemmasTyping.
 Require Import StlcEqui.SpecEquivalent.
 Require Import StlcEqui.LemmasEvaluation.
 
@@ -73,13 +73,15 @@ Proof.
         eapply I.eraseAnnot_pctxT, emulate_pctx_T; eauto with tyvalid).
 
   assert (vε : ValidEnv E.empty) by eauto with tyvalid.
+  assert (vuvalτ : ValidTy (UValIE (S (S n)) τ')) by crushValidTy_with_UVal.
   pose proof (tEmCu := emulate_pctx_T (n := S (S n)) vε vτ' tCu).
   assert (I.Terminating (I.pctx_app t₂ (I.eraseAnnot_pctx (I.pctxA_cat
                  (I.ia_papp₂ τ (UValIE (S (S n)) τ) (injectA (S (S n)) τ) I.ia_phole)
                  (emulate_pctx (S (S n)) Cu))))) as termS'.
   { eapply ceq.
+    exact vuvalτ.
     repeat (I.crushTypingMatchIAH + I.crushTypingMatchIAH2);
-    crushValidTy_with_UVal; eauto using injectAT, emulate_pctx_T, I.PCtxTypingAnnot.
+    crushValidTy_with_UVal; eauto using I.pctxtyping_cat_annot, injectAT, emulate_pctx_T, I.PCtxTypingAnnot.
     assumption.
   }
 

@@ -1,17 +1,17 @@
-Require StlcIsoValid.SpecSyntax.
+Require StlcIso.SpecSyntax.
 Require StlcEqui.SpecSyntax.
-Require Import StlcIsoValid.SpecTyping.
-Require Import StlcIsoValid.LemmasTyping.
-Require Import StlcIsoValid.Size.
-Require Import StlcIsoValid.SpecAnnot.
-Require Import StlcIsoValid.Fix.
+Require Import StlcIso.SpecTyping.
+Require Import StlcIso.LemmasTyping.
+Require Import StlcIso.Size.
+Require Import StlcIso.SpecAnnot.
+Require Import StlcIso.Fix.
 Require Import StlcEqui.SpecEvaluation.
-Require Import StlcIsoValid.SpecEvaluation.
-Require Import StlcIsoValid.CanForm.
+Require Import StlcIso.SpecEvaluation.
+Require Import StlcIso.CanForm.
 Require Import StlcEqui.LemmasEvaluation.
 Require Import StlcEqui.TypeSafety.
 Require Import StlcEqui.SpecTyping.
-Require Import StlcIsoValid.LemmasEvaluation.
+Require Import StlcIso.LemmasEvaluation.
 Require Import UValIE.UVal.
 Require Import LogRelIE.PseudoType.
 Require Import LogRelIE.LemmasPseudoType.

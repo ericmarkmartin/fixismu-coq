@@ -65,6 +65,7 @@ Inductive AnnotTyping (Γ : Env) : TmA -> Ty -> Prop :=
       ⟪ i : T r∈ Γ ⟫ →
       ⟪ Γ ia⊢ ia_var i : T ⟫
   | ia_WtAbs {t τ₁ τ₂} :
+    ValidTy τ₁ →
       ⟪ Γ r▻ τ₁ ia⊢ t : τ₂ ⟫ →
       ⟪ Γ ia⊢ ia_abs τ₁ τ₂ t : tarr τ₁ τ₂ ⟫
   | ia_WtApp {t₁ t₂ τ₁ τ₂} :
@@ -93,21 +94,26 @@ Inductive AnnotTyping (Γ : Env) : TmA -> Ty -> Prop :=
       ⟪ Γ ia⊢ t : tprod τ₁ τ₂ ⟫ →
       ⟪ Γ ia⊢ ia_proj₂ τ₁ τ₂ t : τ₂ ⟫
   | ia_WtInl {t τ₁ τ₂} :
+    ValidTy τ₂ →
       ⟪ Γ ia⊢ t : τ₁ ⟫ →
       ⟪ Γ ia⊢ ia_inl τ₁ τ₂ t : tsum τ₁ τ₂ ⟫
   | ia_WtInr {t τ₁ τ₂} :
+    ValidTy τ₁ →
       ⟪ Γ ia⊢ t : τ₂ ⟫ →
       ⟪ Γ ia⊢ ia_inr τ₁ τ₂ t : tsum τ₁ τ₂ ⟫
   | ia_WtCaseof {t₁ t₂ t₃ τ₁ τ₂ τ} :
       ⟪ Γ ia⊢ t₁ : tsum τ₁ τ₂ ⟫ →
       ⟪ Γ r▻ τ₁ ia⊢ t₂ : τ ⟫ →
       ⟪ Γ r▻ τ₂ ia⊢ t₃ : τ ⟫ →
+      ValidTy τ₁ → ValidTy τ₂ →
       ⟪ Γ ia⊢ ia_caseof τ₁ τ₂ τ t₁ t₂ t₃ : τ ⟫
   | ia_WtFold {t τ} :
       ⟪ Γ ia⊢ t : τ[beta1 (trec τ)] ⟫ →
+      ValidTy (trec τ) →
       ⟪ Γ ia⊢ ia_fold_ τ t : trec τ ⟫
   | ia_WtUnfold {t τ} :
       ⟪ Γ ia⊢ t : trec τ ⟫ →
+      ValidTy (trec τ) →
       ⟪ Γ ia⊢ ia_unfold_ τ t : τ[beta1 (trec τ)] ⟫
   | ia_WtSeq {t₁ t₂ T} :
       ⟪ Γ ia⊢ t₁ : tunit ⟫ →
@@ -147,12 +153,15 @@ Inductive PCtxTypingAnnot (Γ₀: Env) (τ₀: Ty) : Env → PCtxA → Ty → Pr
       ⟪ ia⊢ ia_phole : Γ₀, τ₀ → Γ₀, τ₀ ⟫
   | ia_WtPAbs {Γ C τ₁ τ₂} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ r▻ τ₁, τ₂ ⟫ →
+      ValidTy τ₁ →
       ⟪ ia⊢ ia_pabs τ₁ τ₂ C : Γ₀, τ₀ → Γ, tarr τ₁ τ₂ ⟫
   | ia_WtPAppl {Γ C t₂ τ₁ τ₂} :
+    ValidTy τ₂ →
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, tarr τ₁ τ₂ ⟫ →
       ⟪ Γ ia⊢ t₂ : τ₁ ⟫ →
       ⟪ ia⊢ ia_papp₁ τ₁ τ₂ C t₂ : Γ₀, τ₀ → Γ, τ₂ ⟫
   | ia_WtPAppr {Γ t₁ C τ₁ τ₂} :
+    ValidTy τ₁ → ValidTy τ₂ →
       ⟪ Γ ia⊢ t₁ : tarr τ₁ τ₂ ⟫ →
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, τ₁ ⟫ →
       ⟪ ia⊢ ia_papp₂ τ₁ τ₂ t₁ C : Γ₀, τ₀ → Γ, τ₂ ⟫
@@ -181,36 +190,45 @@ Inductive PCtxTypingAnnot (Γ₀: Env) (τ₀: Ty) : Env → PCtxA → Ty → Pr
       ⟪ ia⊢ ia_ppair₂ τ₁ τ₂ t₁ C : Γ₀, τ₀ → Γ, tprod τ₁ τ₂ ⟫
   | ia_WtPProj₁ {Γ C τ₁ τ₂} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, tprod τ₁ τ₂ ⟫ →
+      ValidTy (tprod τ₁ τ₂) →
       ⟪ ia⊢ ia_pproj₁ τ₁ τ₂ C : Γ₀, τ₀ → Γ, τ₁ ⟫
   | ia_WtPProj₂ {Γ C τ₁ τ₂} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, tprod τ₁ τ₂ ⟫ →
+      ValidTy (tprod τ₁ τ₂) →
       ⟪ ia⊢ ia_pproj₂ τ₁ τ₂ C : Γ₀, τ₀ → Γ, τ₂ ⟫
   | ia_WtPInl {Γ C τ₁ τ₂} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, τ₁ ⟫ →
+      ValidTy τ₂ →
       ⟪ ia⊢ ia_pinl τ₁ τ₂ C : Γ₀, τ₀ → Γ, tsum τ₁ τ₂ ⟫
   | ia_WtPInr {Γ C τ₁ τ₂} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, τ₂ ⟫ →
+      ValidTy τ₁ →
       ⟪ ia⊢ ia_pinr τ₁ τ₂ C : Γ₀, τ₀ → Γ, tsum τ₁ τ₂ ⟫
   | ia_WtPCaseof₁ {Γ C t₂ t₃ τ₁ τ₂ τ} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, tsum τ₁ τ₂ ⟫ →
       ⟪ Γ r▻ τ₁ ia⊢ t₂ : τ ⟫ →
       ⟪ Γ r▻ τ₂ ia⊢ t₃ : τ ⟫ →
+      ValidTy τ₁ → ValidTy τ₂ →
       ⟪ ia⊢ ia_pcaseof₁ τ₁ τ₂ τ C t₂ t₃ : Γ₀, τ₀ → Γ, τ ⟫
   | ia_WtPCaseof₂ {Γ t₁ C t₃ τ₁ τ₂ τ} :
       ⟪ Γ ia⊢ t₁ : tsum τ₁ τ₂ ⟫ →
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ r▻ τ₁, τ ⟫ →
       ⟪ Γ r▻ τ₂ ia⊢ t₃ : τ ⟫ →
+      ValidTy τ₁ → ValidTy τ₂ →
       ⟪ ia⊢ ia_pcaseof₂ τ₁ τ₂ τ t₁ C t₃ : Γ₀, τ₀ → Γ, τ ⟫
   | ia_WtPCaseof₃ {Γ t₁ t₂ C τ₁ τ₂ τ} :
       ⟪ Γ ia⊢ t₁ : tsum τ₁ τ₂ ⟫ →
       ⟪ Γ r▻ τ₁ ia⊢ t₂ : τ ⟫ →
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ r▻ τ₂, τ ⟫ →
+      ValidTy τ₁ → ValidTy τ₂ →
       ⟪ ia⊢ ia_pcaseof₃ τ₁ τ₂ τ t₁ t₂ C : Γ₀, τ₀ → Γ, τ ⟫
   | ia_WtPFold {Γ C τ} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, τ [beta1 (trec τ)] ⟫ →
+      ValidTy τ →
       ⟪ ia⊢ ia_pfold τ C : Γ₀, τ₀ → Γ, trec τ ⟫
   | ia_WtPUnfold {Γ C τ} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, trec τ ⟫ →
+      ValidTy (trec τ) →
       ⟪ ia⊢ ia_punfold τ C : Γ₀, τ₀ → Γ, τ [beta1 (trec τ)] ⟫
   | ia_WtPSeq₁ {Γ C t₂ T} :
       ⟪ ia⊢ C : Γ₀, τ₀ → Γ, tunit ⟫ →
@@ -238,8 +256,8 @@ Ltac crushTypingMatchIAH :=
     | H: ⟪ _ ia⊢ ia_false        : _ ⟫ |- _ => inversion H; clear H
     | H: ⟪ _ ia⊢ ia_ite _ _ _    : _ ⟫ |- _ => inversion H; clear H
     | H: ⟪ _ ia⊢ ia_pair _ _     : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ ia⊢ ia_proj₁ _      : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ ia⊢ ia_proj₂ _      : _ ⟫ |- _ => inversion H; clear H
+    | H: ⟪ _ ia⊢ ia_proj₁ _ _ _      : _ ⟫ |- _ => inversion H; clear H
+    | H: ⟪ _ ia⊢ ia_proj₂ _ _ _      : _ ⟫ |- _ => inversion H; clear H
     | H: ⟪ _ ia⊢ ia_inl _ _ _        : _ ⟫ |- _ => inversion H; clear H
     | H: ⟪ _ ia⊢ ia_inr _ _ _        : _ ⟫ |- _ => inversion H; clear H
     | H: ⟪ _ ia⊢ ia_caseof _ _ _ _ _ _ : _ ⟫ |- _ => inversion H; clear H
@@ -260,9 +278,9 @@ Ltac crushTypingMatchIAH :=
     | [ |- ⟪ _ ia⊢ ia_true : _ ⟫                     ] => econstructor
     | [ |- ⟪ _ ia⊢ ia_false : _ ⟫                    ] => econstructor
     | [ |- ⟪ _ ia⊢ ia_ite _ _ _ : _ ⟫                ] => econstructor
-    | [ |- ⟪ _ ia⊢ ia_pair _ _ : _ ⟫                 ] => econstructor
-    | [ |- ⟪ _ ia⊢ ia_proj₁ _ : _ ⟫                  ] => econstructor
-    | [ |- ⟪ _ ia⊢ ia_proj₂ _ : _ ⟫                  ] => econstructor
+    | [ |- ⟪ _ ia⊢ ia_pair _ _ _ _ : _ ⟫                 ] => econstructor
+    | [ |- ⟪ _ ia⊢ ia_proj₁ _ _ _ : _ ⟫                  ] => econstructor
+    | [ |- ⟪ _ ia⊢ ia_proj₂ _ _ _ : _ ⟫                  ] => econstructor
     | [ |- ⟪ _ ia⊢ ia_inl _ _ _ : _ ⟫                    ] => econstructor
     | [ |- ⟪ _ ia⊢ ia_inr _ _ _ : _ ⟫                    ] => econstructor
     | [ |- ⟪ _ ia⊢ ia_caseof _ _ _ _ _ _ : _ ⟫             ] => econstructor
@@ -273,22 +291,24 @@ Ltac crushTypingMatchIAH :=
     | [ |- ⟪ ia⊢ ia_pabs _ _ _ : _ , _ → _ , _ ⟫       ] => econstructor
     | [ |- ⟪ ia⊢ ia_papp₁ _ _ _ _ : _ , _ → _ , _ ⟫      ] => econstructor
     | [ |- ⟪ ia⊢ ia_papp₂ _ _ _ _ : _ , _ → _ , _ ⟫      ] => econstructor
-    | [ |- ⟪ ia⊢ ia_pite₁ _ _ _ : _ , _ → _ , _ ⟫    ] => econstructor
-    | [ |- ⟪ ia⊢ ia_pite₂ _ _ _ : _ , _ → _ , _ ⟫    ] => econstructor
-    | [ |- ⟪ ia⊢ ia_pite₃ _ _ _ : _ , _ → _ , _ ⟫    ] => econstructor
-    | [ |- ⟪ ia⊢ ia_ppair₁ _ _ : _ , _ → _ , _ ⟫     ] => econstructor
-    | [ |- ⟪ ia⊢ ia_ppair₂ _ _ : _ , _ → _ , _ ⟫     ] => econstructor
-    | [ |- ⟪ ia⊢ ia_pproj₁ _ : _ , _ → _ , _ ⟫       ] => econstructor
-    | [ |- ⟪ ia⊢ ia_pproj₂ _ : _ , _ → _ , _ ⟫       ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pite₁ _ _ _ _ : _ , _ → _ , _ ⟫    ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pite₂ _ _ _ _ : _ , _ → _ , _ ⟫    ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pite₃ _ _ _ _ : _ , _ → _ , _ ⟫    ] => econstructor
+    | [ |- ⟪ ia⊢ ia_ppair₁ _ _ _ _ : _ , _ → _ , _ ⟫     ] => econstructor
+    | [ |- ⟪ ia⊢ ia_ppair₂ _ _ _ _ : _ , _ → _ , _ ⟫     ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pproj₁ _ _ _ : _ , _ → _ , _ ⟫       ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pproj₂ _ _ _ : _ , _ → _ , _ ⟫       ] => econstructor
     | [ |- ⟪ ia⊢ ia_pinl _ _ _ : _ , _ → _ , _ ⟫         ] => econstructor
     | [ |- ⟪ ia⊢ ia_pinr _ _ _ : _ , _ → _ , _ ⟫         ] => econstructor
     | [ |- ⟪ ia⊢ ia_pcaseof₁ _ _ _ _ _ _ : _ , _ → _ , _ ⟫ ] => econstructor
     | [ |- ⟪ ia⊢ ia_pcaseof₂ _ _ _ _ _ _ : _ , _ → _ , _ ⟫ ] => econstructor
     | [ |- ⟪ ia⊢ ia_pcaseof₃ _ _ _ _ _ _ : _ , _ → _ , _ ⟫ ] => econstructor
-    | [ |- ⟪ _ ia⊢ ia_pfold _ _ : _ ⟫                    ] => econstructor
-    | [ |- ⟪ _ ia⊢ ia_punfold _ _ : _ ⟫                    ] => econstructor
-    | [ |- ⟪ _ ia⊢ ia_pseq₁ _ _ _ : _ ⟫                  ] => econstructor
-    | [ |- ⟪ _ ia⊢ ia_pseq₂ _ _ _ : _ ⟫                  ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pfold _ _ _ : _ , _ → _ , _ ⟫         ] => econstructor
+    | [ |- ⟪ ia⊢ ia_punfold _ _ _ : _ , _ → _ , _ ⟫         ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pfold _ _ : _ , _ → _ , _ ⟫                    ] => econstructor
+    | [ |- ⟪ ia⊢ ia_punfold _ _ : _ , _ → _ , _ ⟫                    ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pseq₁ _ _ _ : _ , _ → _ , _ ⟫                  ] => econstructor
+    | [ |- ⟪ ia⊢ ia_pseq₂ _ _ _ : _ , _ → _ , _ ⟫                  ] => econstructor
   end.
 
 
@@ -336,28 +356,110 @@ Fixpoint eraseAnnot_pctx (C : PCtxA) : PCtx :=
   | ia_punfold τ C => punfold (eraseAnnot_pctx C)
   end.
 
+Fixpoint pctxA_app (t : TmA) (C: PCtxA) {struct C} : TmA :=
+  match C with
+    | ia_phole                    => t
+    | ia_pabs τ₁ τ₂ C             => ia_abs τ₁ τ₂ (pctxA_app t C)
+    | ia_papp₁ τ₁ τ₂ C t2         => ia_app τ₁ τ₂ (pctxA_app t C) t2
+    | ia_papp₂ τ₁ τ₂ t1 C         => ia_app τ₁ τ₂ t1 (pctxA_app t C)
+    | ia_pite₁ τ C t₂ t₃          => ia_ite τ (pctxA_app t C) t₂ t₃
+    | ia_pite₂ τ t₁ C t₃          => ia_ite τ t₁ (pctxA_app t C) t₃
+    | ia_pite₃ τ t₁ t₂ C          => ia_ite τ t₁ t₂ (pctxA_app t C)
+    | ia_ppair₁ τ₁ τ₂ C t₂        => ia_pair τ₁ τ₂ (pctxA_app t C) t₂
+    | ia_ppair₂ τ₁ τ₂ t₁ C        => ia_pair τ₁ τ₂ t₁ (pctxA_app t C)
+    | ia_pproj₁ τ₁ τ₂ C           => ia_proj₁ τ₁ τ₂ (pctxA_app t C)
+    | ia_pproj₂ τ₁ τ₂ C           => ia_proj₂ τ₁ τ₂ (pctxA_app t C)
+    | ia_pinl τ₁ τ₂ C             => ia_inl τ₁ τ₂ (pctxA_app t C)
+    | ia_pinr τ₁ τ₂ C             => ia_inr τ₁ τ₂ (pctxA_app t C)
+    | ia_pcaseof₁ τ₁ τ₂ τ C t₁ t₂ => ia_caseof τ₁ τ₂ τ (pctxA_app t C) t₁ t₂
+    | ia_pcaseof₂ τ₁ τ₂ τ t₁ C t₂ => ia_caseof τ₁ τ₂ τ t₁ (pctxA_app t C) t₂
+    | ia_pcaseof₃ τ₁ τ₂ τ t₁ t₂ C => ia_caseof τ₁ τ₂ τ t₁ t₂ (pctxA_app t C)
+    | ia_pseq₁ τ C t₂             => ia_seq τ (pctxA_app t C) t₂
+    | ia_pseq₂ τ t₁ C             => ia_seq τ t₁ (pctxA_app t C)
+    | ia_pfold τ C                => ia_fold_ τ (pctxA_app t C)
+    | ia_punfold τ C              => ia_unfold_ τ (pctxA_app t C)
+  end.
+
+Fixpoint pctxA_cat (C₀ C: PCtxA) {struct C} : PCtxA :=
+  match C with
+    | ia_phole                    => C₀
+    | ia_pabs τ₁ τ₂ C             => ia_pabs τ₁ τ₂ (pctxA_cat C₀ C)
+    | ia_papp₁ τ₁ τ₂ C t          => ia_papp₁ τ₁ τ₂ (pctxA_cat C₀ C) t
+    | ia_papp₂ τ₁ τ₂ t C          => ia_papp₂ τ₁ τ₂ t (pctxA_cat C₀ C)
+    | ia_pite₁ τ C t₂ t₃          => ia_pite₁ τ (pctxA_cat C₀ C) t₂ t₃
+    | ia_pite₂ τ t₁ C t₃          => ia_pite₂ τ t₁ (pctxA_cat C₀ C) t₃
+    | ia_pite₃ τ t₁ t₂ C          => ia_pite₃ τ t₁ t₂ (pctxA_cat C₀ C)
+    | ia_ppair₁ τ₁ τ₂ C t         => ia_ppair₁ τ₁ τ₂ (pctxA_cat C₀ C) t
+    | ia_ppair₂ τ₁ τ₂ t C         => ia_ppair₂ τ₁ τ₂ t (pctxA_cat C₀ C)
+    | ia_pproj₁ τ₁ τ₂ C           => ia_pproj₁ τ₁ τ₂ (pctxA_cat C₀ C)
+    | ia_pproj₂ τ₁ τ₂ C           => ia_pproj₂ τ₁ τ₂ (pctxA_cat C₀ C)
+    | ia_pinl τ₁ τ₂ C             => ia_pinl τ₁ τ₂ (pctxA_cat C₀ C)
+    | ia_pinr τ₁ τ₂ C             => ia_pinr τ₁ τ₂ (pctxA_cat C₀ C)
+    | ia_pcaseof₁ τ₁ τ₂ τ C t₁ t₂ => ia_pcaseof₁ τ₁ τ₂ τ (pctxA_cat C₀ C) t₁ t₂
+    | ia_pcaseof₂ τ₁ τ₂ τ t₁ C t₂ => ia_pcaseof₂ τ₁ τ₂ τ t₁ (pctxA_cat C₀ C) t₂
+    | ia_pcaseof₃ τ₁ τ₂ τ t₁ t₂ C => ia_pcaseof₃ τ₁ τ₂ τ t₁ t₂ (pctxA_cat C₀ C)
+    | ia_pseq₁ τ C t              => ia_pseq₁ τ (pctxA_cat C₀ C) t
+    | ia_pseq₂ τ t C              => ia_pseq₂ τ t (pctxA_cat C₀ C)
+    | ia_pfold τ C                => ia_pfold τ (pctxA_cat C₀ C)
+    | ia_punfold τ C              => ia_punfold τ (pctxA_cat C₀ C)
+  end.
+
 Lemma eraseAnnotT {Γ t τ} : ⟪  Γ ia⊢ t : τ  ⟫ ->
                             ⟪  Γ i⊢ (eraseAnnot t) : τ  ⟫.
 Proof.
   induction 1; cbn; eauto using Typing.
+  all:
+    repeat econstructor;
+    try assumption;
+    crushValidTy.
 Qed.
 
 Lemma eraseAnnot_pctxT {Γₒ τₒ Γ C τ} : ⟪ ia⊢ C : Γₒ , τₒ → Γ , τ ⟫ ->
                             ⟪  i⊢ eraseAnnot_pctx C : Γₒ , τₒ → Γ , τ  ⟫.
 Proof.
   induction 1; cbn; eauto using Typing, PCtxTyping, eraseAnnotT.
+  all:
+    repeat econstructor;
+    try assumption;
+    crushValidTy.
 Qed.
 
-(* #[export]
-Hint Resolve pctxtyping_app_annot : typing. *)
-(* #[export]
-Hint Resolve pctxtyping_cat_annot : typing. *)
+Lemma pctxtyping_app_annot {Γ₀ t₀ τ₀ Γ C τ} :
+  ⟪ Γ₀ ia⊢ t₀ : τ₀ ⟫ → ⟪ ia⊢ C : Γ₀, τ₀ → Γ , τ ⟫ → ⟪ Γ ia⊢ pctxA_app t₀ C : τ ⟫.
+Proof.
+  intros wt₀ wC;
+  induction wC; cbn; subst; eauto using AnnotTyping.
+  all:
+    repeat econstructor;
+    try assumption;
+    crushValidTy.
+Qed.
 
-(* Ltac crushTypingMatchIAH2 := *)
-(*   match goal with *)
-(*     | [ |- ⟪ _ ia⊢ pctxA_app _ _ : _ ⟫          ] => apply pctxtyping_app_annot *)
-(*     | [ |- ⟪ ia⊢ pctxA_cat _ _ : _ , _ → _ , _ ⟫          ] => eapply pctxtyping_cat_annot *)
-(*   end. *)
+Lemma pctxtyping_cat_annot {Γ₀ τ₀ C₁ Γ₁ τ₁ C₂ Γ₂ τ₂} :
+  ⟪ ia⊢ C₁ : Γ₀, τ₀ → Γ₁ , τ₁ ⟫ →
+  ⟪ ia⊢ C₂ : Γ₁, τ₁ → Γ₂ , τ₂ ⟫ →
+  ⟪ ia⊢ pctxA_cat C₁ C₂ : Γ₀, τ₀ → Γ₂ , τ₂ ⟫.
+Proof.
+  intros wC₁ wC₂.
+  induction wC₂; cbn; eauto using PCtxTypingAnnot.
+Qed.
+
+Lemma eraseAnnot_pctx_cat {C1 C2} :
+  eraseAnnot_pctx (pctxA_cat C1 C2) = pctx_cat (eraseAnnot_pctx C1) (eraseAnnot_pctx C2).
+Proof.
+  induction C2; cbn; f_equal; assumption.
+Qed.
+
+#[export]
+Hint Resolve pctxtyping_app_annot : typing.
+#[export]
+Hint Resolve pctxtyping_cat_annot : typing.
+
+Ltac crushTypingMatchIAH2 :=
+  match goal with
+    | [ |- ⟪ _ ia⊢ pctxA_app _ _ : _ ⟫          ] => apply pctxtyping_app_annot
+    | [ |- ⟪ ia⊢ pctxA_cat _ _ : _ , _ → _ , _ ⟫          ] => eapply pctxtyping_cat_annot
+  end.
 
 Ltac crushTypingIA :=
   intros; cbn in * |-;
@@ -367,6 +469,7 @@ Ltac crushTypingIA :=
      repeat crushDbSyntaxMatchH;
      repeat crushDbLemmasMatchH;
      repeat crushTypingMatchIAH;
+     repeat crushTypingMatchIAH2;
      eauto with ws
     ).
 

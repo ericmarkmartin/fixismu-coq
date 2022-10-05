@@ -478,6 +478,14 @@ Proof.
   eauto using determinacy'.
 Qed.
 
+Lemma determinacyStar1 {t1 t2 t3} : t1 --> t2 -> t1 -->* t3 -> normal t3 -> t2 -->* t3.
+Proof.
+  intros e12 es13 n3.
+  destruct es13 as [|t4 t3 e14 es43].
+  - exfalso. refine (n3 _ e12).
+  - destruct (determinacy e12 e14); eauto.
+Qed.
+
 Lemma determinacyStar' {t1 t2 t3 t4} : t1 -->* t2 -> t3 -->* t4 -> t1 = t3 -> normal t4 -> t2 -->* t4.
 Proof.
   intros e12. revert t3.

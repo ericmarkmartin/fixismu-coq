@@ -1,15 +1,21 @@
+Require Export RecTypes.SpecTypes.
+Require Export RecTypes.InstTy.
+Require Export RecTypes.Contraction.
+Require Export RecTypes.ValidTy.
+Require Export RecTypes.LemmasTypes.
+
 Require Import StlcIso.SpecSyntax.
 Require Import StlcIso.SpecEvaluation.
 Require Import StlcIso.LemmasEvaluation.
 Require Import StlcIso.SpecTyping.
 Require Import StlcIso.SpecAnnot.
 Require Import StlcIso.LemmasTyping.
-(* Require Import StlcIso.SpecScoping. *)
-(* Require Import StlcIso.LemmasScoping. *)
 Require Import StlcIso.Inst.
 Require Import StlcIso.InstAnnot.
 Require Import Db.Lemmas.
 Require Import Db.WellScoping.
+
+Require Import Coq.Bool.Bool.
 
 Local Ltac crush :=
   intros; cbn in * |-;
@@ -59,11 +65,14 @@ Definition ufix₁ (f : Tm) (τ1 τ2 : Ty) : Tm :=
 Definition ufix (τ1 τ2 : Ty) : Tm :=
   abs (tarr (tarr τ1 τ2) (tarr τ1 τ2)) (ufix₁ (var 0) τ1 τ2).
 
-Lemma eraseAnnot_ufix {τ₁ τ₂} : eraseAnnot (ufix_annot τ₁ τ₂) = ufix τ₁ τ₂.
-Proof.
+Definition Om (τ : Ty) : Tm :=
+  app (ufix₁ (abs (tunit r⇒ τ) (var 0)) tunit τ) unit.
 
-  reflexivity.
-Qed.
+Definition OmA (τ : Ty) : TmA :=
+  ia_app tunit τ (ufix₁_annot (ia_abs (tunit r⇒ τ) (tunit r⇒ τ) (ia_var 0)) tunit τ) ia_unit.
+
+Lemma eraseAnnot_ufix {τ₁ τ₂} : eraseAnnot (ufix_annot τ₁ τ₂) = ufix τ₁ τ₂.
+Proof. reflexivity. Qed.
 
 Lemma ufix_eval₁' f (valf: Value f) {τ1 τ2} : (app (ufix τ1 τ2) f) --> (ufix₁ f τ1 τ2).
 Proof.
@@ -97,85 +106,221 @@ Proof.
   econstructor.
 Qed.
 
-Lemma foo {Γ t τ τ'} :
-  τ[beta1 (trec τ)] = τ' →
-  ⟪ Γ i⊢ t : trec τ ⟫ →
-  ⟪ Γ i⊢ unfold_ t : τ' ⟫.
+(* Lemma unfold_fold_id { Γ t τ } : *)
+(*   ValidTy τ → *)
+(*   ⟪ Γ i⊢ t : τ ⟫ → *)
+(*   ⟪ Γ i⊢ unfold_ (fold_ t) : τ ⟫. *)
+(* Proof. *)
+(*   intros. *)
+(*   Check WtUnfold. *)
+(*   Check WtFold. *)
+(*   apply WtUnfold. *)
+
+Lemma fizz {τ₁ τ₂ }:
+  (trec (tvar 0 r⇒ (τ₁ r⇒ τ₂)[wkm]) r⇒ τ₁ r⇒ τ₂) = (tvar 0 r⇒ (τ₁ r⇒ τ₂) [wkm])[beta1 (trec (tarr (tvar 0) (tarr τ₁ τ₂)[wkm]))].
 Proof.
-  intros. subst.
-  constructor. assumption.
+  crush.
 Qed.
 
 Lemma ufix₁_typing {t τ₁ τ₂ Γ} :
+  ValidTy τ₁ → ValidTy τ₂ →
   ⟪ Γ i⊢ t : tarr (tarr τ₁ τ₂) (tarr τ₁ τ₂) ⟫ →
   ⟪ Γ i⊢ ufix₁ t τ₁ τ₂ : tarr τ₁ τ₂ ⟫.
 Proof.
-  intros.
+  intros (cl1 & cr1) (cl2 & cr2) tyt.
   unfold ufix₁.
-
   apply (@WtApp Γ _ _ (trec (tarr (tvar 0) (tarr τ₁ τ₂)[wkm])) (tarr τ₁ τ₂)).
-  - rewrite <-(apply_wkm_beta1_cancel (τ₁ r⇒ τ₂) (trec (tarr (tvar 0) (tarr τ₁ τ₂)[wkm]))) at 3.
-    apply (WtUnfold _ (τ := tarr (tvar 0) (tarr τ₁ τ₂)[wkm])).
+  - (* rewrite <-(apply_wkm_beta1_cancel (τ₁ r⇒ τ₂) (trec (tarr (tvar 0) (tarr τ₁ τ₂)[wkm]))) at 1. *)
+    rewrite fizz.
     econstructor.
+    econstructor.
+    rewrite <-fizz.
+    econstructor.
+    econstructor.
+    crush.
+    eapply typing_sub.
+    exact tyt.
+    apply wtSub_wkm.
+    econstructor.
+    econstructor.
+    econstructor.
+    rewrite fizz.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+
+    crushValidTy.
+    crush.
+    apply WsFn.
+    change (wsTy _ _) with ⟨ 1 ⊢ τ₁[wkm] ⟩.
+    crushValidTy.
+    change (wsTy _ _) with ⟨ 1 ⊢ τ₂[wkm] ⟩.
+    crushValidTy.
+    crush.
+    econstructor.
+    econstructor.
+    econstructor.
+    pose proof (SimpleContrRec_ren) as (H & _).
+    specialize (H τ₁ cr1 wkm).
+    erewrite <-ap_liftSub in H.
+    exact H.
+    econstructor.
+    pose proof (SimpleContrRec_ren) as (H & _).
+    specialize (H τ₂ cr2 wkm).
+    erewrite <-ap_liftSub in H.
+    exact H.
     crushTyping.
-    rewrite ?apply_wkm_beta1_cancel.
-    eassumption.
-    rewrite <-(apply_wkm_beta1_cancel (τ₁ r⇒ τ₂) (trec (tarr (tvar 0) (tarr τ₁ τ₂)[wkm]))) at 1.
-    change (trec _ r⇒ _) with (tvar 0 r⇒ (τ₁ r⇒ τ₂) [wkm])[beta1 (trec (tarr (tvar 0) (tarr τ₁ τ₂)[wkm]))].
-    repeat econstructor.
-  - constructor.
-    cbn.
-    constructor.
     crushTyping.
-    rewrite ?apply_wkm_beta1_cancel.
-    eassumption.
-    rewrite <-(apply_wkm_beta1_cancel (τ₁ r⇒ τ₂) (trec (tarr (tvar 0) (tarr τ₁ τ₂)[wkm]))) at 1.
-    change (trec _ r⇒ _) with (tvar 0 r⇒ (τ₁ r⇒ τ₂) [wkm])[beta1 (trec (tarr (tvar 0) (tarr τ₁ τ₂)[wkm]))].
+    crushValidTy.
+    crushValidTy.
+    crush.
+    crushValidTy.
+    crushValidTy.
+    crush.
+    econstructor.
+    econstructor;
+    econstructor;
+    pose proof (SimpleContrRec_ren) as (H & _).
+    specialize (H τ₁ cr1 wkm).
+    erewrite <-ap_liftSub in H.
+    exact H.
+    specialize (H τ₂ cr2 wkm).
+    erewrite <-ap_liftSub in H.
+    exact H.
+    crushValidTyMatch.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    crush.
+    crushValidTy.
+    crushValidTy.
+    crush.
+    crushValidTy.
+    crushValidTy.
+    crush.
+    crushValidTy.
+    crush.
+    crushValidTy.
+  - crushTypingMatchH.
+    rewrite <-fizz.
+    crushTypingMatchH.
+    crushTypingMatchH.
+    crush.
+    eapply typing_sub.
+    exact tyt.
+    apply wtSub_wkm.
+    econstructor.
+    econstructor.
+    econstructor.
+    rewrite fizz.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    repeat (crushValidTy; crush).
     repeat econstructor.
+    repeat econstructor.
+    crushValidTy.
+    repeat (crushValidTy; crush).
+    repeat (crushValidTy; crush).
 Qed.
 
 Lemma ufix_typing {τ₁ τ₂ Γ} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   ⟪ Γ i⊢ ufix τ₁ τ₂ : tarr (tarr (tarr τ₁ τ₂) (tarr τ₁ τ₂)) (tarr τ₁ τ₂) ⟫.
 Proof.
   constructor.
   apply ufix₁_typing.
-  crushTyping.
+  all: repeat (crushTyping; crushValidTy).
 Qed.
 
 Lemma ufix₁_annot_typing {t τ₁ τ₂ Γ} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   ⟪ (Γ r▻ trec (tvar 0 r⇒ τ₁[wkm] r⇒ τ₂[wkm])) ia⊢ t [wkm] : tarr (tarr τ₁ τ₂) (tarr τ₁ τ₂) ⟫ →
   ⟪ Γ ia⊢ ufix₁_annot t τ₁ τ₂ : tarr τ₁ τ₂ ⟫.
 Proof.
-  intros tytwk.
+  intros (cl1 & cr1) (cl2 & cr2) tyt.
   unfold ufix₁_annot.
-  repeat constructor.
-  - replace (trec (tvar 0 r⇒ (τ₁ r⇒ τ₂)[wkm]) r⇒ τ₁ r⇒ τ₂) with ((tvar 0 r⇒ (τ₁ r⇒ τ₂)[wkm]) [ beta1 (trec (tvar 0 r⇒ (τ₁ r⇒ τ₂)[wkm]))]).
-    repeat econstructor.
-    cbn.
-    crushTyping.
-    rewrite ?apply_wkm_beta1_cancel.
-    repeat econstructor.
-    eassumption.
-    replace (trec (tvar 0 r⇒ (τ₁ [wkm] r⇒ τ₂[wkm])) r⇒ τ₁ r⇒ τ₂) with ((tvar 0 r⇒ (τ₁ r⇒ τ₂)[wkm]) [ beta1 (trec (tvar 0 r⇒ (τ₁ r⇒ τ₂)[wkm]))]).
-    repeat econstructor.
-    cbn.
-    crushTyping; rewrite ?apply_wkm_beta1_cancel; try reflexivity.
-    crushTyping; rewrite ?apply_wkm_beta1_cancel; try reflexivity.
-  - cbn.
-    crushTyping; rewrite ?apply_wkm_beta1_cancel.
-    repeat econstructor.
-    try eassumption.
-    replace (trec (tvar 0 r⇒ (τ₁ [wkm] r⇒ τ₂[wkm])) r⇒ τ₁ r⇒ τ₂) with ((tvar 0 r⇒ (τ₁ r⇒ τ₂)[wkm]) [ beta1 (trec (tvar 0 r⇒ (τ₁ r⇒ τ₂)[wkm]))]).
-    repeat econstructor.
-    cbn.
-    crushTyping; rewrite ?apply_wkm_beta1_cancel; try reflexivity.
+  crushTypingIA.
+  - repeat change (apTy ?ξ ?τ) with τ[ξ].
+    repeat change (τ₁[wkm] r⇒ τ₂[wkm]) with (τ₁ r⇒ τ₂)[wkm].
+    rewrite fizz.
+    econstructor.
+    econstructor.
+    rewrite <-fizz.
+    econstructor.
+    econstructor.
+    crush.
+    crushValidTy.
+    crushValidTy.
+    crush.
+    crushValidTy.
+    econstructor.
+    exact tyt.
+    econstructor.
+    crushValidTy.
+    econstructor.
+    econstructor.
+    rewrite fizz.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    repeat (crush; crushValidTy).
+    repeat (crush; crushValidTy).
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    repeat (crush; crushValidTy).
+    repeat (crush; crushValidTy).
+    repeat (crush; crushValidTy).
+  - repeat change (apTy ?ξ ?τ) with τ[ξ].
+    repeat change (τ₁[wkm] r⇒ τ₂[wkm]) with (τ₁ r⇒ τ₂)[wkm].
+    crush.
+    econstructor.
+    repeat (crush; crushValidTy).
+    econstructor.
+    exact tyt.
+    econstructor.
+    repeat (crush; crushValidTy).
+    econstructor.
+    econstructor.
+    repeat change (τ₁[wkm] r⇒ τ₂[wkm]) with (τ₁ r⇒ τ₂)[wkm].
+    rewrite fizz.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    repeat (crush; crushValidTy).
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+    econstructor.
+  - repeat (crush; crushValidTy).
 Qed.
 
 Lemma ufix_annot_typing {τ₁ τ₂ Γ} :
+  ValidTy τ₁ -> ValidTy τ₂ ->
   ⟪ Γ ia⊢ ufix_annot τ₁ τ₂ : tarr (tarr (tarr τ₁ τ₂) (tarr τ₁ τ₂)) (tarr τ₁ τ₂) ⟫.
 Proof.
-  constructor.
-  apply ufix₁_annot_typing.
+  intros (cl1 & cr1) (cl2 & cr2).
+  constructor; crushValidTy.
+  eapply ufix₁_annot_typing; crushValidTy.
   constructor.
   crushTyping.
 Qed.
@@ -206,3 +351,68 @@ Qed.
 (*   crush. *)
 (* Qed. *)
 
+Lemma wtOm_tau {Γ} τ : ValidTy τ → ⟪ Γ i⊢ Om τ : τ ⟫.
+Proof.
+  unfold Om.
+  crushTyping;
+  eapply ufix₁_typing;
+    crushTyping.
+Qed.
+
+Lemma wtOmA_tau {Γ} τ : ValidTy τ → ⟪ Γ ia⊢ OmA τ : τ ⟫.
+  unfold OmA.
+  crushTypingIA;
+  eapply ufix₁_annot_typing;
+    (crushTypingIA; crushValidTy).
+Qed.
+
+#[export]
+Hint Resolve wtOm_tau : typing.
+#[export]
+Hint Resolve wtOmA_tau : typing.
+(* #[export]
+Hint Resolve stlcOmegaAT : typing. *)
+
+Definition OmHelp (τ : Ty) : Tm :=
+  app (abs tunit (app (ufix₁ (abs (tunit r⇒ τ) (var 0)) tunit τ) (var 0))) unit.
+
+Lemma evaln_to_evalPlus {t t' n} : evaln t t' (S n) → t -->+ t'.
+Proof.
+  intros.
+  eapply evaln_split1 in H as (? & ? & ?).
+  apply evaln_to_evalStar in H0.
+  eapply evalStepStarToPlus.
+  exact H.
+  exact H0.
+Qed.
+
+Lemma stlcOmega_cycles {τ} : Om τ -->+ Om τ.
+  cut (Om τ -->+ OmHelp τ ∧ OmHelp τ -->+ Om τ).
+  - destruct 1. apply evalPlusToStar in H0. eapply evalPlusStarToPlus. exact H. exact H0.
+  - unfold Om, OmHelp; split.
+    + eapply (evalplus_ctx (papp₁ phole _)).
+      constructor.
+      eapply evaln_to_evalPlus.
+      pose proof (@ufix₁_evaln' (var 0) tunit τ).
+      remember (var 0)[beta1 (abs tunit (app (ufix₁ (abs (tunit r⇒ τ) (var 0)[wkm↑]) tunit τ) (var 0)))] as x.
+      remember (abs tunit (app (ufix₁ (abs (tunit r⇒ τ) (var 0)) tunit τ) (var 0))) as y.
+      enough (x = y).
+      rewrite <-H0.
+      exact H.
+      subst.
+      cbn.
+      reflexivity.
+    + unfold ufix₁.
+      eapply evalStepStarToPlus.
+      apply eval₀_to_eval.
+      apply eval_beta; now cbn.
+      cbn.
+      change (wk 0) with 1.
+      apply rt1n_refl.
+Qed.
+
+Lemma Om_div {τ} : (Om τ)⇑.
+Proof.
+  apply cycles_dont_terminate.
+  apply stlcOmega_cycles.
+Qed.

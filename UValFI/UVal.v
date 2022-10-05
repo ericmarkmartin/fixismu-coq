@@ -229,7 +229,6 @@ Qed.
 
 (* (t : F.Tm) {P : F.Typing t (UValFI n I.tunit)} : F.Tm := *)
 Definition case_uvalfi_unit (n : nat) : F.Tm :=
-  let P := UnitClosed 0 in
   let τ := UValFI (S n) I.tunit in
   let t := F.caseof (F.var 0) (F.var 0) (F.Om F.tunit) in
   F.abs τ t.

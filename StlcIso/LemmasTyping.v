@@ -1,7 +1,17 @@
 Require Export Db.Spec.
 Require Export Db.Lemmas.
+
+Require Export RecTypes.SpecTypes.
+Require Export RecTypes.InstTy.
+Require Export RecTypes.Contraction.
+Require Export RecTypes.ValidTy.
+Require Export RecTypes.LemmasTypes.
+
 Require Export StlcIso.Inst.
 Require Export StlcIso.SpecTyping.
+
+Require Import Coq.Bool.Bool.
+Require Import Coq.micromega.Lia.
 
 Ltac crushTypingMatchH :=
   match goal with
@@ -11,23 +21,25 @@ Ltac crushTypingMatchH :=
       apply getEvarInvHere in H; repeat subst
     | [ H: ⟪ (S _) : _ r∈ (_ r▻ _) ⟫ |- _ ] =>
       apply getEvarInvThere in H
-    | H: ⟪ _ i⊢ var _        : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ abs _ _      : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ app _ _      : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ unit         : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ true         : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ false        : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ ite _ _ _    : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ pair _ _     : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ proj₁ _      : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ proj₂ _      : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ inl _        : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ inr _        : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ caseof _ _ _ : _ ⟫ |- _ => inversion H; clear H
+    | [ |- ⟪ 0 : _ r∈ _ ⟫ ] => apply GetEvarHere
+    | [ |- ⟪ S _ : _ r∈ _ ⟫ ] => apply GetEvarThere
+    (* | H: ⟪ _ i⊢ var _        : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ abs _ _      : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ app _ _      : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ unit         : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ true         : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ false        : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ ite _ _ _    : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ pair _ _     : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ proj₁ _      : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ proj₂ _      : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ inl _        : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ inr _        : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ caseof _ _ _ : _ ⟫ |- _ => inversion H; clear H *)
 
-    | H: ⟪ _ i⊢ fold_ _ : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ unfold_ _ : _ ⟫ |- _ => inversion H; clear H
-    | H: ⟪ _ i⊢ seq _ _      : _ ⟫ |- _ => inversion H; clear H
+    (* | H: ⟪ _ i⊢ fold_ _ : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ unfold_ _ : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ i⊢ seq _ _      : _ ⟫ |- _ => inversion H; clear H *)
     | [ wi : ⟪ ?i : _ r∈ (_ r▻ _) ⟫
         |- context [match ?i with _ => _ end]
       ] => destruct i
@@ -169,7 +181,7 @@ Hint Resolve wtRen_wkm : ws.
 
 Lemma wtiIx_wkm Γ i T :
   ⟪ (wkm i) : T r∈ (Γ r▻ T) ⟫ → ⟪ i : T r∈ Γ ⟫.
-Proof. refine (wtiIx_wkms (empty r▻ T) _ _ _). Qed.
+Proof. apply (wtiIx_wkms (empty r▻ T)). Qed.
 #[export]
 Hint Resolve wtiIx_wkm : wsi.
 
@@ -370,27 +382,6 @@ Ltac crushTypingMatchH2 :=
       ] => eapply wtSub_beta1
   end.
 
-Ltac crushTyping :=
-  intros; cbn in * |-;
-  repeat
-    (cbn;
-     repeat crushRecTypesMatchH;
-     repeat crushStlcSyntaxMatchH;
-     repeat crushDbSyntaxMatchH;
-     repeat crushDbLemmasMatchH;
-     repeat crushTypingMatchH;
-     repeat crushTypingMatchH2;
-     eauto with ws
-    ).
-
-#[export]
-Hint Extern 20 (⟪ _ i⊢ _ : _ ⟫) =>
-  crushTyping : typing.
-
-#[export]
-Hint Extern 20 (⟪ i⊢ _ : _ , _ → _ , _ ⟫) =>
-  crushTyping : typing.
-
 #[export]
 Hint Resolve pctxtyping_cat : typing.
 #[export]
@@ -428,4 +419,203 @@ Qed.
 (* (*   rewrite H2 in IHτ1. *) *)
 (* (*   rewrite H2 in IHτ2. *) *)
 (* (* Admitted. *) *)
+Lemma typed_terms_are_valid {Γ} (t : Tm) (T : Ty) :
+  ValidEnv Γ →
+  ⟪ Γ i⊢ t : T ⟫ →
+  ValidTy T.
+Proof.
+  intros cenv wt.
+  induction wt; eauto with wt tyvalid.
+  - specialize (IHwt1 cenv).
+    now eapply ValidTy_invert_arr in IHwt1.
+  - specialize (IHwt cenv).
+    now eapply ValidTy_invert_prod in IHwt.
+  - specialize (IHwt cenv).
+    now eapply ValidTy_invert_prod in IHwt.
+  - specialize (IHwt cenv).
+    now eapply ValidTy_unfold_trec in IHwt.
+Qed.
 
+Ltac try_typed_terms_are_valid :=
+  match goal with
+  | [ H: ⟪ _ i⊢ _ : ?τ ⟫ |- ValidTy ?τ ] => refine (typed_terms_are_valid _ _ _ H)
+  end.
+
+#[export]
+Hint Extern 50 (ValidTy _) => try_typed_terms_are_valid : tyvalid_terms.
+
+Lemma invert_ty_abs {Γ τ₁ t τ} :
+  ValidEnv Γ ->
+  ⟪ Γ i⊢ abs τ₁ t : τ ⟫ ->
+  exists τ₂, ValidTy τ₁ /\ ValidTy τ₂ /\
+          (τ₁ r⇒ τ₂) = τ ∧
+          ⟪ Γ r▻ τ₁ i⊢ t : τ₂ ⟫.
+Proof.
+  intros vΓ wt.
+  depind wt.
+  exists τ₂;
+  split; eauto using typed_terms_are_valid with tyeq tyvalid.
+Qed.
+
+Lemma invert_ty_proj₁ {Γ t τ} :
+  ValidEnv Γ ->
+  ⟪ Γ i⊢ proj₁ t : τ ⟫ ->
+  exists τ₂, ⟪ Γ i⊢ t : τ r× τ₂ ⟫.
+Proof.
+  intros vΓ wt.
+  depind wt.
+  now exists τ₂.
+Qed.
+
+Lemma invert_ty_proj₂ {Γ t τ} :
+  ValidEnv Γ ->
+  ⟪ Γ i⊢ proj₂ t : τ ⟫ ->
+  exists τ₁, ⟪ Γ i⊢ t : τ₁ r× τ ⟫.
+Proof.
+  intros vΓ wt.
+  depind wt.
+  now exists τ₁.
+Qed.
+
+Lemma invert_ty_pair {Γ t₁ t₂ τ₁ τ₂} :
+  ValidEnv Γ ->
+  ⟪ Γ i⊢ pair t₁ t₂ : τ₁ r× τ₂ ⟫ ->
+  ValidTy τ₁ ∧ ValidTy τ₂ /\ ⟪ Γ i⊢ t₁ : τ₁ ⟫ /\ ⟪ Γ i⊢ t₂ : τ₂ ⟫.
+Proof.
+  intros vΓ wt.
+  depind wt.
+  split; eauto using typed_terms_are_valid with tyeq tyvalid.
+Qed.
+
+Lemma invert_ty_app {Γ t₁ t₂ τ} :
+  ValidEnv Γ ->
+  ⟪ Γ i⊢ app t₁ t₂ : τ ⟫ ->
+  exists τ₁, ⟪ Γ i⊢ t₁ : τ₁ r⇒ τ ⟫ /\ ⟪ Γ i⊢ t₂ : τ₁ ⟫.
+Proof.
+  intros vΓ wt.
+  depind wt.
+  exists τ₁. assert (vτ₁ := typed_terms_are_valid _ _ vΓ wt1).
+  now eapply ValidTy_invert_arr in vτ₁.
+Qed.
+
+Lemma invert_ty_caseof {Γ t₁ t₂ t₃ τ} :
+  ⟪ Γ i⊢ caseof t₁ t₂ t₃ : τ ⟫ ->
+  exists τ₁ τ₂, ⟪ Γ i⊢ t₁ : τ₁ r⊎ τ₂ ⟫ /\ ⟪ Γ r▻ τ₁ i⊢ t₂ : τ ⟫ /\ ⟪ Γ r▻ τ₂ i⊢ t₃ : τ ⟫.
+Proof.
+  intros wt.
+  depind wt.
+  now exists τ₁, τ₂.
+Qed.
+
+Lemma invert_ty_inl {Γ t τ₁ τ₂} :
+  ValidEnv Γ ->
+  ⟪ Γ i⊢ inl t : τ₁ r⊎ τ₂ ⟫ ->
+  ValidTy τ₁ /\ ValidTy τ₂ /\ ⟪ Γ i⊢ t : τ₁ ⟫.
+Proof.
+  intros vΓ wt.
+  depind wt.
+  split; eauto using typed_terms_are_valid with tyeq tyvalid.
+Qed.
+
+Lemma invert_ty_inr {Γ t τ₁ τ₂} :
+  ValidEnv Γ ->
+  ⟪ Γ i⊢ inr t : τ₁ r⊎ τ₂ ⟫ ->
+  ValidTy τ₁ /\ ValidTy τ₁ /\ ⟪ Γ i⊢ t : τ₂ ⟫.
+Proof.
+  intros vΓ wt.
+  depind wt.
+  split; eauto using typed_terms_are_valid with tyeq tyvalid.
+Qed.
+
+Lemma invert_ty_ite {Γ t₁ t₂ t₃ τ} :
+  ⟪ Γ i⊢ ite t₁ t₂ t₃ : τ ⟫ ->
+  ⟪ Γ i⊢ t₁ : tbool ⟫ /\ ⟪ Γ i⊢ t₂ : τ ⟫ /\ ⟪ Γ i⊢ t₃ : τ ⟫.
+Proof.
+  intros wt.
+  depind wt.
+  eauto.
+Qed.
+
+Lemma invert_ty_seq {Γ t₁ t₂ τ} :
+  ⟪ Γ i⊢ seq t₁ t₂ : τ ⟫ ->
+  ⟪ Γ i⊢ t₁ : tunit ⟫ /\ ⟪ Γ i⊢ t₂ : τ ⟫.
+Proof.
+  intros wt.
+  depind wt.
+  eauto.
+Qed.
+
+Lemma invert_ty_fold {Γ t τ} :
+  ⟪ Γ i⊢ fold_ t : trec τ ⟫ →
+  ValidTy (trec τ) ∧ ⟪ Γ i⊢ t : τ[beta1 (trec τ)] ⟫.
+Proof.
+  intros wt.
+  depind wt.
+  eauto.
+Qed.
+
+Lemma invert_ty_unfold {Γ t τ} :
+  ⟪ Γ i⊢ unfold_ t : τ ⟫ →
+  exists τ', ValidTy (trec τ') ∧
+          τ = τ'[beta1 (trec τ')] ∧
+          ⟪ Γ i⊢ t : trec τ' ⟫.
+Proof.
+  intros wt.
+  depind wt.
+  exists τ; split; eauto using typed_terms_are_valid with tyeq tyvalid.
+Qed.
+
+Ltac crushTypingMatchHInv :=
+  match goal with
+    (* | H: ⟪ _ e⊢ var _        : _ ⟫ |- _ => inversion H; clear H *)
+    | H2: ValidEnv ?Γ, H: ⟪ _ i⊢ abs _ _      : _ ⟫ |- _ => destruct (invert_ty_abs H2 H) as (? & ? & ? & eq & ?); inversion eq; subst; clear H
+    | H2: ValidEnv ?Γ, H: ⟪ ?Γ i⊢ app _ _      : _ ⟫ |- _ => destruct (invert_ty_app H2 H) as (? & ? & ?); clear H
+    (* | H: ⟪ _ e⊢ unit         : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ e⊢ true         : _ ⟫ |- _ => inversion H; clear H *)
+    (* | H: ⟪ _ e⊢ false        : _ ⟫ |- _ => inversion H; clear H *)
+    | H: ⟪ _ i⊢ ite _ _ _    : _ ⟫ |- _ => destruct (invert_ty_ite H) as (? & ? & ?); clear H
+    | H2: ValidEnv ?Γ, H: ⟪ _ i⊢ proj₁ _      : _ ⟫ |- _ => destruct (invert_ty_proj₁ H2 H) as (? & ?); clear H
+    | H2: ValidEnv ?Γ, H: ⟪ _ i⊢ proj₂ _      : _ ⟫ |- _ => destruct (invert_ty_proj₂ H2 H) as (? & ?); clear H
+    | H2: ValidEnv ?Γ, H: ⟪ _ i⊢ pair _ _      : _ ⟫ |- _ => destruct (invert_ty_pair H2 H) as (? & ? & ? & ?); clear H
+    | H2: ValidEnv ?Γ, H: ⟪ _ i⊢ inl _        : _ ⟫ |- _ => destruct (invert_ty_inl H2 H) as (? & ? & ?); clear H
+    | H2: ValidEnv ?Γ, H: ⟪ _ i⊢ inr _        : _ ⟫ |- _ => destruct (invert_ty_inr H2 H) as (? & ? & ?); clear H
+    | H: ⟪ _ i⊢ caseof _ _ _ : _ ⟫ |- _ => destruct (invert_ty_caseof H) as (? & ? & ? & ? & ?); clear H
+    | H: ⟪ _ i⊢ seq _ _      : _ ⟫ |- _ => destruct (invert_ty_seq H) as (? & ?); clear H
+    | H: ⟪ _ i⊢ fold_ _      : _ ⟫ |- _ => destruct (invert_ty_fold H) as (? & ?); clear H
+    | H: ⟪ _ i⊢ unfold_ _      : _ ⟫ |- _ => destruct (invert_ty_unfold H) as (? & ? & eq & ?); inversion eq; subst; clear H
+  end.
+
+Ltac crushTyping :=
+  intros; cbn in * |-;
+  repeat
+    (cbn;
+     repeat crushRecTypesMatchH;
+     repeat crushStlcSyntaxMatchH;
+     repeat crushDbSyntaxMatchH;
+     repeat crushDbLemmasMatchH;
+     repeat crushTypingMatchH;
+     repeat crushTypingMatchHInv;
+     repeat crushTypingMatchH2
+    );
+  eauto with ws tyvalid tyeq.
+
+(* Ltac crushTyping := *)
+(*   intros; cbn in * |-; *)
+(*   repeat *)
+(*     (cbn; *)
+(*      repeat crushRecTypesMatchH; *)
+(*      repeat crushStlcSyntaxMatchH; *)
+(*      repeat crushDbSyntaxMatchH; *)
+(*      repeat crushDbLemmasMatchH; *)
+(*      repeat crushTypingMatchH; *)
+(*      repeat crushTypingMatchH2; *)
+(*      eauto with ws *)
+(*     ). *)
+
+#[export]
+Hint Extern 20 (⟪ _ i⊢ _ : _ ⟫) =>
+  crushTyping : typing.
+
+#[export]
+Hint Extern 20 (⟪ i⊢ _ : _ , _ → _ , _ ⟫) =>
+  crushTyping : typing.

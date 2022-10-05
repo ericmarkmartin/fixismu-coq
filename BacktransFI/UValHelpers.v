@@ -457,7 +457,7 @@ Section IntroProps.
   Proof.
    intros dwp vr.
    unfold inUnitDwn.
-   apply downgrade_works''; trivial.
+   apply downgrade_works''; trivial; crushValidTy.
    replace (n + 1) with (S n) by lia.
    apply valrel_inUnit'; trivial.
   Qed.
@@ -469,41 +469,44 @@ Section IntroProps.
   Proof.
    intros dwp vr.
    unfold inBoolDwn.
-   apply downgrade_works''; trivial.
+   apply downgrade_works''; trivial; crushValidTy.
    replace (n + 1) with (S n) by lia.
    apply valrel_inBool'; trivial.
   Qed.
 
   Lemma termrel₀_inSumDwn {d w n p vs vu τ1 τ2} :
+    ValidTy τ1 -> ValidTy τ2 ->
     dir_world_prec n w d p →
     valrel d w (ptsum (pEmulDV n p τ1) (pEmulDV n p τ2)) vs vu →
     termrel₀ d w (pEmulDV n p (I.tsum τ1 τ2)) (inSumDwn τ1 τ2 n vs) vu.
   Proof.
-   intros dwp vr.
+   intros vτ1 vτ2 dwp vr.
    unfold inSumDwn.
-   apply downgrade_works''; trivial.
+   apply downgrade_works''; trivial; crushValidTy.
    replace (n + 1) with (S n) by lia.
    now apply valrel_inSum''.
   Qed.
 
   Lemma termrel₀_inProdDwn {d w n p vs vu τ1 τ2} :
+    ValidTy τ1 -> ValidTy τ2 ->
     dir_world_prec n w d p →
     valrel d w (ptprod (pEmulDV n p τ1) (pEmulDV n p τ2)) vs vu →
     termrel₀ d w (pEmulDV n p (I.tprod τ1 τ2)) (inProdDwn τ1 τ2 n vs) vu.
   Proof.
-   intros dwp vr.
+   intros vτ1 vτ2 wp vr.
    unfold inProdDwn.
-   apply downgrade_works''; trivial.
+   apply downgrade_works''; trivial; crushValidTy.
    replace (n + 1) with (S n) by lia.
    now apply valrel_inProd''.
   Qed.
 
   Lemma termrel₀_inRecDwn {d w n p vs vu τ} :
+    ValidTy (trec τ) →
     dir_world_prec n w d p →
     valrel d w (pEmulDV n p (τ [beta1 (I.trec τ)])) vs vu →
     termrel₀ d w (pEmulDV n p (I.trec τ)) (inRecDwn τ n vs) (I.fold_ vu).
   Proof.
-   intros dwp vr.
+   intros vτ dwp vr.
    unfold inRecDwn.
    apply downgrade_works''; trivial.
    replace (n + 1) with (S n) by lia.
@@ -511,13 +514,14 @@ Section IntroProps.
   Qed.
 
   Lemma termrel₀_inArrDwn {d w n p vs vu τ1 τ2} :
+    ValidTy τ1 -> ValidTy τ2 ->
     dir_world_prec n w d p →
     valrel d w (ptarr (pEmulDV n p τ1) (pEmulDV n p τ2)) vs vu →
     termrel₀ d w (pEmulDV n p (I.tarr τ1 τ2)) (inArrDwn τ1 τ2 n vs) vu.
   Proof.
-   intros dwp vr.
+   intros vτ1 vτ2 dwp vr.
    unfold inArrDwn.
-   apply downgrade_works''; trivial.
+   apply downgrade_works''; trivial; crushValidTy.
    replace (n + 1) with (S n) by lia.
    apply valrel_inArr; trivial.
   Qed.
@@ -1106,14 +1110,15 @@ Section DestructProps.
   Qed.
 
   Lemma invert_valrel_pEmulDV_for_caseUValSum {d w n p vs vu τ1 τ2} :
+    ValidTy τ1 -> ValidTy τ2 ->
     valrel d w (pEmulDV (S n) p (I.tsum τ1 τ2)) vs vu →
     (∃ vs', vs = (F.inl vs') ∧
                 caseSum n vs τ1 τ2 -->* vs' ∧
                 valrel d w (ptsum (pEmulDV n p τ1) (pEmulDV n p τ2)) vs' vu) ∨
     (p = imprecise ∧ (caseSum n vs τ1 τ2) ⇑).
   Proof.
-    intros vr.
-    apply invert_valrel_pEmulDV_sum in vr.
+    intros vτ1 vτ2 vr.
+    apply invert_valrel_pEmulDV_sum in vr; try assumption.
     destruct vr as [[? ?] | (vs' & ? & vr)];
       subst; unfold caseSum.
     - right.

@@ -431,15 +431,29 @@ Proof.
     change (eraseAnnot _) with (inject n τ2) at 1.
     change (eraseAnnot _) with (extract n τ1) at 1.
     rewrite inject_sub, extract_sub.
-    destruct (valrel_ptarr_inversion vr) as (tsb & tub & tslam & tulam & tytsb & tytub & trtsub).
+    assert (vτ1 : ValidPTy (embed τ1)) by eauto using validPTy_embed.
+    assert (vτ2 : ValidPTy (embed τ2)) by eauto using validPTy_embed.
+    destruct (valrel_ptarr_inversion vτ1 vτ2 vr) as (tsb & tub & tslam & tulam & tytsb & tytub & trtsub).
 
     eapply valrel_termrelnd₀.
-    eapply valrel_inArr.
-    rewrite tulam.
-    erewrite <- fizzbuzz.
+    eapply valrel_inArr; eauto using validTy_compfi_ty.
+    cbn in tytub.
     change (UValFI n (compfi_ty τ1)) with (repEmul (pEmulDV n p (compfi_ty τ1))).
-    apply valrel_lambda.
-    crushOfType; crush; eauto using injectT, extractT.
+    subst.
+    erewrite <-fizzbuzz.
+    refine (valrel_lambda _ _ _ _); cbn;
+      eauto using validPTy_embed, validTy_compfi_ty with tyvalid.
+    erewrite <-?(fizzbuzz (n := n) (p := p)) in tytub; cbn in tytub.
+    crushOfType; cbn;
+      eauto using validPTy_embed, validTy_compfi_ty with tyvalid tyeq;
+      cbn;
+    eauto using injectT, extractT; I.crushTyping.
+    eauto using validTy_compfi_ty.
+    crushTyping.
+    rewrite repEmul_embed_leftinv.
+    eapply injectT.
+    rewrite repEmul_embed_leftinv.
+    eapply extractT.
     rewrite ?compiler_is_fxToIs_embed; eauto using tytub.
 
     intros w' vs' vu' fw' szvu vr'.
@@ -457,6 +471,7 @@ Proof.
       (* cbn in sz. *)
       (* assert (szvs' : (size vs') <= w') by lia. *)
       assert (nsz : forall A, dir_lt = dir_gt -> A) by (intros _ [=]).
+      rewrite <-compiler_is_fxToIs_embed in vr'.
       pose proof (IHext _ _ _ _ obv_leq dwp' (nsz _) vr') as extr_tr.
       (* clear sz szvs'. *)
       refine (termrelnd₀_ectx_sub (F.papp₂ (inject n τ2) (F.papp₂ _ F.phole)) _ extr_tr _);
@@ -478,8 +493,10 @@ Proof.
         cbn; eauto using inject_value.
       intros w3 fw3 vs3 vu3 vr3.
       eapply termrelnd₀_termrel.
+      rewrite <-compiler_is_fxToIs_embed.
       refine (IHinj n w3 vs3 vu3 _ _ vr3); try lia; eauto using dwp_mono.
     + destruct (dwp_invert_gt dwp) as (-> & ineq).
+      rewrite <-compiler_is_fxToIs_embed in vr'.
       pose proof (IHext _ _ _ _ obv_leq dwp' (fun _ => szvu eq_refl) vr') as extr_tr.
       refine (termrelnd₀_ectx_sub (F.papp₂ (inject n τ2) (F.papp₂ _ F.phole)) _ extr_tr _);
         cbn; eauto using inject_value.
@@ -500,6 +517,7 @@ Proof.
         cbn; eauto using inject_value.
       intros w3 fw3 vs3 vu3 vr3.
       eapply termrelnd₀_termrel.
+      rewrite <-compiler_is_fxToIs_embed.
       refine (IHinj n w3 vs3 vu3 _ _ vr3); try lia; eauto using dwp_mono.
 Qed.
 
@@ -510,7 +528,8 @@ Lemma inject_tprod_works {n w d p τ₁ τ₂ vs vu} :
 Proof.
   intros inj₁ inj₂ dwp vr.
   destruct (valrel_implies_OfType vr) as [[vvs tvs] [vvu tvu]].
-
+  assert (vτ₁ : ValidPTy (embed τ₁)) by eauto using validPTy_embed.
+  assert (vτ₂ : ValidPTy (embed τ₂)) by eauto using validPTy_embed.
   destruct (valrel_ptprod_inversion vr) as (vs1 & vs2 & vu1 & vu2 & -> & -> & ot1 & ot2 & vr').
   destruct ot1 as [tvs1 tvu1].
   destruct ot2 as [tvs2 tvu2].
@@ -593,7 +612,8 @@ Proof.
      }
      eapply (termrelnd₀_ectx' inj₂); F.inferContext; I.inferContext; cbn; eauto.
      intros vs4 vu4 vr4.
-     now eapply valrel_termrelnd₀, valrel_inProd'', valrel_pair'.
+     eapply valrel_termrelnd₀, valrel_inProd'', valrel_pair';
+       cbn; eauto using validTy_compfi_ty.
 Qed.
 
 Lemma inject_tsum_works {n w d p τ₁ τ₂ vs vu} :
@@ -603,6 +623,8 @@ Lemma inject_tsum_works {n w d p τ₁ τ₂ vs vu} :
 Proof.
   intros inj₁ inj₂ dwp vr.
   destruct (valrel_implies_OfType vr) as [[vvs tvs] [vvu tvu]].
+  assert (vτ₁ : ValidPTy (embed τ₁)) by eauto using validPTy_embed.
+  assert (vτ₂ : ValidPTy (embed τ₂)) by eauto using validPTy_embed.
 
   (* assert (w < S w) as fw by lia. *)
   (* assert (dir_world_prec n w d p) as dwp' by eauto using dwp_invert_S. *)
@@ -632,21 +654,24 @@ Proof.
     destruct w.
     + inversion tvs; subst.
       inversion tvu; subst.
-      rewrite <-compiler_is_fxToIs_embed in H2.
+      rewrite <-compiler_is_fxToIs_embed in H4.
+
       destruct (inject_terminates n (conj vvs H1)) as (vs2 & vvs2 & es2).
       eapply termrelnd₀_antired_left.
       { change (inl (inl ?x)) with (pctx_app x (pinl (pinl phole))).
         refine (evalstar_ctx _ _ es2); now cbn. }
       cbn.
       eapply valrel_termrelnd₀.
-      eapply valrel_inSum''.
-      eapply valrel_inl''.
+      eapply valrel_inSum''; eauto using validTy_compfi_ty.
+      eapply valrel_inl''; cbn; eauto using validTy_compfi_ty.
       assert (tyvs2 : ⟪ PseudoType.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₁)) ⟫).
       * eapply (F.preservation_star es2).
         crushTyping.
         rewrite repEmul_embed_leftinv.
         eapply injectT.
-      * now repeat split.
+      * repeat split; try assumption.
+        cbn.
+        now rewrite compiler_is_fxToIs_embed.
       * intros w' fw; exfalso; lia.
     + assert (fw : w < S w) by lia.
       specialize (vrs w fw).
@@ -660,7 +685,8 @@ Proof.
       intros vs2 vu2 vr2.
       cbn.
       eapply valrel_termrelnd₀.
-      eauto using valrel_inSum'', valrel_inl'.
+      eapply valrel_inSum''; eauto using validTy_compfi_ty, valrel_inSum'', valrel_inl'.
+      eapply valrel_inl'; cbn; eauto using validTy_compfi_ty, valrel_inSum'', valrel_inl'.
   - eapply termrelnd₀_antired_left.
     { (* beta-reduce *)
       eapply evalStepStar.
@@ -683,21 +709,21 @@ Proof.
     destruct w.
     + inversion tvs; subst.
       inversion tvu; subst.
-      rewrite <-compiler_is_fxToIs_embed in H2.
+      rewrite <-compiler_is_fxToIs_embed in tvu; cbn in tvu.
       destruct (inject_terminates n (conj vvs H1)) as (vs2 & vvs2 & es2).
       eapply termrelnd₀_antired_left.
       { change (inl (inr ?x)) with (pctx_app x (pinl (pinr phole))).
         refine (evalstar_ctx _ _ es2); now cbn. }
       cbn.
       eapply valrel_termrelnd₀.
-      eapply valrel_inSum''.
-      eapply valrel_inr''.
+      eapply valrel_inSum''; eauto using validTy_compfi_ty.
+      eapply valrel_inr''; cbn; eauto using validTy_compfi_ty.
       assert (tyvs2 : ⟪ PseudoType.F.empty ⊢ vs2 : repEmul (pEmulDV n p (compfi_ty τ₂)) ⟫).
       * eapply (F.preservation_star es2).
         crushTyping.
         rewrite repEmul_embed_leftinv.
         eapply injectT.
-      * now repeat split.
+      * repeat split; cbn; try trivial. now rewrite compiler_is_fxToIs_embed.
       * intros w' fw; exfalso; lia.
     + assert (fw : w < S w) by lia.
       specialize (vrs w fw).
@@ -711,9 +737,9 @@ Proof.
       intros vs2 vu2 vr2.
       cbn.
       eapply valrel_termrelnd₀.
-      eauto using valrel_inSum'', valrel_inr'.
+      eapply valrel_inSum''; eauto using validTy_compfi_ty.
+      eapply valrel_inr'; cbn; eauto using validTy_compfi_ty.
 Qed.
-
 
 Lemma extract_tarr_works {n w d p τ₁ τ₂ vs vu} :
   (forall w' vs' vu', w' < w → inject_works_prop n w' d p vs' vu' τ₁) →
@@ -744,17 +770,17 @@ Proof.
     rewrite compiler_is_fxToIs_embed.
     pose proof (tvs2w := typing_sub tvs2 _ wkm (wtSub_wkm _ τ₁)).
     rewrite (wsClosed_invariant (wt_implies_ws tvs2)) in tvs2w.
-    refine (valrel_lambda _ _); crushOfType; rewrite <-?compiler_is_fxToIs_embed, ?repEmul_embed_leftinv; eauto;
-      crushTyping; eauto with typing uval_typing.
+    refine (valrel_lambda _ _ _ _); crushOfType; rewrite <-?compiler_is_fxToIs_embed, ?repEmul_embed_leftinv; eauto;
+      crushTyping; eauto using validTy_compfi_ty, validPTy_embed with typing uval_typing.
     subst.
 
-    destruct (valrel_implies_Value H2) as [vvs3 vvu3].
+    destruct (valrel_implies_Value H1) as [vvs3 vvu3].
     rewrite inject_sub, extract_sub, caseArr_sub.
     cbn.
     repeat change (apTm ?x ?t) with (ap x t).
     rewrite (wsClosed_invariant (wt_implies_ws tvs2)).
     pose proof (dwp3 := dwp_invert_S' dwp w' H).
-    specialize (inj1 w' vs vu H dwp3 H2).
+    specialize (inj1 w' vs vu H dwp3 H1).
 
     refine (termrel_antired_star_left _ _).
     { unfold caseArr, caseArr_pctx, caseUVal_pctx; cbn.
@@ -770,8 +796,8 @@ Proof.
     destruct (valrel_implies_Value vr4) as [vvs4 _].
 
     cbn in vr.
-    destruct (valrel_ptarr_inversion vr2) as (tsb & tub & -> & [=] & ttsb & ttub & trb); subst.
-
+    unshelve eapply valrel_ptarr_inversion in vr2; cbn; eauto using validTy_compfi_ty with tyvalid.
+    destruct vr2 as (tsb & tub & -> & [=] & ttsb & ttub & trb); subst.
     refine (termrel_antired_star_left _ _).
     { change (app ?t1 ?t2) with (F.pctx_app t2 (F.papp₂ t1 F.phole)).
       eapply evalToStar, eval_ctx₀; [eapply eval_beta|]; cbn; eauto using extract_value.
@@ -798,14 +824,14 @@ Proof.
     inversion tvu; subst; cbn in vvu; try contradiction.
     replace τ₁ with (repEmul (embed τ₁)) at 2 by eapply repEmul_embed_leftinv.
     rewrite ?compiler_is_fxToIs_embed in *.
-    refine (valrel_lambda _ _).
+    refine (valrel_lambda _ _ _ _); eauto using validPTy_embed with tyeq tyvalid.
     { pose proof (tvsw := typing_sub tvs _ wkm (wtSub_wkm _ τ₁)).
       rewrite (wsClosed_invariant (wt_implies_ws tvs)) in tvsw.
       rewrite <-compiler_is_fxToIs_embed in tvsw.
       crushOfType;
         crushTyping;
       rewrite ?repEmul_embed_leftinv, <-?compiler_is_fxToIs_embed;
-        eauto with typing uval_typing.
+        eauto using validTy_compfi_ty, validPTy_embed with typing uval_typing.
     }
     intros w2 vs2 vu2 fw2 _ vr2.
     eapply termrel_div_lt.
@@ -872,7 +898,7 @@ Proof.
       eapply value_evalStar in es5; [|now cbn];subst.
       destruct ot11 as (ots11 & otu11).
       destruct ot12 as (ots12 & otu12).
-      eapply valrel_pair''.
+      eapply valrel_pair''; eauto using validPTy_embed.
       { split.
         split; [assumption|].
         eapply (F.preservation_star es11').
@@ -937,7 +963,8 @@ Proof.
       eapply (termrelnd₀_ectx' extr₂); [F.inferContext| I.inferContext|idtac|now cbn|now cbn].
       intros vs31 vu31 vr31.
       eapply valrel_termrelnd₀.
-      now eapply valrel_pair'.
+      eapply valrel_pair';
+      eauto using validPTy_embed.
   - eapply dwp_invert_imprecise in dwp; subst.
     eapply termrelnd₀_div_lt.
     unfold caseProd,caseProd_pctx, caseUVal_pctx, stlcOmega in div.
@@ -1010,12 +1037,12 @@ Proof.
         cbn in es3'.
         assert (vivs3 : Value (F.inl vs3)) by (now cbn).
         eapply (value_evalStar vivs3) in es3'; subst.
-        eapply valrel_inl''.
+        eapply valrel_inl''; eauto using validPTy_embed.
         { destruct (OfType_inversion_pEmulDV ot) as (_ & _ & tyvs' & tyvu).
-          inversion tyvu; subst.
           inversion tyvs'; subst.
-          inversion H2; clear H2; subst.
-          fold UValFI in H3.
+          inversion H1; subst.
+          eapply I.invert_ty_inl in tyvu; eauto with tyvalid.
+          destruct (tyvu) as (vτ₁₂ & vτ₂' & tvu).
           split; split;
             try rewrite <-compiler_is_fxToIs_embed;
             eauto.
@@ -1046,7 +1073,7 @@ Proof.
         refine (termrelnd₀_ectx (Cs := F.pinl F.phole) (Cu := I.pinl I.phole) I I extr1 _).
         intros vs2 vu2 vr2.
         eapply valrel_termrelnd₀.
-        now eapply valrel_inl'.
+        eapply valrel_inl'; eauto using validPTy_embed.
     + clear extr1.
       eapply termrelnd₀_antired_left.
       { eapply evalToStar.
@@ -1065,12 +1092,12 @@ Proof.
         cbn in es3'.
         assert (vivs3 : F.Value (F.inr vs3)) by (now cbn).
         eapply (value_evalStar vivs3) in es3'; subst.
-        eapply valrel_inr''.
+        eapply valrel_inr''; eauto using validPTy_embed with tyvalid.
         { destruct (OfType_inversion_pEmulDV ot) as (_ & _ & tyvs' & tyvu).
-          inversion tyvu; subst.
           inversion tyvs'; subst.
-          inversion H2; clear H2; subst.
-          fold UValFI in H3.
+          inversion H1; clear H1; subst.
+          eapply I.invert_ty_inr in tyvu; eauto using validPTy_embed with tyvalid.
+          destruct tyvu as (vτ₁₂ & vτ₂' & tvu).
           split; split;
             try rewrite <-compiler_is_fxToIs_embed;
             eauto.
@@ -1100,7 +1127,7 @@ Proof.
         refine (termrelnd₀_ectx (Cs := F.pinr F.phole) (Cu := I.pinr I.phole) I I extr2 _).
         intros vs2 vu2 vr2.
         eapply valrel_termrelnd₀.
-        now eapply valrel_inr'.
+        eapply valrel_inr'; eauto using validPTy_embed.
 Qed.
 
 Lemma inject_works {n w d p τ vs vu} :

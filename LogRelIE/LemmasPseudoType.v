@@ -6,7 +6,7 @@ Require Export LogRelIE.InstPTy.
 Require Export LogRelIE.Contraction.
 Require Export LogRelIE.ValidPTy.
 
-Require Import StlcIsoValid.LemmasTyping.
+Require Import StlcIso.LemmasTyping.
 Require Import StlcEqui.LemmasTyping.
 
 Require Import Coq.Bool.Bool.

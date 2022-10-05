@@ -159,18 +159,28 @@ Proof.
   induction 1; constructor; assumption.
 Qed.
 
+Lemma validTy_compfi_ty {τ} : ValidTy (compfi_ty τ).
+Proof.
+  induction τ; cbn.
+  - now apply ValidTy_arr.
+  - now apply ValidTy_unit.
+  - now apply ValidTy_bool.
+  - now apply ValidTy_prod.
+  - now apply ValidTy_sum.
+Qed.
+
 Lemma compfi_typing_works {Γ t τ} :
   ⟪ Γ ⊢ t : τ ⟫ →
   ⟪ compfi_env Γ i⊢ compfi t : compfi_ty τ ⟫.
 Proof.
-  induction 1; F.crushTyping; I.crushTyping; eauto using I.AnnotTyping, compfi_getevar_works, I.ufix_typing.
+  induction 1; F.crushTyping; I.crushTyping; eauto using I.AnnotTyping, compfi_getevar_works, I.ufix_typing, validTy_compfi_ty.
 Qed.
 
 Lemma compfi_annot_typing_works {Γ t τ} :
   ⟪ Γ a⊢ t : τ ⟫ →
   ⟪ compfi_env Γ ia⊢ compfi_annot t : compfi_ty τ ⟫.
 Proof.
-  induction 1; F.crushTyping; I.crushTyping; eauto using I.AnnotTyping, compfi_getevar_works, I.ufix_annot_typing.
+  induction 1; F.crushTyping; I.crushTyping; eauto using I.AnnotTyping, compfi_getevar_works, I.ufix_annot_typing, validTy_compfi_ty.
 Qed.
 
 Lemma compfi_pctx_annot_typing_works {C Γ Γ' τ τ'} :
@@ -178,11 +188,11 @@ Lemma compfi_pctx_annot_typing_works {C Γ Γ' τ τ'} :
   ⟪ ia⊢ compfi_pctx_annot C : compfi_env Γ, compfi_ty τ →
   compfi_env Γ', compfi_ty τ' ⟫.
 Proof.
-  induction 1; eauto using PCtxTypingAnnot, compfi_typing_works.
+  induction 1; eauto using PCtxTypingAnnot, compfi_typing_works, validTy_compfi_ty.
   - eapply compfi_annot_typing_works in H0.
-    eauto using PCtxTypingAnnot, compfi_typing_works.
+    eauto using PCtxTypingAnnot, compfi_typing_works, validTy_compfi_ty with tyvalid.
   - eapply compfi_annot_typing_works in H.
-    eauto using PCtxTypingAnnot, compfi_typing_works.
+    eauto using PCtxTypingAnnot, compfi_typing_works, validTy_compfi_ty with tyvalid.
   - eapply compfi_annot_typing_works in H0, H1.
     eauto using PCtxTypingAnnot, compfi_typing_works.
   - eapply compfi_annot_typing_works in H, H1.
@@ -193,17 +203,21 @@ Proof.
     eauto using PCtxTypingAnnot, compfi_typing_works.
   - eapply compfi_annot_typing_works in H.
     eauto using PCtxTypingAnnot, compfi_typing_works.
+  - eauto using PCtxTypingAnnot, compfi_typing_works, validTy_compfi_ty with tyvalid.
+  - eauto using PCtxTypingAnnot, compfi_typing_works, validTy_compfi_ty with tyvalid.
   - eapply compfi_annot_typing_works in H0, H1.
-    eauto using PCtxTypingAnnot, compfi_typing_works.
+    eauto using PCtxTypingAnnot, compfi_typing_works, validTy_compfi_ty.
   - eapply compfi_annot_typing_works in H, H1.
-    eauto using PCtxTypingAnnot, compfi_typing_works.
+    eauto using PCtxTypingAnnot, compfi_typing_works, validTy_compfi_ty.
   - eapply compfi_annot_typing_works in H, H0.
-    eauto using PCtxTypingAnnot, compfi_typing_works.
+    eauto using PCtxTypingAnnot, compfi_typing_works, validTy_compfi_ty.
   - eapply compfi_annot_typing_works in H0.
     eauto using PCtxTypingAnnot, compfi_typing_works, I.ufix_annot_typing.
   - eapply compfi_annot_typing_works in H.
     eauto using PCtxTypingAnnot, compfi_typing_works, I.ufix_annot_typing.
-  - eauto using PCtxTypingAnnot, compfi_typing_works, I.ufix_annot_typing.
+  - eauto using PCtxTypingAnnot, compfi_typing_works, I.ufix_annot_typing, validTy_compfi_ty with tyvalid2.
+    cbn.
+    constructor; eauto using ufix_annot_typing, validTy_compfi_ty with tyvalid.
 Qed.
 
 Lemma compileCtx_works {Γ i τ} :
@@ -222,6 +236,7 @@ Local Ltac crush :=
      F.crushTyping;
      I.crushTyping;
      repeat crushRepEmulEmbed;
+     repeat crushRecTypesMatchH;
      repeat F.crushStlcSyntaxMatchH;
      repeat I.crushStlcSyntaxMatchH;
      subst;
@@ -244,28 +259,36 @@ Qed.
 
 Section CompatibilityLemmas.
 
+
   Lemma compat_lambda {Γ τ' ts d n tu τ} :
+    ValidPTy τ -> ValidPTy τ' -> ValidPEnv Γ ->
     ⟪ Γ p▻ τ' ⊩ ts ⟦ d , n ⟧ tu : τ ⟫ →
     ⟪ Γ ⊩ (F.abs (repEmul τ') ts) ⟦ d , n ⟧ (I.abs (fxToIs τ') tu) : ptarr τ' τ ⟫.
   Proof.
     crush.
-    - eauto using I.wtSub_up, envrel_implies_WtSub_iso.
-    - eauto using F.wtSub_up, envrel_implies_WtSub.
+    - eauto using I.wtSub_up, envrel_implies_WtSub_iso, validTy_fxToIs.
+    - eauto using I.wtSub_up, envrel_implies_WtSub_iso, validTy_fxToIs.
+    - eauto using I.wtSub_up, envrel_implies_WtSub_iso, validTy_fxToIs.
+    - eauto using F.wtSub_up, envrel_implies_WtSub, validTy_fxToIs.
     - repeat eexists; try reflexivity.
       intros w' fw vs vu szvu vr.
       rewrite -> ?ap_comp.
-      apply H1; crush.
+      apply H4; [lia|].
+      eauto using extend_envrel, envrel_mono.
   Qed.
 
   Lemma compat_lambda_embed {Γ τ' ts d n tu τ} :
+    ValidPEnv Γ -> ValidPTy τ ->
     ⟪ Γ p▻ embed τ' ⊩ ts ⟦ d , n ⟧ tu : τ ⟫ →
     ⟪ Γ ⊩ (F.abs τ' ts) ⟦ d , n ⟧ (I.abs (fxToIs (embed τ')) tu) : ptarr (embed τ') τ ⟫.
   Proof.
+    intros vΓ vτ.
     rewrite <- (repEmul_embed_leftinv τ') at 2.
-    apply compat_lambda.
+    apply compat_lambda; eauto using validPTy_embed.
   Qed.
 
   Lemma compat_lambda_embed' {Γ τ' ts d n tu τ} :
+    ValidPEnv Γ -> ValidPTy τ ->
     ⟪ Γ p▻ embed τ' ⊩ ts ⟦ d , n ⟧ tu : τ ⟫ →
     ⟪ Γ ⊩ (F.abs τ' ts) ⟦ d , n ⟧ (I.abs (compfi_ty τ') tu) : ptarr (embed τ') τ ⟫.
   Proof.
@@ -292,51 +315,56 @@ Section CompatibilityLemmas.
   Qed.
 
   Lemma compat_pair {Γ d n ts₁ tu₁ τ₁ ts₂ tu₂ τ₂} :
+    ValidPEnv Γ -> ValidPTy τ₁ -> ValidPTy τ₂ ->
     ⟪ Γ ⊩ ts₁ ⟦ d , n ⟧ tu₁ : τ₁ ⟫ →
     ⟪ Γ ⊩ ts₂ ⟦ d , n ⟧ tu₂ : τ₂ ⟫ →
     ⟪ Γ ⊩ F.pair ts₁ ts₂ ⟦ d , n ⟧ I.pair tu₁ tu₂ : ptprod τ₁ τ₂ ⟫.
   Proof.
     crush.
     apply termrel_pair; crush.
-    refine (H2 w' _ _ _ _); unfold lev in *; try lia.
+    refine (H5 w' _ _ _ _); unfold lev in *; try lia.
     eauto using envrel_mono.
   Qed.
 
   Lemma compat_app {Γ d n ts₁ tu₁ τ₁ ts₂ tu₂ τ₂} :
+    ValidPEnv Γ -> ValidPTy τ₁ -> ValidPTy τ₂ ->
     ⟪ Γ ⊩ ts₁ ⟦ d , n ⟧ tu₁ : ptarr τ₁ τ₂ ⟫ →
     ⟪ Γ ⊩ ts₂ ⟦ d , n ⟧ tu₂ : τ₁ ⟫ →
     ⟪ Γ ⊩ F.app ts₁ ts₂ ⟦ d , n ⟧ I.app tu₁ tu₂ : τ₂ ⟫.
   Proof.
     crush.
     refine (termrel_app _ _); crush.
-    refine (H2 w' _ _ _ _); unfold lev in *; try lia.
+    refine (H5 w' _ _ _ _); unfold lev in *; try lia.
     crush.
   Qed.
 
   Lemma compat_inl {Γ d n ts tu τ₁ τ₂} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     ⟪ Γ ⊩ ts ⟦ d , n ⟧ tu : τ₁ ⟫ →
     ⟪ Γ ⊩ F.inl ts ⟦ d , n ⟧ I.inl tu : ptsum τ₁ τ₂ ⟫.
   Proof.
-    crush.
-    refine (termrel_inl _); crush.
+    crush; eauto using validTy_fxToIs.
+    refine (termrel_inl _ _ _); crush.
   Qed.
 
   Lemma compat_inr {Γ d n ts tu τ₁ τ₂} :
+    ValidPTy τ₁ -> ValidPTy τ₂ ->
     ⟪ Γ ⊩ ts ⟦ d , n ⟧ tu : τ₂ ⟫ →
     ⟪ Γ ⊩ F.inr ts ⟦ d , n ⟧ I.inr tu : ptsum τ₁ τ₂ ⟫.
   Proof.
-    crush.
-    refine (termrel_inr _); crush.
+    crush; eauto using validTy_fxToIs.
+    refine (termrel_inr _ _ _); crush.
   Qed.
 
   Lemma compat_seq {Γ d n ts₁ tu₁ ts₂ tu₂ τ₂} :
+    ValidPEnv Γ -> ValidPTy τ₂ ->
     ⟪ Γ ⊩ ts₁ ⟦ d , n ⟧ tu₁ : ptunit ⟫ →
     ⟪ Γ ⊩ ts₂ ⟦ d , n ⟧ tu₂ : τ₂ ⟫ →
     ⟪ Γ ⊩ F.seq ts₁ ts₂ ⟦ d , n ⟧ I.seq tu₁ tu₂ : τ₂ ⟫.
   Proof.
     crush.
     apply termrel_seq; crush.
-    refine (H2 w' _ _ _ _); crush.
+    refine (H4 w' _ _ _ _); crush.
   Qed.
 
   Lemma compat_proj₂ {Γ d n ts tu τ₁ τ₂} :
@@ -368,12 +396,15 @@ Section CompatibilityLemmas.
   Qed.
 
   Lemma compat_caseof {Γ d n ts₁ tu₁ ts₂ tu₂ ts₃ tu₃ τ₁ τ₂ τ} :
+    ValidPEnv Γ -> ValidPTy τ₁ -> ValidPTy τ₂ ->
     ⟪ Γ ⊩ ts₁ ⟦ d , n ⟧ tu₁ : ptsum τ₁ τ₂ ⟫ →
     ⟪ Γ p▻ τ₁ ⊩ ts₂ ⟦ d , n ⟧ tu₂ : τ ⟫ →
     ⟪ Γ p▻ τ₂ ⊩ ts₃ ⟦ d , n ⟧ tu₃ : τ ⟫ →
     ⟪ Γ ⊩ F.caseof ts₁ ts₂ ts₃ ⟦ d , n ⟧ I.caseof tu₁ tu₂ tu₃ : τ ⟫.
   Proof.
-    crush.
+    intros vΓ vτ₁ vτ₂.
+    crush;
+    try now apply validTy_fxToIs.
     refine (termrel_caseof _ _ _); crush;
     rewrite -> ?ap_comp.
     - refine (H5 w' _ _ _ _); crush.
@@ -381,27 +412,30 @@ Section CompatibilityLemmas.
   Qed.
 
   Lemma compat_fix {Γ d n ts tu τ₁ τ₂} :
+    ValidPEnv Γ -> ValidPTy τ₁ -> ValidPTy τ₂ ->
     ⟪ Γ ⊩ ts ⟦ d , n ⟧ tu : ptarr (ptarr τ₁ τ₂) (ptarr τ₁ τ₂) ⟫ →
     ⟪ Γ ⊩ F.fixt (repEmul τ₁) (repEmul τ₂) ts ⟦ d , n ⟧ I.app (I.ufix (fxToIs τ₁) (fxToIs τ₂)) tu : ptarr τ₁ τ₂ ⟫.
   Proof.
     crush.
-    - eapply I.ufix_typing.
-    - refine (termrel_fix _); crush.
+    - eauto using I.ufix_typing, validTy_fxToIs.
+    - refine (termrel_fix _ _ _); crush.
   Qed.
 
   Lemma compat_fix' {Γ d n ts tu τ₁ τ₂} :
+    ValidPEnv Γ →
     ⟪ Γ ⊩ ts ⟦ d , n ⟧ tu : embed (F.tarr (F.tarr τ₁ τ₂) (F.tarr τ₁ τ₂)) ⟫ →
     ⟪ Γ ⊩ F.fixt τ₁ τ₂ ts ⟦ d , n ⟧ I.app (I.ufix (compfi_ty τ₁) (compfi_ty τ₂)) tu : ptarr (embed τ₁) (embed τ₂) ⟫.
   Proof.
-    intros tr.
+    intros vΓ tr.
     rewrite <- (repEmul_embed_leftinv τ₁) at 1.
     rewrite <- (repEmul_embed_leftinv τ₂) at 1.
     rewrite (compiler_is_fxToIs_embed τ₁) at 1.
     rewrite (compiler_is_fxToIs_embed τ₂) at 1.
-    apply compat_fix; assumption.
+    apply compat_fix; eauto using validPTy_embed.
   Qed.
 
   Lemma compat_fix'' {Γ d n ts tu τ₁ τ₂} :
+    ValidPEnv Γ →
     ⟪ Γ ⊩ ts ⟦ d , n ⟧ tu : embed (F.tarr (F.tarr τ₁ τ₂) (F.tarr τ₁ τ₂)) ⟫ →
     ⟪ Γ ⊩ F.fixt τ₁ τ₂ ts ⟦ d , n ⟧ I.app (I.ufix (fxToIs (embed τ₁)) (fxToIs (embed τ₂))) tu : ptarr (embed τ₁) (embed τ₂) ⟫.
   Proof.
@@ -429,7 +463,9 @@ Section CompatibilityLemmas.
       , compat_seq
       , compat_ite, compat_proj₁, compat_proj₂
       , compat_caseof
-      , compat_fix''.
+      , compat_fix''
+      , validPTy_embed
+      , validPEnv_embedCtx.
   Qed.
 
   Lemma compfi_correct' {Γ d n ts τ τ'} :
@@ -459,7 +495,9 @@ Section CompatibilityLemmas.
       , compat_seq
       , compat_ite, compat_proj₁, compat_proj₂
       , compat_caseof
-      , compat_fix''.
+      , compat_fix''
+      , validPTy_embed
+      , validPEnv_embedCtx.
   Qed.
 
   Lemma compfi_ctx_correct {Γ Γ' d n C τ τ'} :
@@ -496,6 +534,7 @@ Section CompatibilityLemmas.
              | [ |- ⟪ _ ⊢ F.eraseAnnot _ : _ ⟫ ] => eapply F.eraseAnnotT
              | [ |- ⟪ _ ⊢ I.eraseAnnot _ : _ ⟫ ] => eapply I.eraseAnnotT
               end;
+              eauto using validPTy_embed, validPEnv_embedCtx;
               try eassumption;
               fold embed;
               try reflexivity;
@@ -538,7 +577,7 @@ Proof.
     as termu₁ by (apply (adequacy_lt lrt₁ termN); lia).
 
   assert (I.Terminating (I.pctx_app (compfi t₂) (I.eraseAnnot_pctx (compfi_pctx_annot C)))).
-  eapply eq; try assumption;
+  eapply eq; try assumption; eauto using compfi_pctx_annot_typing_works, validTy_compfi_ty.
   apply (compfi_pctx_annot_typing_works tyC).
 
   destruct (I.Terminating_TermHor H) as [n' termN']; clear H.
