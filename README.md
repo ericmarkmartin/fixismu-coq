@@ -14,8 +14,14 @@ See the paper [on arxiv][arxiv]
 1. Clone the repository
 2. run `make` from the repo root
 
-### Verified compatible coq versions
-- 8.13.2
+### Compatible Coq versions
+- 8.14
+- 8.15
+- 8.16
+
+This is checked using the [docker-coq] github action.
+
+[docker-coq]: https://github.com/coq-community/docker-coq-action
 
 ## Paper-to-artifact correspondence guide
 
