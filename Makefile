@@ -17,7 +17,7 @@ endif
 SRCS := $(shell egrep "^.*\.v$$" _CoqProject)
 AUXS := $(join $(dir $(SRCS)), $(addprefix ., $(notdir $(SRCS:.v=.aux))))
 
-.PHONY: coq clean
+.PHONY: coq clean install validate
 
 coq: Makefile.coq
 	$(E) "  MAKE Makefile.coq"
@@ -31,3 +31,11 @@ clean: Makefile.coq
 	$(Q)$(MAKE) $(MFLAGS) -f Makefile.coq clean
 	$(Q)rm -f $(AUXS)
 	$(Q)rm -f Makefile.coq *.bak *.d *.glob *~ result*
+
+install: Makefile.coq
+	$(E) "  MAKE -f Makefile.coq install"
+	$(Q)$(MAKE) $(MFLAGS) -f Makefile.coq install
+
+validate: Makefile.coq
+	$(E) "  MAKE -f Makefile.coq validate"
+	$(Q)$(MAKE) $(MFLAGS) -f Makefile.coq validate

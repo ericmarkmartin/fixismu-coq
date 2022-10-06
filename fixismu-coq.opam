@@ -10,9 +10,7 @@ Coq mechanization of FAC proofs:
 """
 maintainer: "Dominique Devriese <dominique.devriese@kuleuven.be>"
 authors: "Dominique Devriese <dominique.devriese@kuleuven.be>, Eric Mark Martin <ericmarkmartin@gmail.com>, Marco Patrignani <marco.patrignani@unitn.it>"
-license: ""
 homepage: "https://github.com/dominiquedevriese/fixismu-coq"
-bug-reports: ""
-dev-repo: ""
 depends: [ "ocaml" "ocamlfind" ]
+bug-reports: "https://github.com/dominiquedevriese/fixismu-coq/issues"
 build: [make]
