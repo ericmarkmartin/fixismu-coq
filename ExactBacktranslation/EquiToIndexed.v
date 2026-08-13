@@ -1,9 +1,12 @@
 Require Import ExactBacktranslation.Decision.
 Require Import ExactBacktranslation.IndexedCompiler.
 Require Import ExactBacktranslation.GlobalCoercions.
+Require Import ExactBacktranslation.AnnotatedGlobalCoercions.
 Require Import StlcEqui.SpecAnnot.
+Require Import StlcIso.SpecAnnot.
 
 Module EAF := StlcEqui.SpecAnnot.
+Module IAF := StlcIso.SpecAnnot.
 
 (** Computational elaboration of the repository's existing annotated Equi
     syntax.  The expected result type supplies the right endpoint omitted by
@@ -76,14 +79,31 @@ Qed.
 (** The user-facing compiler infers a certificate at each annotated
     conversion and then invokes the certificate interpreter. *)
 Definition compile_equi_annot (result : Ty) (t : EAF.TmA) :
+    IAF.TmA :=
+  compile_indexed_annot (equi_to_indexed result t).
+
+Definition compile_equi_raw (result : Ty) (t : EAF.TmA) :
     StlcIso.SpecSyntax.Tm :=
-  compile_indexed (equi_to_indexed result t).
+  IAF.eraseAnnot (compile_equi_annot result t).
 
 Theorem compile_equi_annot_typing {Gamma t A} :
   EAF.AnnotTyping Gamma t A ->
-  StlcIso.SpecTyping.Typing Gamma (compile_equi_annot A t) A.
+  IAF.AnnotTyping Gamma (compile_equi_annot A t) A.
 Proof.
-  intros Ht. apply compile_indexed_typing, equi_to_indexed_typing. exact Ht.
+  intros Ht. apply compile_indexed_annot_typing, equi_to_indexed_typing.
+  exact Ht.
+Qed.
+
+Theorem erase_compile_equi_annot (result : Ty) (t : EAF.TmA) :
+  IAF.eraseAnnot (compile_equi_annot result t) =
+  compile_indexed (equi_to_indexed result t).
+Proof. apply erase_compile_indexed_annot. Qed.
+
+Theorem compile_equi_raw_typing {Gamma t A} :
+  EAF.AnnotTyping Gamma t A ->
+  StlcIso.SpecTyping.Typing Gamma (compile_equi_raw A t) A.
+Proof.
+  intros Ht. apply IAF.eraseAnnotT, compile_equi_annot_typing. exact Ht.
 Qed.
 
 Lemma compile_equi_coerce_strict {T U t} :
@@ -91,11 +111,28 @@ Lemma compile_equi_coerce_strict {T U t} :
   exists d,
     decide_casteq T U = Some d /\
     compile_equi_annot U (EAF.ea_coerce T t) =
-      StlcIso.SpecSyntax.app (compile_global_up d)
+      IAF.ia_app T U (compile_global_up_annot d)
         (compile_equi_annot T t).
 Proof.
   intros HE VT VU.
   destruct (decide_casteq_complete T U VT VU HE) as [d Hd].
   exists d. split; [exact Hd|].
   unfold compile_equi_annot. cbn [equi_to_indexed]. now rewrite Hd.
+Qed.
+
+Lemma compile_equi_raw_coerce_strict {T U t} :
+  Tyeq T U -> ValidTy T -> ValidTy U ->
+  exists d,
+    decide_casteq T U = Some d /\
+    compile_equi_raw U (EAF.ea_coerce T t) =
+      StlcIso.SpecSyntax.app (compile_global_up d)
+        (compile_equi_raw T t).
+Proof.
+  intros HE VT VU.
+  destruct (compile_equi_coerce_strict (t := t) HE VT VU)
+    as (d & Hd & Hcompile).
+  exists d. split; [exact Hd|].
+  unfold compile_equi_raw. rewrite Hcompile.
+  cbn -[compile_global_up_annot].
+  now rewrite erase_compile_global_up_annot.
 Qed.

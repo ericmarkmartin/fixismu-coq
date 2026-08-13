@@ -1,11 +1,14 @@
 Require Import ExactBacktranslation.IndexedCompiler.
 Require Import ExactBacktranslation.CertificateIndexed.
 Require Import ExactBacktranslation.GlobalCoercions.
+Require Import ExactBacktranslation.AnnotatedGlobalCoercions.
 Require Import StlcIso.SpecSyntax.
 Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecAnnot.
 Require Import StlcEqui.SpecAnnot.
 
 Module ICI := StlcIso.SpecSyntax.
+Module ICIA := StlcIso.SpecAnnot.
 Module ICE := StlcEqui.SpecAnnot.
 
 (** Certificate-indexed one-hole contexts.  This is deliberately structural:
@@ -135,6 +138,54 @@ Fixpoint compile_indexed_context (C : ICCtx) : ICI.PCtx :=
       (compile_indexed_context C0)
   end.
 
+(** Direct, computational annotation insertion for structural contexts. *)
+Fixpoint compile_indexed_context_annot (C : ICCtx) : ICIA.PCtxA :=
+  match C with
+  | icc_hole => ICIA.ia_phole
+  | icc_abs A B C0 => ICIA.ia_pabs A B
+      (compile_indexed_context_annot C0)
+  | icc_app1 A B C0 x => ICIA.ia_papp₁ A B
+      (compile_indexed_context_annot C0) (compile_indexed_annot x)
+  | icc_app2 A B f C0 => ICIA.ia_papp₂ A B
+      (compile_indexed_annot f) (compile_indexed_context_annot C0)
+  | icc_ite1 A C0 x y => ICIA.ia_pite₁ A
+      (compile_indexed_context_annot C0)
+      (compile_indexed_annot x) (compile_indexed_annot y)
+  | icc_ite2 A b C0 y => ICIA.ia_pite₂ A
+      (compile_indexed_annot b) (compile_indexed_context_annot C0)
+      (compile_indexed_annot y)
+  | icc_ite3 A b x C0 => ICIA.ia_pite₃ A
+      (compile_indexed_annot b) (compile_indexed_annot x)
+      (compile_indexed_context_annot C0)
+  | icc_pair1 A B C0 y => ICIA.ia_ppair₁ A B
+      (compile_indexed_context_annot C0) (compile_indexed_annot y)
+  | icc_pair2 A B x C0 => ICIA.ia_ppair₂ A B
+      (compile_indexed_annot x) (compile_indexed_context_annot C0)
+  | icc_proj1 A B C0 => ICIA.ia_pproj₁ A B
+      (compile_indexed_context_annot C0)
+  | icc_proj2 A B C0 => ICIA.ia_pproj₂ A B
+      (compile_indexed_context_annot C0)
+  | icc_inl A B C0 => ICIA.ia_pinl A B
+      (compile_indexed_context_annot C0)
+  | icc_inr A B C0 => ICIA.ia_pinr A B
+      (compile_indexed_context_annot C0)
+  | icc_case1 A B R C0 l r => ICIA.ia_pcaseof₁ A B R
+      (compile_indexed_context_annot C0)
+      (compile_indexed_annot l) (compile_indexed_annot r)
+  | icc_case2 A B R s C0 r => ICIA.ia_pcaseof₂ A B R
+      (compile_indexed_annot s) (compile_indexed_context_annot C0)
+      (compile_indexed_annot r)
+  | icc_case3 A B R s l C0 => ICIA.ia_pcaseof₃ A B R
+      (compile_indexed_annot s) (compile_indexed_annot l)
+      (compile_indexed_context_annot C0)
+  | icc_seq1 A C0 y => ICIA.ia_pseq₁ A
+      (compile_indexed_context_annot C0) (compile_indexed_annot y)
+  | icc_seq2 A x C0 => ICIA.ia_pseq₂ A
+      (compile_indexed_annot x) (compile_indexed_context_annot C0)
+  | icc_coerce A B d C0 => ICIA.ia_papp₂ A B
+      (compile_global_up_annot d) (compile_indexed_context_annot C0)
+  end.
+
 Reserved Notation "⟪ icc⊢ C : Gamma0 , A0 → Gamma , A ⟫"
   (at level 0, C at level 98, Gamma0 at level 98, A0 at level 98,
    Gamma at level 98, A at level 98).
@@ -236,6 +287,31 @@ Proof.
   - exact IHICCtxTyping.
 Qed.
 
+Theorem compile_indexed_context_annot_typing
+    {Gamma0 A0 Gamma C A} :
+  ⟪icc⊢ C : Gamma0, A0 → Gamma, A⟫ ->
+  ICIA.PCtxTypingAnnot Gamma0 A0 Gamma
+    (compile_indexed_context_annot C) A.
+Proof.
+  induction 1; cbn;
+    eauto using ICIA.PCtxTypingAnnot, compile_indexed_annot_typing.
+  eapply ICIA.ia_WtPAppr.
+  - exact H.
+  - exact H0.
+  - now apply compile_global_up_annot_typing.
+  - exact IHICCtxTyping.
+Qed.
+
+Theorem erase_compile_indexed_context_annot (C : ICCtx) :
+  ICIA.eraseAnnot_pctx (compile_indexed_context_annot C) =
+  compile_indexed_context C.
+Proof.
+  induction C; cbn -[compile_global_up_annot];
+    repeat rewrite erase_compile_indexed_annot;
+    try rewrite erase_compile_global_up_annot;
+    congruence.
+Qed.
+
 Theorem plug_indexed_typing {Gamma0 t A0 Gamma C A} :
   ⟪Gamma0 ic⊢ t : A0⟫ ->
   ⟪icc⊢ C : Gamma0, A0 → Gamma, A⟫ ->
@@ -248,6 +324,12 @@ Qed.
 Theorem compile_plug_indexed t C :
   compile_indexed (plug_indexed t C) =
   ICI.pctx_app (compile_indexed t) (compile_indexed_context C).
+Proof. induction C; cbn; congruence. Qed.
+
+Theorem compile_plug_indexed_annot t C :
+  compile_indexed_annot (plug_indexed t C) =
+  ICIA.pctxA_app (compile_indexed_annot t)
+    (compile_indexed_context_annot C).
 Proof. induction C; cbn; congruence. Qed.
 
 Theorem erase_plug_indexed t C :
@@ -264,4 +346,10 @@ Qed.
 Lemma compile_indexed_context_coerce_strict A B d C :
   compile_indexed_context (icc_coerce A B d C) =
   ICI.papp₂ (compile_global_up d) (compile_indexed_context C).
+Proof. reflexivity. Qed.
+
+Lemma compile_indexed_context_annot_coerce_strict A B d C :
+  compile_indexed_context_annot (icc_coerce A B d C) =
+  ICIA.ia_papp₂ A B (compile_global_up_annot d)
+    (compile_indexed_context_annot C).
 Proof. reflexivity. Qed.

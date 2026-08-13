@@ -2,8 +2,10 @@ Require Import ExactBacktranslation.Decision.
 Require Import ExactBacktranslation.EquiToIndexed.
 Require Import ExactBacktranslation.IndexedContexts.
 Require Import StlcEqui.SpecAnnot.
+Require Import StlcIso.SpecAnnot.
 
 Module EACF := StlcEqui.SpecAnnot.
+Module IACF := StlcIso.SpecAnnot.
 
 (** Structural elaboration of an existing annotated Equi context.  The hole
     stays in its original evaluation position.  As for terms, [result]
@@ -104,15 +106,35 @@ Proof.
 Qed.
 
 Definition compile_equi_context_annot (result : Ty)
+    (C : EACF.PCtxA) : IACF.PCtxA :=
+  compile_indexed_context_annot (equi_context_to_indexed result C).
+
+Definition compile_equi_context_raw (result : Ty)
     (C : EACF.PCtxA) : StlcIso.SpecSyntax.PCtx :=
-  compile_indexed_context (equi_context_to_indexed result C).
+  IACF.eraseAnnot_pctx (compile_equi_context_annot result C).
 
 Theorem compile_equi_context_annot_typing
     {Gamma0 A0 Gamma C A} :
   EACF.PCtxTypingAnnot Gamma0 A0 Gamma C A ->
-  StlcIso.SpecTyping.PCtxTyping Gamma0 A0 Gamma
+  IACF.PCtxTypingAnnot Gamma0 A0 Gamma
     (compile_equi_context_annot A C) A.
 Proof.
-  intros HC. apply compile_indexed_context_typing.
+  intros HC. apply compile_indexed_context_annot_typing.
   now apply equi_context_to_indexed_typing.
+Qed.
+
+Theorem erase_compile_equi_context_annot (result : Ty)
+    (C : EACF.PCtxA) :
+  IACF.eraseAnnot_pctx (compile_equi_context_annot result C) =
+  compile_indexed_context (equi_context_to_indexed result C).
+Proof. apply erase_compile_indexed_context_annot. Qed.
+
+Theorem compile_equi_context_raw_typing
+    {Gamma0 A0 Gamma C A} :
+  EACF.PCtxTypingAnnot Gamma0 A0 Gamma C A ->
+  StlcIso.SpecTyping.PCtxTyping Gamma0 A0 Gamma
+    (compile_equi_context_raw A C) A.
+Proof.
+  intros HC. apply IACF.eraseAnnot_pctxT,
+    compile_equi_context_annot_typing. exact HC.
 Qed.

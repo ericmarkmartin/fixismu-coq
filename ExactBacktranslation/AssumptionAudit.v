@@ -1,6 +1,9 @@
 Require Import ExactBacktranslation.Decision.
 Require Import ExactBacktranslation.CertificateIndexed.
 Require Import ExactBacktranslation.GlobalCoercions.
+Require Import ExactBacktranslation.AnnotatedGlobalCoercions.
+Require Import ExactBacktranslation.IndexedCompiler.
+Require Import ExactBacktranslation.IndexedContexts.
 Require Import ExactBacktranslation.SemanticBridge.
 Require Import ExactBacktranslation.ExactContextLR.
 Require Import ExactBacktranslation.ContextAnnotation.
@@ -16,6 +19,20 @@ Goal True. idtac "=== compile_global_up_typing ===". exact I. Qed.
 Print Assumptions compile_global_up_typing.
 Goal True. idtac "=== compile_global_down_typing ===". exact I. Qed.
 Print Assumptions compile_global_down_typing.
+Goal True. idtac "=== compile_global_up_annot_typing ===". exact I. Qed.
+Print Assumptions compile_global_up_annot_typing.
+Goal True. idtac "=== compile_global_down_annot_typing ===". exact I. Qed.
+Print Assumptions compile_global_down_annot_typing.
+Goal True. idtac "=== erase_compile_global_up_annot ===". exact I. Qed.
+Print Assumptions erase_compile_global_up_annot.
+Goal True. idtac "=== compile_indexed_annot_typing ===". exact I. Qed.
+Print Assumptions compile_indexed_annot_typing.
+Goal True. idtac "=== erase_compile_indexed_annot ===". exact I. Qed.
+Print Assumptions erase_compile_indexed_annot.
+Goal True. idtac "=== compile_indexed_context_annot_typing ===". exact I. Qed.
+Print Assumptions compile_indexed_context_annot_typing.
+Goal True. idtac "=== erase_compile_indexed_context_annot ===". exact I. Qed.
+Print Assumptions erase_compile_indexed_context_annot.
 Goal True. idtac "=== generated_cast_lr_all_worlds ===". exact I. Qed.
 Print Assumptions generated_cast_lr_all_worlds.
 Goal True. idtac "=== generated_cast_contextually_identity ===". exact I. Qed.

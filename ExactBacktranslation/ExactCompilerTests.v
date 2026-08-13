@@ -6,9 +6,12 @@ Require Import ExactBacktranslation.EquiContextFrontend.
 Require Import ExactBacktranslation.StructuralCoercionTests.
 Require Import ExactBacktranslation.CertificateIndexedTests.
 Require Import ExactBacktranslation.GlobalCoercions.
+Require Import ExactBacktranslation.AnnotatedGlobalCoercions.
 Require Import StlcEqui.SpecAnnot.
+Require Import StlcIso.SpecAnnot.
 
 Module EATest := StlcEqui.SpecAnnot.
+Module IATest := StlcIso.SpecAnnot.
 
 (** The source syntax contains no certificate. *)
 Definition ordinary_cyclic_cast_function : EATest.TmA :=
@@ -33,13 +36,13 @@ Example ordinary_cyclic_compiler_infers_certificate :
     decide_casteq cycle_t_i cycle_s_i = Some d /\
     compile_equi_annot (tarr cycle_t_i cycle_s_i)
       ordinary_cyclic_cast_function =
-      StlcIso.SpecSyntax.abs cycle_t_i
-        (StlcIso.SpecSyntax.app (compile_global_up d)
-          (StlcIso.SpecSyntax.var 0)).
+      IATest.ia_abs cycle_t_i cycle_s_i
+        (IATest.ia_app cycle_t_i cycle_s_i
+          (compile_global_up_annot d) (IATest.ia_var 0)).
 Proof. vm_compute. eauto. Qed.
 
 Example ordinary_cyclic_compiler_typed :
-  StlcIso.SpecTyping.Typing empty
+  IATest.AnnotTyping empty
     (compile_equi_annot (tarr cycle_t_i cycle_s_i)
       ordinary_cyclic_cast_function)
     (tarr cycle_t_i cycle_s_i).
@@ -49,8 +52,9 @@ Proof. exact (compile_equi_annot_typing
 Example ordinary_cyclic_exact_roundtrip :
   StlcEqui.SpecEquivalent.PCtxEquivalent empty
     (CompilerIE.Compiler.compie
-      (compile_equi_annot (tarr cycle_t_i cycle_s_i)
-        ordinary_cyclic_cast_function))
+      (IATest.eraseAnnot
+        (compile_equi_annot (tarr cycle_t_i cycle_s_i)
+          ordinary_cyclic_cast_function)))
     (EATest.eraseAnnot ordinary_cyclic_cast_function)
     (tarr cycle_t_i cycle_s_i).
 Proof. exact (exact_equi_annot_roundtrip
@@ -62,10 +66,12 @@ Example ordinary_cyclic_exact_full_abstraction :
       (EATest.eraseAnnot ordinary_cyclic_cast_function)
       (tarr cycle_t_i cycle_s_i) <->
    StlcIso.SpecEquivalent.PCtxEquivalent empty
-      (compile_equi_annot (tarr cycle_t_i cycle_s_i)
-        ordinary_cyclic_cast_function)
-      (compile_equi_annot (tarr cycle_t_i cycle_s_i)
-        ordinary_cyclic_cast_function)
+      (IATest.eraseAnnot
+        (compile_equi_annot (tarr cycle_t_i cycle_s_i)
+          ordinary_cyclic_cast_function))
+      (IATest.eraseAnnot
+        (compile_equi_annot (tarr cycle_t_i cycle_s_i)
+          ordinary_cyclic_cast_function))
       (tarr cycle_t_i cycle_s_i)).
 Proof.
   exact (exact_equi_annot_full_abstraction
@@ -93,18 +99,20 @@ Example ordinary_context_backtranslation_is_structural :
   exists d,
     decide_casteq arrow_l_i arrow_r_i = Some d /\
     compile_equi_context_annot arrow_r_i ordinary_arrow_cast_context =
-      StlcIso.SpecSyntax.papp₂ (compile_global_up d)
-        StlcIso.SpecSyntax.phole.
+      IATest.ia_papp₂ arrow_l_i arrow_r_i
+        (compile_global_up_annot d) IATest.ia_phole.
 Proof. vm_compute. eauto. Qed.
 
 Example ordinary_context_backtranslation_is_exact :
   StlcEqui.SpecEquivalent.PCtxEquivalent empty
     (CompilerIE.Compiler.compie
       (StlcIso.SpecSyntax.pctx_app
-        (compile_equi_annot arrow_l_i
-          (EATest.ea_abs direct_l_i tunit EATest.ea_unit))
-        (compile_equi_context_annot arrow_r_i
-          ordinary_arrow_cast_context)))
+        (IATest.eraseAnnot
+          (compile_equi_annot arrow_l_i
+            (EATest.ea_abs direct_l_i tunit EATest.ea_unit)))
+        (IATest.eraseAnnot_pctx
+          (compile_equi_context_annot arrow_r_i
+            ordinary_arrow_cast_context))))
     (StlcEqui.SpecSyntax.pctx_app
       (EATest.eraseAnnot
         (EATest.ea_abs direct_l_i tunit EATest.ea_unit))

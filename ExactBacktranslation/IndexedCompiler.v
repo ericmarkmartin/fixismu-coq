@@ -1,11 +1,14 @@
 Require Import ExactBacktranslation.CertificateIndexed.
 Require Import ExactBacktranslation.GlobalCoercions.
+Require Import ExactBacktranslation.AnnotatedGlobalCoercions.
 Require Import StlcIso.SpecSyntax.
 Require Import StlcIso.SpecTyping.
+Require Import StlcIso.SpecAnnot.
 Require Import StlcEqui.SpecAnnot.
 
 Module I := StlcIso.SpecSyntax.
 Module IT := StlcIso.SpecTyping.
+Module IA := StlcIso.SpecAnnot.
 Module E := StlcEqui.SpecAnnot.
 
 (** Equi terms with computational equality evidence at conversions.  The
@@ -75,6 +78,35 @@ Fixpoint compile_indexed (t : ICTm) : I.Tm :=
   | ic_coerce A B d x => I.app (compile_global_up d) (compile_indexed x)
   end.
 
+(** The computational compiler proper.  Unlike [compile_indexed], this keeps
+    every type annotation carried by [ICTm] and invokes the directly
+    annotated coercion interpreter at conversion sites. *)
+Fixpoint compile_indexed_annot (t : ICTm) : IA.TmA :=
+  match t with
+  | ic_var i => IA.ia_var i
+  | ic_abs A B body => IA.ia_abs A B (compile_indexed_annot body)
+  | ic_app A B f x => IA.ia_app A B
+      (compile_indexed_annot f) (compile_indexed_annot x)
+  | ic_unit => IA.ia_unit
+  | ic_true => IA.ia_true
+  | ic_false => IA.ia_false
+  | ic_ite A b t e => IA.ia_ite A (compile_indexed_annot b)
+      (compile_indexed_annot t) (compile_indexed_annot e)
+  | ic_pair A B x y => IA.ia_pair A B
+      (compile_indexed_annot x) (compile_indexed_annot y)
+  | ic_proj1 A B p => IA.ia_proj₁ A B (compile_indexed_annot p)
+  | ic_proj2 A B p => IA.ia_proj₂ A B (compile_indexed_annot p)
+  | ic_inl A B x => IA.ia_inl A B (compile_indexed_annot x)
+  | ic_inr A B x => IA.ia_inr A B (compile_indexed_annot x)
+  | ic_case A B C s l r => IA.ia_caseof A B C
+      (compile_indexed_annot s) (compile_indexed_annot l)
+      (compile_indexed_annot r)
+  | ic_seq A x y => IA.ia_seq A
+      (compile_indexed_annot x) (compile_indexed_annot y)
+  | ic_coerce A B d x => IA.ia_app A B
+      (compile_global_up_annot d) (compile_indexed_annot x)
+  end.
+
 Reserved Notation "⟪  Γ ic⊢ t : T  ⟫"
   (at level 0, Γ at level 98, t at level 98, T at level 98).
 Inductive ICTyping (Γ : Env) : ICTm -> Ty -> Prop :=
@@ -128,9 +160,29 @@ Proof.
   eapply IT.WtApp; [now apply compile_global_up_typing|exact IHICTyping].
 Qed.
 
+Theorem compile_indexed_annot_typing {Γ t A} :
+  ⟪ Γ ic⊢ t : A ⟫ -> IA.AnnotTyping Γ (compile_indexed_annot t) A.
+Proof.
+  induction 1; cbn; eauto using IA.AnnotTyping.
+  eapply IA.ia_WtApp;
+    [now apply compile_global_up_annot_typing|exact IHICTyping].
+Qed.
+
+Theorem erase_compile_indexed_annot (t : ICTm) :
+  IA.eraseAnnot (compile_indexed_annot t) = compile_indexed t.
+Proof.
+  induction t; cbn -[compile_global_up_annot]; try congruence.
+  now rewrite erase_compile_global_up_annot, IHt.
+Qed.
+
 (** The source computation is an application argument, hence is evaluated in
     the original CBV order rather than delayed under an eta-expanded lambda. *)
 Lemma compile_indexed_coerce_strict A B d x :
   compile_indexed (ic_coerce A B d x) =
   I.app (compile_global_up d) (compile_indexed x).
+Proof. reflexivity. Qed.
+
+Lemma compile_indexed_annot_coerce_strict A B d x :
+  compile_indexed_annot (ic_coerce A B d x) =
+  IA.ia_app A B (compile_global_up_annot d) (compile_indexed_annot x).
 Proof. reflexivity. Qed.

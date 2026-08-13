@@ -129,6 +129,7 @@ ExactBacktranslation/IndexedContexts.v
 ExactBacktranslation/EquiContextFrontend.v
 ExactBacktranslation/IndexedCompilerTests.v
 ExactBacktranslation/GlobalCoercions.v
+ExactBacktranslation/AnnotatedGlobalCoercions.v
 ExactBacktranslation/GlobalCoercionTests.v
 ExactBacktranslation/RoundTrip.v
 ExactBacktranslation/RoundTripTests.v

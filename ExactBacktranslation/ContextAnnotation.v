@@ -63,96 +63,22 @@ Corollary compile_indexed_has_annotation {Gamma t A} :
   exists ta, IA.AnnotTyping Gamma ta A /\
     IA.eraseAnnot ta = IndexedCompiler.compile_indexed t.
 Proof.
-  intros Ht. apply iso_typing_has_annotation.
-  now apply IndexedCompiler.compile_indexed_typing.
+  intros Ht. exists (IndexedCompiler.compile_indexed_annot t). split.
+  - now apply IndexedCompiler.compile_indexed_annot_typing.
+  - apply IndexedCompiler.erase_compile_indexed_annot.
 Qed.
 
-(** The exact context compiler also has a fully annotated presentation.
-    The presentation is built structurally from the indexed source context;
-    generated coercions are annotated from their checked ordinary-Iso typing
-    derivations. *)
+(** The witness is now the compiler's computational annotated output itself;
+    no typing proof is eliminated to construct it. *)
 Theorem compile_indexed_context_has_annotation
     {Gamma0 A0 Gamma C A} :
   ICCtxTyping Gamma0 A0 Gamma C A ->
   exists Ca, IA.PCtxTypingAnnot Gamma0 A0 Gamma Ca A /\
     IA.eraseAnnot_pctx Ca = compile_indexed_context C.
 Proof.
-  induction 1.
-  - exists IA.ia_phole. split; [constructor|reflexivity].
-  - destruct IHICCtxTyping as (Ca & HCa & He).
-    exists (IA.ia_pabs A B Ca). split; [now constructor|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    destruct (compile_indexed_has_annotation H1) as (ta & Hta & Het).
-    exists (IA.ia_papp₁ A B Ca ta). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct (compile_indexed_has_annotation H1) as (ta & Hta & Het).
-    destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_papp₂ A B ta Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    destruct (compile_indexed_has_annotation H0) as (ta1 & Hta1 & He1).
-    destruct (compile_indexed_has_annotation H1) as (ta2 & Hta2 & He2).
-    exists (IA.ia_pite₁ A Ca ta1 ta2). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct (compile_indexed_has_annotation H) as (ta1 & Hta1 & He1).
-    destruct IHICCtxTyping as (Ca & HCa & HeC).
-    destruct (compile_indexed_has_annotation H1) as (ta2 & Hta2 & He2).
-    exists (IA.ia_pite₂ A ta1 Ca ta2). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct (compile_indexed_has_annotation H) as (ta1 & Hta1 & He1).
-    destruct (compile_indexed_has_annotation H0) as (ta2 & Hta2 & He2).
-    destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_pite₃ A ta1 ta2 Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    destruct (compile_indexed_has_annotation H0) as (ta & Hta & Het).
-    exists (IA.ia_ppair₁ A B Ca ta). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct (compile_indexed_has_annotation H) as (ta & Hta & Het).
-    destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_ppair₂ A B ta Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_pproj₁ A B Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_pproj₂ A B Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_pinl A B Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_pinr A B Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    destruct (compile_indexed_has_annotation H0) as (ta1 & Hta1 & He1).
-    destruct (compile_indexed_has_annotation H1) as (ta2 & Hta2 & He2).
-    exists (IA.ia_pcaseof₁ A B R Ca ta1 ta2). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct (compile_indexed_has_annotation H) as (ta1 & Hta1 & He1).
-    destruct IHICCtxTyping as (Ca & HCa & HeC).
-    destruct (compile_indexed_has_annotation H1) as (ta2 & Hta2 & He2).
-    exists (IA.ia_pcaseof₂ A B R ta1 Ca ta2). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct (compile_indexed_has_annotation H) as (ta1 & Hta1 & He1).
-    destruct (compile_indexed_has_annotation H0) as (ta2 & Hta2 & He2).
-    destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_pcaseof₃ A B R ta1 ta2 Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    destruct (compile_indexed_has_annotation H0) as (ta & Hta & Het).
-    exists (IA.ia_pseq₁ A Ca ta). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct (compile_indexed_has_annotation H) as (ta & Hta & Het).
-    destruct IHICCtxTyping as (Ca & HCa & HeC).
-    exists (IA.ia_pseq₂ A ta Ca). split;
-      [econstructor; eauto|cbn; congruence].
-  - destruct IHICCtxTyping as (Ca & HCa & HeC).
-    destruct (iso_typing_has_annotation
-      (@GlobalCoercions.compile_global_up_typing Gamma A B d H H0))
-      as (ta & Hta & Het).
-    exists (IA.ia_papp₂ A B ta Ca). split;
-      [econstructor; eauto|cbn; congruence].
+  intros HC. exists (compile_indexed_context_annot C). split.
+  - now apply compile_indexed_context_annot_typing.
+  - apply erase_compile_indexed_context_annot.
 Qed.
 
 Lemma iso_contextual_equivalence_compiled_context
@@ -165,7 +91,7 @@ Lemma iso_contextual_equivalence_compiled_context
       (StlcIso.SpecSyntax.pctx_app t2 (compile_indexed_context C))).
 Proof.
   intros Heq VR HC.
-  destruct (compile_indexed_context_has_annotation HC)
-    as (Ca & HCa & Herase).
-  rewrite <- !Herase. exact (Heq Ca R VR HCa).
+  rewrite <- !erase_compile_indexed_context_annot.
+  exact (Heq (compile_indexed_context_annot C) R VR
+    (compile_indexed_context_annot_typing HC)).
 Qed.

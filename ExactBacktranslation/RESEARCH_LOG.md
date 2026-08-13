@@ -183,3 +183,36 @@
   `functional_extensionality_dep`.
 - Coq 8.16.1 successfully compiles the entire repository with `make -B V=0
   -j2`; all executable and theorem-level stress tests pass.
+
+## 2026-08-13: computational Iso annotation insertion
+
+- Corrected the Equi-to-Iso frontend interface: `compile_equi_annot` now maps
+  `StlcEqui.SpecAnnot.TmA` to `StlcIso.SpecAnnot.TmA`, rather than taking an
+  annotated source and silently returning raw Iso syntax.  Raw syntax is
+  exposed separately as `compile_equi_raw` and only used at semantic APIs that
+  are defined over raw terms.
+- Added `AnnotatedGlobalCoercions.v`, a direct annotated interpretation of the
+  same finite cyclic certificate and single heterogeneous fixed-point bundle.
+  The `cn_mu_l` and `cn_mu_r` cases computationally emit `ia_fold_ body` and
+  `ia_unfold_ body`; no typing derivation in `Prop` is eliminated to recover
+  those bodies.
+- Proved direct annotated typing for the entire bundle functional, tied bundle,
+  forward cast, and reverse cast.  Proved erasure agreement with every public
+  raw cast (`erase_compile_global_pair_annot`,
+  `erase_compile_global_up_annot`, and
+  `erase_compile_global_down_annot`).
+- Added `compile_indexed_annot` and `compile_indexed_context_annot`, with direct
+  annotated typing, structural plugging, CBV-strict conversion equations, and
+  erasure agreement with the established raw term/context compilers.
+- `compile_equi_context_annot` now returns an annotated Iso context directly.
+  `ContextAnnotation.compile_indexed_context_has_annotation` uses that concrete
+  compiler output as its witness, replacing the old post-hoc reconstruction
+  from raw typing derivations on the exact compiler codepath.
+- Updated exact round-trip, context-backtranslation, and FAC statements to
+  erase the annotated target only at the repository's raw contextual-
+  equivalence boundary.  The underlying semantic theorems and generated raw
+  programs are unchanged by the erasure-agreement proofs.
+- Added executable/proof tests for annotated cyclic casts in both directions,
+  annotated compiler strictness and erasure, annotated structural contexts,
+  and a direct recursive node whose generated syntax visibly contains
+  `ia_unfold_ tunit` and `ia_fold_ tunit`.
