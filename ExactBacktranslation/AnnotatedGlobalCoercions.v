@@ -6,8 +6,8 @@ Require Import StlcIso.SpecAnnot.
 Require Import StlcIso.InstAnnot.
 Require Import StlcIso.Fix.
 Require Import StlcIso.LemmasTyping.
-From Coq Require Import Lists.List.
-From Coq Require Import Logic.FunctionalExtensionality.
+From Stdlib Require Import Lists.List.
+From Stdlib Require Import Logic.FunctionalExtensionality.
 Import ListNotations.
 
 Module IA := StlcIso.SpecAnnot.

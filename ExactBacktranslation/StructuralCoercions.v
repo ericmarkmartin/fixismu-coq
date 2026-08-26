@@ -5,7 +5,7 @@ Require Import StlcIso.Inst.
 Require Import StlcIso.Fix.
 Require Import StlcIso.SpecTyping.
 Require Import StlcIso.LemmasTyping.
-From Coq Require Import Lists.List.
+From Stdlib Require Import Lists.List.
 Import ListNotations.
 
 (** Terms realizing the assumed cast pairs. The head corresponds to the most

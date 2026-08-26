@@ -1,5 +1,5 @@
 Require Import ExactBacktranslation.CertificateIndexed.
-From Coq Require Import Arith.PeanoNat Lia Lists.List Logic.Eqdep_dec.
+From Stdlib Require Import Arith.PeanoNat Lia Lists.List Logic.Eqdep_dec.
 Import ListNotations.
 
 (** Height is a proof property, not execution fuel in a generated cast.  It is

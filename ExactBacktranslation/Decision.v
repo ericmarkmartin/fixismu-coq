@@ -3,7 +3,7 @@ Require Import ExactBacktranslation.SearchCompleteness.
 Require Import RecTypes.ValidTy.
 Require Import RecTypes.LemmasTypes.
 Require Import Db.Lemmas.
-From Coq Require Import Lists.List Arith.PeanoNat Arith.Wf_nat Lia.
+From Stdlib Require Import Lists.List Arith.PeanoNat Arith.Wf_nat Lia.
 Import ListNotations.
 
 (** A finite closure presentation of a recursive type.  [env] contains the

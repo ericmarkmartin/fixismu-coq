@@ -7,7 +7,7 @@ Require Import StlcEqui.SpecSyntax.
 Require StlcEqui.SpecEvaluation.
 Require StlcEqui.LemmasEvaluation.
 Require Import StlcEqui.SpecTyping.
-From Coq Require Import Arith.PeanoNat Lia.
+From Stdlib Require Import Arith.PeanoNat Lia.
 
 Module HI := StlcIso.SpecSyntax.
 Module HIE := StlcIso.SpecEvaluation.

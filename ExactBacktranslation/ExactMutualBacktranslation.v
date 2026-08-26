@@ -14,7 +14,7 @@ Require StlcIso.SpecEquivalent.
 Require Import StlcIso.SpecAnnot.
 Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.
-From Coq Require Import Lia.
+From Stdlib Require Import Lia.
 
 Module EMI := StlcIso.SpecSyntax.
 Module EME := StlcEqui.SpecSyntax.

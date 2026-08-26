@@ -12,7 +12,7 @@ Require Import StlcEqui.CanForm.
 Require Import Db.Lemmas.
 Require Import Common.Relations.
 Require Import CompilerIE.Compiler.
-From Coq Require Import Lia Lists.List.
+From Stdlib Require Import Lia Lists.List.
 Import ListNotations.
 
 Module BI := StlcIso.SpecSyntax.

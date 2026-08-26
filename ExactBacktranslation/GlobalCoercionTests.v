@@ -9,7 +9,7 @@ Require Import StlcIso.SpecTyping.
 Require Import StlcIso.Fix.
 Require Import StlcIso.SpecAnnot.
 Require Import StlcIso.InstAnnot.
-From Coq Require Import Lists.List.
+From Stdlib Require Import Lists.List.
 Import ListNotations.
 
 Module IAGlobalTest := StlcIso.SpecAnnot.

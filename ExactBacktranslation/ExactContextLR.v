@@ -9,7 +9,7 @@ Require Import RecTypes.ValidTy.
 Require Import CompilerIE.Compiler.
 Require Import ExactBacktranslation.NativeBundleInvariant.
 Require Import Db.WellScoping.
-From Coq Require Import Lia.
+From Stdlib Require Import Lia.
 
 Local Ltac crush :=
   cbn in * |- ;

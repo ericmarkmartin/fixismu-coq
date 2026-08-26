@@ -14,7 +14,7 @@ Require Import LogRelIE.LemmasPseudoType.
 Require Import LogRelIE.LemmasLR.
 Require Import LogRelIE.LemmasIntro.
 Require Import LogRelIE.LemmasInversion.
-From Coq Require Import Lia Lists.List.
+From Stdlib Require Import Lia Lists.List.
 Import ListNotations.
 
 Module NBI := StlcIso.SpecSyntax.

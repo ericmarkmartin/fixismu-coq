@@ -1,7 +1,7 @@
 Require Export RecTypes.SpecTypes.
 Require Export RecTypes.Contraction.
 
-From Coq Require Import Lists.List Program.Equality.
+From Stdlib Require Import Lists.List Program.Equality.
 Import ListNotations.
 
 Definition PairEnv := list (Ty * Ty).

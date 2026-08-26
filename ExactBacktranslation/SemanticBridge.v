@@ -18,7 +18,7 @@ Require Import StlcEqui.SpecTyping.
 Require Import StlcEqui.SpecEquivalent.
 Require Import StlcEqui.LemmasEvaluation.
 Require Import Db.WellScoping.
-From Coq Require Import Lia.
+From Stdlib Require Import Lia.
 
 (** The exact semantic target for a generated forward cast. Both directions
     are needed so the common Iso term can mediate contextual equivalence

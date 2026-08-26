@@ -7,7 +7,7 @@ Require Import StlcIso.Fix.
 Require Import StlcIso.SpecTyping.
 Require Import StlcIso.LemmasTyping.
 Require Import Db.Lemmas.
-From Coq Require Import Lists.List.
+From Stdlib Require Import Lists.List.
 Import ListNotations.
 
 (** One bundle cell for every proper certificate node. Backreferences add no
