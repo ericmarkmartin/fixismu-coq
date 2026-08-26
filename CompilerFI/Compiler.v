@@ -9,7 +9,7 @@ Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.
 Require Import LogRelFI.LemmasIntro.
-Require Import Lia.
+From Stdlib Require Import Lia.
 Require Import Db.Lemmas.
 
 Require Import StlcFix.SpecEvaluation.

@@ -3,9 +3,8 @@ Require Export RecTypes.InstTy.
 Require Export RecTypes.Contraction.
 
 
-Require Import Coq.Bool.Bool.
-Require Import Coq.Arith.Max.
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import Bool.Bool.
+From Stdlib Require Import micromega.Lia.
 
 (* Fixpoint subt (T T' : Ty) (i : Ix) {struct T} : Ty := *)
 (*   match T with *)

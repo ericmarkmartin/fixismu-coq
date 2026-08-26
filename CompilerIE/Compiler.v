@@ -10,7 +10,7 @@ Require Import LogRelIE.LemmasPseudoType.
 Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.
 Require Import LogRelIE.LemmasIntro.
-Require Import Lia.
+From Stdlib Require Import Lia.
 Require Import Db.Lemmas.
 
 Require Import StlcIso.SpecEvaluation.

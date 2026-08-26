@@ -1,8 +1,8 @@
 Require Export Db.Spec.
 Require Export Db.Tactics.
-Require Import Coq.Logic.FunctionalExtensionality.
-Require Export Coq.Program.Equality.
-Require Export Coq.Program.Tactics.
+From Stdlib Require Import Logic.FunctionalExtensionality.
+From Stdlib Require Export Program.Equality.
+From Stdlib Require Export Program.Tactics.
 
 Create HintDb ws.
 #[export]

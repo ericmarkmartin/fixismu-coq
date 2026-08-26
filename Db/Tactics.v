@@ -1,4 +1,4 @@
-Require Export Coq.Unicode.Utf8.
+From Stdlib Require Export Unicode.Utf8.
 
 Ltac crushRewriter :=
   repeat

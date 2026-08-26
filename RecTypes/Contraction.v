@@ -1,12 +1,12 @@
 Require Export RecTypes.InstTy.
 Require Export RecTypes.SpecTypes.
 
-Require Coq.Arith.PeanoNat.
-Require Import Coq.Bool.Bool.
+From Stdlib Require Arith.PeanoNat.
+From Stdlib Require Import Bool.Bool.
 
-Module B := Coq.Init.Datatypes.
+Module B := Corelib.Init.Datatypes.
 
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 Fixpoint LMC (τ : Ty) {struct τ} : nat :=
   match τ with

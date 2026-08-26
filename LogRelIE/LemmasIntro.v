@@ -14,8 +14,8 @@ Require Import LogRelIE.PseudoType.
 Require Import LogRelIE.LemmasPseudoType.
 Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.
-Require Import Coq.micromega.Lia.
-Require Import Coq.Arith.Wf_nat.
+From Stdlib Require Import micromega.Lia.
+From Stdlib Require Import Arith.Wf_nat.
 Require Import Db.Lemmas.
 (* Require Import StlcEqui.Fix. *)
 

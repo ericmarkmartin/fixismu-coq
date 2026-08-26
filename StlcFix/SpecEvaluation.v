@@ -2,7 +2,7 @@ Require Export RecTypes.SpecTypes.
 Require Export RecTypes.InstTy.
 Require Export RecTypes.Contraction.
 Require Export StlcFix.Inst.
-Require Export Coq.Relations.Relation_Operators.
+From Stdlib Require Export Relations.Relation_Operators.
 Require Export Common.Relations.
 
 (** ** Evaluation *)

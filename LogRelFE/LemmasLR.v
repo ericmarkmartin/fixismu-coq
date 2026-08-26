@@ -20,8 +20,8 @@ Require Import StlcEqui.LemmasEvaluation.
 Require Import StlcEqui.Inst.
 Require Import StlcEqui.Size.
 
-Require Import Lia.
-Require Import Min.
+From Stdlib Require Import Lia.
+From Stdlib Require Import Arith.PeanoNat.
 
 Lemma lev_lateri {i W} : lev (lateri i W) = lev W - i.
 Proof.
@@ -188,7 +188,7 @@ Section Obs.
         refine (S_Observe_TermHor_lt _ obs).
         unfold lev in *.
         enough (min i j ≤ i) by lia.
-        auto using le_min_l.
+        auto using Nat.le_min_l.
     - refine (F.termination_closed_under_antireductionStar _ _).
       + refine (stepRel_to_evalStar es).
       + apply obs; clear obs.
@@ -1070,6 +1070,5 @@ Ltac crushLRMatch :=
     | [ |- F.ECtx (F.pctx_cat _ _) ] => apply F.ectx_cat
     | [ |- E.ECtx (E.pctx_cat _ _) ] => apply E.ectx_cat
   end.
-
 
 

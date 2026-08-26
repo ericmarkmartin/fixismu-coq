@@ -1,16 +1,16 @@
 Require Import LogRelIE.InstPTy.
 Require Import LogRelIE.PseudoType.
 
-Require Coq.Arith.PeanoNat.
-Require Import Coq.Bool.Bool.
+From Stdlib Require Arith.PeanoNat.
+From Stdlib Require Import Bool.Bool.
 
-Module B := Coq.Init.Datatypes.
+Module B := Corelib.Init.Datatypes.
 
 Require Import RecTypes.Contraction.
 
 Require Import InstPTy.
 
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import micromega.Lia.
 
 Inductive SimplePContr : PTy → Prop :=
   | SimpContrPUnit : SimplePContr ptunit

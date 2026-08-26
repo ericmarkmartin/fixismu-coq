@@ -1,5 +1,5 @@
-Require Export Coq.Unicode.Utf8.
-Require Import Coq.micromega.Lia.
+From Stdlib Require Export Unicode.Utf8.
+From Stdlib Require Import micromega.Lia.
 
 Lemma S_le {n m} : S n ≤ m → exists m', m = S m' ∧ n ≤ m'.
 Proof.

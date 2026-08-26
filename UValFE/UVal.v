@@ -24,7 +24,7 @@ Require Import StlcFix.Size.
 Require Import StlcFix.StlcOmega.
 Require Import StlcFix.TypeSafety.
 Require Import Common.Relations.
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 Module F.
   Include StlcFix.SpecEvaluation.

@@ -1,5 +1,5 @@
 Require Export StlcEqui.Inst.
-Require Export Coq.Relations.Relation_Operators.
+From Stdlib Require Export Relations.Relation_Operators.
 Require Export Common.Relations.
 
 (** ** Evaluation *)

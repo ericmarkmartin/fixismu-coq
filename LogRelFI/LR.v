@@ -11,10 +11,10 @@ Require Import StlcIso.Inst.
 Require Import StlcIso.Size.
 Require Import UValFI.UVal.
 
-Require Import Coq.Program.Basics.
-Require Import Coq.Logic.FunctionalExtensionality.
-Require Import Coq.Arith.Wf_nat.
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import Program.Basics.
+From Stdlib Require Import Logic.FunctionalExtensionality.
+From Stdlib Require Import Arith.Wf_nat.
+From Stdlib Require Import micromega.Lia.
 
 Inductive Direction : Set :=
 | dir_lt

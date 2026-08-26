@@ -35,6 +35,12 @@ nra.cache
 native_compute_profile_*.data
 *.~undo-tree~
 
+# generated Rocq makefiles
+Makefile.coq
+Makefile.coq.conf
+Makefile.rocq
+Makefile.rocq.conf
+
 # generated timing files
 *.timing.diff
 *.v.after-timing

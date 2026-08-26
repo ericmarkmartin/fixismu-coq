@@ -15,11 +15,11 @@ Require Import LogRelIE.LR.
 Require Import LogRelIE.LemmasLR.
 Require Import LogRelIE.LemmasIntro.
 Require Import LogRelIE.LemmasInversion.
-Require Import Lia.
+From Stdlib Require Import Lia.
 Require Import Db.Lemmas.
 Require Import UValIE.UVal.
 Require StlcEqui.Fix.
-Require Lia.
+From Stdlib Require Lia.
 
 Definition uvalApp_pctx₁ n ts₂ τ τ' :=
   I.papp₁

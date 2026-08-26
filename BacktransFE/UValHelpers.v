@@ -21,7 +21,7 @@ Require Import LogRelFE.LemmasInversion.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import LogRelFE.PseudoType.
 Require Export BacktransFE.UpgradeDowngrade.
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 
 Section Intro.

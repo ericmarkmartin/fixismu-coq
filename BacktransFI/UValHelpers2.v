@@ -14,11 +14,11 @@ Require Import LogRelFI.LR.
 Require Import LogRelFI.LemmasLR.
 Require Import LogRelFI.LemmasIntro.
 Require Import LogRelFI.LemmasInversion.
-Require Import Lia.
+From Stdlib Require Import Lia.
 Require Import Db.Lemmas.
 Require Import UValFI.UVal.
 Require StlcIso.Fix.
-Require Lia.
+From Stdlib Require Lia.
 
 Definition uvalApp_pctx₁ n ts₂ τ τ' :=
   F.papp₁

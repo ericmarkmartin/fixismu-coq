@@ -7,9 +7,8 @@ Require Export RecTypes.LemmasTypes.
 Require Export StlcIso.Inst.
 Require Export StlcIso.SpecSyntax.
 
-Require Import Coq.Bool.Bool.
-Require Import Coq.Arith.Max.
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import Bool.Bool.
+From Stdlib Require Import micromega.Lia.
 
 (** * Typing *)
 

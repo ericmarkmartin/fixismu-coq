@@ -1,7 +1,7 @@
 Require Export Db.Spec.
 Require Export Db.WellScoping.
 
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import micromega.Lia.
 
 Inductive Ty : Set :=
   | tarr (τ₁ τ₂ : Ty)

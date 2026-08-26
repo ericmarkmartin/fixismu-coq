@@ -1,7 +1,7 @@
-Require Export Coq.Unicode.Utf8.
-Require Export Coq.Logic.FunctionalExtensionality.
-Require Export Coq.Program.Equality.
-Require Export Coq.Program.Tactics.
+From Stdlib Require Export Unicode.Utf8.
+From Stdlib Require Export Logic.FunctionalExtensionality.
+From Stdlib Require Export Program.Equality.
+From Stdlib Require Export Program.Tactics.
 
 Set Maximal Implicit Insertion.
 
@@ -368,7 +368,7 @@ Section IndexInstances.
   Global Instance wsApIxIx : WsAp Ix Ix.
   Proof. constructor; auto. Qed.
   Global Instance wsLiftIx {X} `{WsVr X} : WsLift Ix X.
-  Proof. constructor; eauto using wsVr. Qed.
+  Proof. constructor; intros; apply wsVr; assumption. Qed.
 
 End IndexInstances.
 
@@ -425,4 +425,3 @@ Ltac crushDbSyntaxMatchH :=
     | |- context[@ap _ _ _ ?apXY (idm _) ?x   ] => rewrite (@ap_id _ _ _ apXY x)
     | |- context[@lift _ _ _ _ ?liftXY (vr ?i)] => rewrite (@lift_vr _ _ _ _ liftXY i)
     end.
-

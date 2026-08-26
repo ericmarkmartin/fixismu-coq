@@ -21,7 +21,7 @@ Require Import LogRelIE.LemmasInversion.
 Require Import LogRelIE.LemmasPseudoType.
 Require Import LogRelIE.PseudoType.
 Require Export BacktransIE.UpgradeDowngrade.
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 
 Section Intro.

@@ -1,10 +1,10 @@
 Require Export StlcEqui.Inst.
-Require Export Coq.Relations.Relation_Operators.
+From Stdlib Require Export Relations.Relation_Operators.
 Require Export Common.Relations.
 Require Export StlcEqui.SpecEvaluation.
 Require Export StlcEqui.LemmasEvaluation.
 
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 Fixpoint size (t : Tm) : nat :=
   match t with

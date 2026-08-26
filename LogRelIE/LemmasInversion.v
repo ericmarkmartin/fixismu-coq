@@ -18,8 +18,7 @@ Require Import StlcEqui.SpecTyping.
 Require Import StlcEqui.Inst.
 Require Import UValIE.UVal.
 
-Require Import Lia.
-Require Import Min.
+From Stdlib Require Import Lia.
 
 Section ValrelInversion.
 

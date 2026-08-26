@@ -18,8 +18,7 @@ Require Import StlcIso.SpecTyping.
 Require Import StlcIso.Inst.
 Require Import UValFI.UVal.
 
-Require Import Lia.
-Require Import Min.
+From Stdlib Require Import Lia.
 
 Section ValrelInversion.
 

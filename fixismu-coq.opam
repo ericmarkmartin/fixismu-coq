@@ -1,18 +1,22 @@
 opam-version: "2.0"
 name: "fixismu-coq"
 version: "0.1"
-synopsis: "Coq mechanization of FAC proofs between various STLCs"
+synopsis: "Rocq mechanization of FAC proofs between various STLCs"
 description: """
-Coq mechanization of FAC proofs:
+Rocq mechanization of FAC proofs:
 - from STLC with fixpoint recursion to STLC with iso-recursive types
 - from STLC with fixpoint recursion to STLC with equi-recursive types
 - from STLC with iso-recursive types to STLC with equi-recursive types
 """
 maintainer: "Dominique Devriese <dominique.devriese@kuleuven.be>"
 authors: "Dominique Devriese <dominique.devriese@kuleuven.be>, Eric Mark Martin <ericmarkmartin@gmail.com>, Marco Patrignani <marco.patrignani@unitn.it>"
-license: ""
 homepage: "https://github.com/dominiquedevriese/fixismu-coq"
-bug-reports: ""
-dev-repo: ""
-depends: [ "ocaml" "ocamlfind" ]
-build: [make]
+bug-reports: "https://github.com/dominiquedevriese/fixismu-coq/issues"
+dev-repo: "git+https://github.com/dominiquedevriese/fixismu-coq.git"
+depends: [
+  "ocaml"
+  "ocamlfind"
+  "rocq-core" {>= "9.1.1" & < "9.2~"}
+  "rocq-stdlib" {>= "9.0" & < "9.2~"}
+]
+build: [make "-j%{jobs}%"]

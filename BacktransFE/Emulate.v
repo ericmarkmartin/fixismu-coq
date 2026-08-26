@@ -18,11 +18,11 @@ Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.
 Require Import LogRelFE.LemmasIntro.
 Require Import LogRelFE.LemmasInversion.
-Require Import Lia.
+From Stdlib Require Import Lia.
 Require Import Db.Lemmas.
 Require Import UValFE.UVal.
 Require StlcEqui.Fix.
-Require Lia.
+From Stdlib Require Lia.
 
 Set Asymmetric Patterns.
 

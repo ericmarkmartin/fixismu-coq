@@ -10,8 +10,8 @@ Require Export RecTypes.LemmasTypes.
 Require Export StlcEqui.Inst.
 Require Export StlcEqui.SpecTyping.
 
-Require Import Coq.Bool.Bool.
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import Bool.Bool.
+From Stdlib Require Import micromega.Lia.
 
 Ltac crushTypingMatchH :=
   match goal with

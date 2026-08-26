@@ -18,8 +18,7 @@ Require Import StlcEqui.SpecTyping.
 Require Import StlcEqui.Inst.
 Require Import UValFE.UVal.
 
-Require Import Lia.
-Require Import Min.
+From Stdlib Require Import Lia.
 
 Section ValrelInversion.
 
@@ -697,4 +696,3 @@ Proof.
     unfold termrel, termrel', contrel, contrel'.
     now setoid_rewrite <-(valrel_tyeq' vT vU tyeq).
 Qed.
-

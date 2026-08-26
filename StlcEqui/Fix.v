@@ -15,7 +15,7 @@ Require Import StlcEqui.InstAnnot.
 Require Import Db.Lemmas.
 Require Import Db.WellScoping.
 
-Require Import Coq.Bool.Bool.
+From Stdlib Require Import Bool.Bool.
 
 Local Ltac crush :=
   intros; cbn in * |-;

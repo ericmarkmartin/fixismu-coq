@@ -25,7 +25,7 @@ Require Import StlcIso.Size.
 Require Import StlcIso.TypeSafety.
 Require Import StlcIso.Fix.
 Require Import Common.Relations.
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 Module I.
   Include RecTypes.SpecTypes.

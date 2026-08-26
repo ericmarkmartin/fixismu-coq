@@ -1,19 +1,19 @@
 Require Export StlcIso.Inst.
 Require Export StlcIso.SpecSyntax.
 Require Export StlcIso.SpecTyping.
-Require Coq.Program.Tactics.
-Require Coq.Program.Wf.
+From Stdlib Require Program.Tactics.
+From Stdlib Require Program.Wf.
 Require Wf.
 Require Arith.
-Require Coq.Arith.Wf_nat.
-Require Import Coq.Arith.Compare_dec.
-Require Import Coq.Logic.FunctionalExtensionality.
+From Stdlib Require Arith.Wf_nat.
+From Stdlib Require Import Arith.Compare_dec.
+From Stdlib Require Import Logic.FunctionalExtensionality.
 
 Require Import FunInd.
 Require Import Recdef.
 Require Import Db.Lemmas.
 
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 Fixpoint LMC (τ : Ty) {struct τ} : nat :=
   match τ with

@@ -15,8 +15,8 @@ Require Import LogRelFE.PseudoType.
 Require Import LogRelFE.LemmasPseudoType.
 Require Import LogRelFE.LR.
 Require Import LogRelFE.LemmasLR.
-Require Import Lia.
-Require Import Coq.Arith.Wf_nat.
+From Stdlib Require Import Lia.
+From Stdlib Require Import Arith.Wf_nat.
 Require Import Db.Lemmas.
 (* Require Import StlcEqui.Fix. *)
 

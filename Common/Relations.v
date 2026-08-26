@@ -1,7 +1,7 @@
-Require Export Coq.Relations.Relations.
-Require Coq.Relations.Operators_Properties.
-Require Coq.Setoids.Setoid.
-Require Export Coq.Unicode.Utf8.
+From Stdlib Require Export Relations.Relations.
+From Stdlib Require Relations.Operators_Properties.
+From Stdlib Require Setoids.Setoid.
+From Stdlib Require Export Unicode.Utf8.
 
 #[export]
 Hint Constructors clos_refl_trans_1n : eval.

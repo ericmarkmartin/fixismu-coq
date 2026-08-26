@@ -1,7 +1,7 @@
 # fixismu-coq
 [![build](https://github.com/dominiquedevriese/fixismu-coq/actions/workflows/build.yml/badge.svg)](https://github.com/dominiquedevriese/fixismu-coq/actions/workflows/build.yml)
 
-Coq proofs for the results reported in [_On the Semantic Expresiveness of
+Rocq proofs for the results reported in [_On the Semantic Expresiveness of
 Recursive Types_][arxiv]. They establish semantic equi-expressiveness results
 between simply-typed lambda calculi with
 1. a fixpoint combinator
@@ -19,11 +19,11 @@ This artifact was developed by [Dominique Devriese] and [Eric Mark Martin]. It l
 
 ## Structure of the Proof
 
-Here is a list of Coq files with a short description of what they contain, in 
+Here is a list of Rocq files with a short description of what they contain, in
 dependency order. 
 
 * Common/Common.v: A few simple arithmetic lemmas that we didn't immediately
-find in the Coq libraries
+find in the Rocq standard library
 * Common/Relations.v: Lemmas and definitions concerning the transitive and transitive-reflexive closure of relations and the transitive-reflexive closure indexed with a step count.
 * Db: Definitions and lemmas for working with De Bruijn binding structure
   * Db/Spec.v: A generic specification of languages with a De Bruijn binding structure, along with a set of type classes that may be instantiated for such languages.
@@ -65,23 +65,23 @@ find in the Coq libraries
 1. Clone the repository
 2. run `make` from the repo root
 
-### Compatible Coq versions
-- 8.14
-- 8.15
-- 8.16
+### Compatible Rocq version
 
-This is checked using the [docker-coq] github action (see the badge at the top of this readme).
+- 9.1.1
 
-[docker-coq]: https://github.com/coq-community/docker-coq-action
+This is checked using the [Docker-Coq GitHub Action] (see the badge at the top of this readme).
+
+[Docker-Coq GitHub Action]: https://github.com/rocq-prover/docker-opam-action
 
 ### Assumptions
 
 We depend on only two Axioms
-* [`Coq.Logic.FunctionalExtensionality.functional_extensionality_dep`][functional_extensionality_dep]
-* [`Coq.Logic.Eqdep.Eq_rect_eq.eq_rect_eq`][eq_rect_eq]
 
-[functional_extensionality_dep]: https://coq.inria.fr/library/Coq.Logic.FunctionalExtensionality.html#functional_extensionality_dep
-[eq_rect_eq]: https://coq.inria.fr/library/Coq.Logic.Eqdep.html#Eq_rect_eq.eq_rect_eq
+* [`Stdlib.Logic.FunctionalExtensionality.functional_extensionality_dep`][functional_extensionality_dep]
+* [`Stdlib.Logic.Eqdep.Eq_rect_eq.eq_rect_eq`][eq_rect_eq]
+
+[functional_extensionality_dep]: https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Logic.FunctionalExtensionality.html#functional_extensionality_dep
+[eq_rect_eq]: https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Logic.Eqdep.html#Eq_rect_eq.eq_rect_eq
 
 ## Differences to the Paper
 

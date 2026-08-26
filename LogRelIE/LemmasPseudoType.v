@@ -9,8 +9,8 @@ Require Export LogRelIE.ValidPTy.
 Require Import StlcIso.LemmasTyping.
 Require Import StlcEqui.LemmasTyping.
 
-Require Import Coq.Bool.Bool.
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import Bool.Bool.
+From Stdlib Require Import micromega.Lia.
 
 Require Import UValIE.UVal.
 

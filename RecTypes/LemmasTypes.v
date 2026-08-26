@@ -6,8 +6,8 @@ Require Export RecTypes.InstTy.
 Require Export RecTypes.Contraction.
 Require Export RecTypes.ValidTy.
 
-Require Import Coq.Bool.Bool.
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import Bool.Bool.
+From Stdlib Require Import micromega.Lia.
 
 
 Lemma closed_implies_not_var {i} :
@@ -225,7 +225,7 @@ Proof.
   inversion clτ; subst.
   inversion crτ; subst.
   split.
-  - eauto using wsAp, wsSub_sub_beta1.
+  - eapply wsAp. apply wsSub_sub_beta1. exact clτ. exact H0.
   - eauto using unfold_preserves_contr.
 Qed.
 

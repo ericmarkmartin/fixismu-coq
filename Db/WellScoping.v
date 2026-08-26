@@ -1,6 +1,6 @@
 Require Export Db.Spec.
 Require Export Db.Lemmas.
-Require Coq.Setoids.Setoid.
+From Stdlib Require Setoids.Setoid.
 
 Section WsSnoc.
 

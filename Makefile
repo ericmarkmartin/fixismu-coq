@@ -1,8 +1,10 @@
 # Comment out the below line if you want to be quiet by default.
 V=1
 
-# Specify a concrete number of jobs if necessary
-JOBS=-j
+# Set a concrete value such as -j4 if nested make jobserver inheritance is unavailable.
+JOBS ?=
+
+ROCQ ?= rocq
 
 ifeq ($(V),1)
 E=@true
@@ -17,17 +19,22 @@ endif
 SRCS := $(shell egrep "^.*\.v$$" _CoqProject)
 AUXS := $(join $(dir $(SRCS)), $(addprefix ., $(notdir $(SRCS:.v=.aux))))
 
-.PHONY: coq clean
+.PHONY: all rocq coq clean
 
-coq: Makefile.coq
-	$(E) "  MAKE Makefile.coq"
-	$(Q)$(MAKE) $(MFLAGS) -f Makefile.coq
+all: rocq
 
-Makefile.coq: Makefile $(VS)
-	$(E) "  COQ_MAKEFILE Makefile.coq"
-	$(Q)coq_makefile -f _CoqProject -o Makefile.coq
+rocq: Makefile.rocq
+	$(E) "  MAKE Makefile.rocq"
+	$(Q)$(MAKE) $(MFLAGS) -f Makefile.rocq
 
-clean: Makefile.coq
-	$(Q)$(MAKE) $(MFLAGS) -f Makefile.coq clean
+coq: rocq
+
+Makefile.rocq: Makefile _CoqProject
+	$(E) "  ROCQ MAKEFILE Makefile.rocq"
+	$(Q)$(ROCQ) makefile -f _CoqProject -o Makefile.rocq
+
+clean: Makefile.rocq
+	$(Q)$(MAKE) $(MFLAGS) -f Makefile.rocq clean
 	$(Q)rm -f $(AUXS)
-	$(Q)rm -f Makefile.coq *.bak *.d *.glob *~ result*
+	$(Q)rm -f Makefile.rocq Makefile.rocq.conf Makefile.coq Makefile.coq.conf
+	$(Q)rm -f *.bak *.d *.glob *~ result*

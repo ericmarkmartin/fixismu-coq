@@ -12,7 +12,7 @@ Require Import StlcEqui.SpecSyntax.
 Require Import UValIE.UVal.
 Require Import RecTypes.SpecTypes.
 
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import micromega.Lia.
 
 Module I.
   Include StlcIso.LemmasEvaluation.

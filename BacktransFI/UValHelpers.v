@@ -21,7 +21,7 @@ Require Import LogRelFI.LemmasInversion.
 Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.PseudoType.
 Require Export BacktransFI.UpgradeDowngrade.
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 
 Section Intro.

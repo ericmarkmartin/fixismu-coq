@@ -3,9 +3,8 @@ Require Export LogRelIE.InstPTy.
 Require Export RecTypes.Contraction.
 Require Export LogRelIE.Contraction.
 
-Require Import Coq.Bool.Bool.
-Require Import Coq.Arith.Max.
-Require Import Coq.micromega.Lia.
+From Stdlib Require Import Bool.Bool.
+From Stdlib Require Import micromega.Lia.
 
 Fixpoint pNumbFree (τ : PTy) : nat :=
   match τ with

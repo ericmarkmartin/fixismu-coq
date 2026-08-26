@@ -17,9 +17,9 @@ Require Import LogRelFI.LemmasPseudoType.
 Require Import LogRelFI.PseudoType.
 Require Import UValFI.UVal.
 
-Require Import Lia.
+From Stdlib Require Import Lia.
 
-Require Import Program.Wf.
+From Stdlib Require Import Program.Wf.
 
 Local Ltac crush :=
   intros; cbn in * |-;

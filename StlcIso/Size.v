@@ -1,10 +1,10 @@
 Require Export StlcIso.Inst.
-Require Export Coq.Relations.Relation_Operators.
+From Stdlib Require Export Relations.Relation_Operators.
 Require Export Common.Relations.
 Require Export StlcIso.SpecEvaluation.
 Require Export StlcIso.LemmasEvaluation.
 
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 Fixpoint size (t : Tm) : nat :=
   match t with

@@ -1,11 +1,11 @@
 Require Export Db.Lemmas.
 Require Export StlcFix.SpecSyntax.
 Require Export StlcFix.SpecEvaluation.
-Require Export Coq.Program.Tactics.
+From Stdlib Require Export Program.Tactics.
 Require Import Common.Common.
 Require Import Common.Relations.
 
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 Local Ltac crush :=
   intros; cbn in * |-;

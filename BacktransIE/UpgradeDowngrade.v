@@ -25,9 +25,9 @@ Require Import LogRelIE.LemmasPseudoType.
 Require Import LogRelIE.PseudoType.
 Require Import UValIE.UVal.
 
-Require Import Lia.
+From Stdlib Require Import Lia.
 
-Require Import Program.Wf.
+From Stdlib Require Import Program.Wf.
 
 Local Ltac matchValidTyUValIE :=
   match goal with
